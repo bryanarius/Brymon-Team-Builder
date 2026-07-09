@@ -93,7 +93,7 @@ The project is being developed in multiple phases, beginning with planning and w
 
 ### 🚧 Phase 1 — Design
 
-- [ ] Low-Fidelity Mockups
+- [x] Low-Fidelity Mockups
 - [ ] High-Fidelity Mockups
 
 ### ⏳ Phase 2 — Technical Design
