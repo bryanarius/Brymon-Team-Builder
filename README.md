@@ -1,72 +1,87 @@
 # Brymon Team Builder
 
-A full-stack Pokémon team builder built with PHP, PostgreSQL, JavaScript, and the PokéAPI.
+A modern full-stack Pokémon team builder built with **PHP**, **PostgreSQL**, **JavaScript**, and the **PokéAPI**.
 
-> **Status:** 🚧 In Development (Version 1)
+> 🚧 **Status:** In Development (Version 1)
 
 ---
 
-## Overview
+## Home
 
-Brymon Team Builder is a portfolio project designed to demonstrate full-stack web development skills through the creation of a Pokémon team builder.
+![Home](docs/high-fi/home.png)
 
-The application allows users to create, edit, save, and manage Pokémon teams while showcasing modern software engineering practices such as:
+---
+
+## Team Builder
+
+![Team Builder](docs/high-fi/team-builder.png)
+
+---
+
+## Saved Teams
+
+![Saved Teams](docs/high-fi/saved-teams.png)
+
+---
+
+## About
+
+![About](docs/high-fi/about.png)
+
+---
+
+# Overview
+
+Brymon Team Builder is a full-stack portfolio project built to demonstrate modern software engineering principles by creating a Pokémon team builder from scratch.
+
+Users can search Pokémon, customize team members, build complete teams, and save them for later while the project demonstrates:
 
 - MVC Architecture
-- Database Design
+- Object-Oriented PHP
+- PostgreSQL Database Design
 - CRUD Operations
 - REST API Integration
 - Responsive UI Design
-- Version Control with Git
-
-The project is being developed in multiple phases, beginning with planning and wireframes before moving into implementation.
+- Git Version Control
 
 ---
 
-## Tech Stack
+# Why Brymon?
 
-### Frontend
+Brymon was created to strengthen my full-stack development skills by building a complete web application from planning through deployment.
 
-- HTML5
-- CSS3
-- JavaScript
-
-### Backend
-
-- PHP
-- Custom MVC Architecture
-
-### Database
-
-- PostgreSQL
-
-### External APIs
-
-- PokéAPI
-
-### Development Tools
-
-- Git
-- GitHub
-- VS Code
+Rather than recreating an existing website, this project focuses on designing and implementing a maintainable application using a custom PHP MVC architecture, relational database design, and third-party API integration.
 
 ---
 
-## Version 1 MVP Features
+# Tech Stack
 
-### Team Management
+| Layer | Technology |
+|--------|------------|
+| Frontend | HTML5, CSS3, JavaScript |
+| Backend | PHP |
+| Architecture | Custom MVC |
+| Database | PostgreSQL |
+| API | PokéAPI |
+| Development Tools | Git, GitHub, VS Code |
 
-- Create a Team
-- Save a Team
-- Edit a Team
-- Delete a Team
+---
+
+# Version 1 MVP Features
+
+## Team Management
+
+- Create Teams
+- Save Teams
+- Edit Teams
+- Delete Teams
 - View Saved Teams
 
-### Pokémon Management
+## Pokémon Management
 
 - Search Pokémon
 - Add up to 6 Pokémon
-- View Pokémon information
+- View Pokémon Details
 - Configure Moves
 - Configure Abilities
 - Configure Items
@@ -74,7 +89,7 @@ The project is being developed in multiple phases, beginning with planning and w
 - Configure EVs
 - Configure IVs
 
-### Database
+## Database
 
 - Store Teams
 - Retrieve Teams
@@ -83,46 +98,56 @@ The project is being developed in multiple phases, beginning with planning and w
 
 ---
 
-## Project Roadmap
+# Project Roadmap
 
-### ✅ Phase 0 — Planning
+## ✅ Phase 0 — Planning
 
 - [x] Project Outline
 - [x] MVP Definition
 - [x] User Flow
 
-### 🚧 Phase 1 — Design
+---
 
-- [x] Low-Fidelity Mockups
-- [ ] High-Fidelity Mockups
+## ✅ Phase 1 — Design
 
-### ⏳ Phase 2 — Technical Design
+- [x] Low-Fidelity Wireframes
+- [x] High-Fidelity Mockups
+
+---
+
+## 🚧 Phase 2 — Technical Design
 
 - [ ] Database ERD
 - [ ] MVC Architecture
 - [ ] Routing Design
 
-### ⏳ Phase 3 — Development
+---
+
+## ⏳ Phase 3 — Development
 
 - [ ] Homepage
 - [ ] Team Builder
+- [ ] Pokémon Search
 - [ ] Pokémon Editor
 - [ ] Saved Teams
 - [ ] PokéAPI Integration
 - [ ] CRUD Functionality
 
-### ⏳ Phase 4 — Polish
+---
+
+## ⏳ Phase 4 — Polish
 
 - [ ] Responsive Design
-- [ ] Validation
+- [ ] Form Validation
 - [ ] Error Handling
+- [ ] Testing
 - [ ] Deployment
 
 ---
 
-## Project Structure
+# Project Structure
 
-```
+```text
 Brymon/
 │
 ├── app/
@@ -135,6 +160,7 @@ Brymon/
 ├── database/
 │
 ├── docs/
+│   └── images/
 │
 ├── public/
 │
@@ -145,33 +171,31 @@ Brymon/
 
 ---
 
-## Goals
+# What This Project Demonstrates
 
-This project is intended to strengthen skills in:
-
-- PHP
+- Object-Oriented PHP
 - MVC Architecture
 - PostgreSQL
-- JavaScript
 - Database Design
-- API Integration
-- Software Architecture
-- UI/UX Planning
+- CRUD Operations
+- REST API Integration
+- Responsive Design
+- UI/UX Design
+- Git Workflow
 
 ---
 
-## Future Versions
+# Future Enhancements
 
-### Version 2
+## Version 2
 
-- Tailwind CSS
-- Authentication
+- User Authentication
 - Team Analysis
 - Type Weakness Calculator
 - Public Team Sharing
 - User Profiles
 
-### Version 3
+## Version 3
 
 - Laravel
 - React or Vue
@@ -181,16 +205,33 @@ This project is intended to strengthen skills in:
 
 ---
 
-## Acknowledgements
+# Installation
 
-Pokémon data is provided by the PokéAPI.
+```bash
+git clone https://github.com/YOUR_USERNAME/brymon.git
+```
 
-This project is a fan-made portfolio project and is not affiliated with or endorsed by Nintendo, Game Freak, or The Pokémon Company.
+1. Install PostgreSQL.
+2. Create the Brymon database.
+3. Import the database schema.
+4. Configure your database credentials.
+5. Start your local PHP server.
+6. Visit the application in your browser.
+
+---
+
+# Acknowledgements
+
+Pokémon data and sprites are provided by **PokéAPI**.
+
+https://pokeapi.co/
+
+Brymon is a fan-made educational portfolio project and is not affiliated with or endorsed by Nintendo, Game Freak, Creatures Inc., or The Pokémon Company.
 
 Pokémon and all related trademarks are the property of their respective owners.
 
 ---
 
-## License
+# License
 
 This project is licensed under the MIT License.
