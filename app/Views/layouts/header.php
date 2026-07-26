@@ -22,17 +22,17 @@ $pageTitle = $pageTitle ?? 'Brymon';
 
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
 
-    <link rel="stylesheet" href="assets/css/app.css">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 
 <body>
 <header class="site-header">
     <div class="container navigation">
-        <a class="logo" href="./">Brymon</a>
+        <a class="logo" href="/">Brymon</a>
 
         <nav aria-label="Primary navigation">
-            <a href="./">Home</a>
-            <a href="about">About</a>
+            <a href="/">Home</a>
+            <a href="/about">About</a>
             <a
                 href="https://github.com/bryanarius/Brymon-Team-Builder"
                 target="_blank"
