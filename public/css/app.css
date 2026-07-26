@@ -247,4 +247,61 @@ h2 {
   .site-footer .container {
     flex-direction: column;
   }
+
+  .about-hero {
+    padding: 6rem 0 4rem;
+  }
+
+  .about-hero h1 {
+    max-width: 900px;
+    font-size: clamp(2.75rem, 7vw, 5rem);
+  }
+
+  .about-introduction {
+    max-width: 720px;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+  }
+
+  .about-content {
+    padding: 1rem 0 6rem;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .about-card {
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: var(--surface);
+  }
+
+  .about-card h2 {
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .about-card p,
+  .about-card li {
+    color: var(--text-muted);
+  }
+
+  .about-card ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  .about-card li + li {
+    margin-top: 0.5rem;
+  }
+
+  @media (max-width: 800px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 }

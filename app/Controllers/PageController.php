@@ -17,6 +17,8 @@ final class PageController extends Controller
 
     public function about(): void
     {
-        echo '<h1>About Brymon</h1>';
+        $this->view('about/index', [
+            'pageTitle' => 'About Brymon',
+        ]);
     }
 }
