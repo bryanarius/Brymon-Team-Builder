@@ -56,14 +56,14 @@ Rather than recreating an existing website, this project focuses on designing an
 
 # Tech Stack
 
-| Layer | Technology |
-|--------|------------|
-| Frontend | HTML5, CSS3, JavaScript |
-| Backend | PHP |
-| Architecture | Custom MVC |
-| Database | PostgreSQL |
-| API | PokéAPI |
-| Development Tools | Git, GitHub, VS Code |
+| Layer             | Technology              |
+| ----------------- | ----------------------- |
+| Frontend          | HTML5, CSS3, JavaScript |
+| Backend           | PHP                     |
+| Architecture      | Custom MVC              |
+| Database          | PostgreSQL              |
+| API               | PokéAPI                 |
+| Development Tools | Git, GitHub, VS Code    |
 
 ---
 
@@ -115,15 +115,15 @@ Rather than recreating an existing website, this project focuses on designing an
 
 ---
 
-## 🚧 Phase 2 — Technical Design
+## ✅ Phase 2 — Technical Design
 
-- [ ] Database ERD
-- [ ] MVC Architecture
-- [ ] Routing Design
+- [x] Database ERD
+- [x] MVC Architecture
+- [x] Routing Design
 
 ---
 
-## ⏳ Phase 3 — Development
+## 🚧 Phase 3 — Development
 
 - [ ] Homepage
 - [ ] Team Builder
