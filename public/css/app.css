@@ -304,4 +304,35 @@ h2 {
       grid-template-columns: 1fr;
     }
   }
+  .error-page {
+    display: grid;
+    align-items: center;
+    min-height: calc(100vh - 160px);
+    padding: 5rem 0;
+  }
+
+  .error-content {
+    max-width: 850px;
+  }
+
+  .error-code {
+    margin-bottom: 1rem;
+    color: var(--accent);
+    font-size: clamp(5rem, 18vw, 11rem);
+    font-weight: 900;
+    line-height: 0.8;
+    letter-spacing: -0.08em;
+  }
+
+  .error-page h1 {
+    max-width: 750px;
+    margin-bottom: 1.5rem;
+    font-size: clamp(3rem, 8vw, 6rem);
+  }
+
+  .error-description {
+    max-width: 620px;
+    color: var(--text-muted);
+    font-size: 1.15rem;
+  }
 }

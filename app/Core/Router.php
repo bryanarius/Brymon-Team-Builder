@@ -81,7 +81,14 @@ final class Router
     {
         http_response_code(404);
 
-        echo '<h1>404</h1>';
-        echo '<p>Page not found.</p>';
+        $viewPath = dirname(__DIR__) . '/Views/errors/404.php';
+
+        if (!file_exists($viewPath)) {
+            echo '<h1>404</h1>';
+            echo '<p>Page not found.</p>';
+            return;
+        }
+
+        require $viewPath;
     }
 }
