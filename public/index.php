@@ -7,8 +7,11 @@ use Dotenv\Dotenv;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-$dotenv = Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->load();
+$root = dirname(__DIR__);
+
+if (file_exists($root . '/.env')) {
+    Dotenv::createImmutable($root)->load();
+}
 
 $router = new Router();
 
