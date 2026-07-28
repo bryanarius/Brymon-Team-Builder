@@ -21,5 +21,5 @@ $router->get('/about', [PageController::class, 'about']);
 |--------------------------------------------------------------------------
 */
 
-$router->get('/register', [AuthController::class, 'showregister']);
+$router->get('/register', [AuthController::class, 'showRegister']);
 $router->post('/register', [AuthController::class, 'register']);
