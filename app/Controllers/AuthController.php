@@ -142,5 +142,14 @@ final class AuthController extends Controller
 
             return;
         }
+
+        session_regenerate_id(true);
+
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['email'] = $user['email'];
+
+        header('Location: /dashboard');
+        exit;
     }
 }

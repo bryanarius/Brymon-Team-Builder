@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\AuthController;
+use App\Controllers\DashboardController;
 use App\Controllers\PageController;
 
 /*
@@ -26,3 +27,11 @@ $router->post('/register', [AuthController::class, 'register']);
 
 $router->get('/login', [AuthController::class, 'showLogin']);
 $router->post('/login',[AuthController::class, 'login']);
+
+/*
+|--------------------------------------------------------------------------
+| Temp Dash Route
+|--------------------------------------------------------------------------
+*/
+
+$router->get('/dashboard', [DashboardController::class, 'index']);

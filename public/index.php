@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Core\Router;
 use Dotenv\Dotenv;
 
+session_start();
+
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 $root = dirname(__DIR__);
