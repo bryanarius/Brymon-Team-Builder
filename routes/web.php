@@ -23,3 +23,6 @@ $router->get('/about', [PageController::class, 'about']);
 
 $router->get('/register', [AuthController::class, 'showRegister']);
 $router->post('/register', [AuthController::class, 'register']);
+
+$router->get('/login', [AuthController::class, 'showLogin']);
+$router->post('/login',[AuthController::class, 'login']);

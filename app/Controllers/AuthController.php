@@ -77,12 +77,70 @@ final class AuthController extends Controller
             return;
         }
 
-        var_dump([
-            'username' => $username,
-            'email' => $email,
-            'password' => $password,
-        ]);
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        die();
+        $userId = $userModel->create(
+            $username,
+            $email,
+            $hashedPassword
+        );
+
+        if ($userId === false) {
+            // Temporary until we have better error handling
+            die('Failed to create user.');
+        }
+
+        header('Location: /login');
+        exit;
+    }
+
+    public function showLogin(): void
+    {
+        $this->view('auth/login', [
+            'pageTitle' => 'Login',
+        ]);
+    }
+
+    public function login(): void
+    {
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+
+        $errors = [];
+
+        if (!Validator::required($email)) {
+            $errors['email'] = 'Email is required.';
+        } elseif (!Validator::email($email)) {
+            $errors['email'] = 'Please enter a valid email.';
+        }
+
+        if (!Validator::required($password)) {
+            $errors['password'] = 'Password is required.';
+        }
+
+        $userModel = new User();
+
+        $user = $userModel->findByEmail($email);
+
+        if ($user === false) {
+            $errors['login'] = 'Invalid email or password';
+        }
+
+        if ($user !== false && 
+        !password_verify($password, $user['password_hash'])) {
+            $errors['login'] =  'Invalid email or password';
+        }
+
+        if ($errors !== []) {
+            $this->view('auth/login', [
+                'pageTitle' => 'Login',
+                'errors' => $errors,
+                'old' => [
+                'email' => $email,
+                ],
+            ]);
+
+            return;
+        }
     }
 }
