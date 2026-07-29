@@ -129,7 +129,8 @@ Rather than recreating an existing website, this project focuses on designing an
 
 ## 🚧 Phase 3 — Development
 
-- [ ] Homepage
+- [x] Homepage
+- [x] Aboutpage
 - [ ] Team Builder
 - [ ] Pokémon Search
 - [ ] Pokémon Editor
