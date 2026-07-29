@@ -27,7 +27,7 @@ require dirname(__DIR__) . '/layouts/header.php';
                 </p>
 
                 <div class="home-hero-actions">
-                    <a class="button button-primary" href="/team-builder">
+                    <a class="button button-primary" href="/teambuilder">
                         Start Building
                     </a>
 

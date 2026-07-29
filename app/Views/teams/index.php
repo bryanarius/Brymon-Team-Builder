@@ -120,7 +120,7 @@ $formatDate = static function (?string $date): string {
                     lineup.
                 </p>
 
-                <a class="teams-primary-button" href="/teams/teambuilder">
+                <a class="teams-primary-button" href="/teambuilder">
                     Create Your First Team
                 </a>
             </div>
