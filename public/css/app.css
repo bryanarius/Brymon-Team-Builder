@@ -133,22 +133,28 @@ h3 {
   position: relative;
   z-index: 20;
 
-  border-bottom: 1px solid var(--border);
-  background: rgba(14, 17, 23, 0.94);
-  backdrop-filter: blur(12px);
+  width: 100%;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: #08172f;
 }
 
 .navigation {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  gap: 2.5rem;
+
+  min-height: 82px;
 }
 
 .logo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
 
-  padding: 0.5rem 0;
+  width: fit-content;
+  padding: 0;
 
   text-decoration: none;
 }
@@ -157,24 +163,104 @@ h3 {
   display: block;
 
   width: auto;
-  height: 90px;
+  height: 58px;
 }
 
-.navigation nav {
+.primary-navigation {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  justify-content: center;
+  gap: 2.5rem;
 }
 
-.navigation nav a {
-  color: var(--text-muted);
+.primary-navigation a {
+  position: relative;
+
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 500;
   text-decoration: none;
 
   transition: color 150ms ease;
 }
 
-.navigation nav a:hover {
+.primary-navigation a::after {
+  content: "";
+
+  position: absolute;
+  right: 0;
+  bottom: -0.5rem;
+  left: 0;
+
+  height: 2px;
+
+  background: var(--accent);
+
+  transform: scaleX(0);
+  transform-origin: center;
+
+  transition: transform 150ms ease;
+}
+
+.primary-navigation a:hover {
+  color: var(--accent);
+}
+
+.primary-navigation a:hover::after {
+  transform: scaleX(1);
+}
+
+.navigation-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navigation-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 110px;
+  min-height: 46px;
+  padding: 0.65rem 1.25rem;
+
+  border-radius: 0.75rem;
+
+  font-weight: 700;
+  text-decoration: none;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.navigation-button:hover {
+  transform: translateY(-2px);
+}
+
+.navigation-button--login {
+  border: 2px solid var(--blue);
+  background: transparent;
   color: var(--text);
+}
+
+.navigation-button--login:hover {
+  border-color: var(--blue-light);
+  background: rgba(40, 105, 223, 0.12);
+}
+
+.navigation-button--register {
+  border: 2px solid var(--accent);
+  background: var(--accent);
+  color: #111827;
+}
+
+.navigation-button--register:hover {
+  border-color: var(--accent-light);
+  background: var(--accent-light);
 }
 
 /* =========================================================
@@ -935,6 +1021,24 @@ h3 {
    Responsive: Tablets
 ========================================================= */
 
+@media (max-width: 1050px) {
+  .navigation {
+    gap: 1.5rem;
+  }
+
+  .logo-image {
+    height: 52px;
+  }
+
+  .primary-navigation {
+    gap: 1.5rem;
+  }
+
+  .navigation-button {
+    min-width: 100px;
+  }
+}
+
 @media (max-width: 980px) {
   .auth-container {
     grid-template-columns: 1fr;
@@ -969,6 +1073,24 @@ h3 {
   }
 }
 
+@media (max-width: 860px) {
+  .navigation {
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    gap: 1.5rem;
+
+    min-height: 76px;
+  }
+
+  .primary-navigation {
+    display: none;
+  }
+
+  .logo-image {
+    height: 50px;
+  }
+}
+
 @media (max-width: 800px) {
   .about-grid {
     grid-template-columns: 1fr;
@@ -980,20 +1102,6 @@ h3 {
 ========================================================= */
 
 @media (max-width: 720px) {
-  .navigation {
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.5rem;
-
-    padding: 1rem 0;
-  }
-
-  .navigation nav {
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
   .hero {
     min-height: auto;
     padding: 4rem 0;
@@ -1050,9 +1158,53 @@ h3 {
   }
 }
 
+@media (max-width: 560px) {
+  .navigation {
+    grid-template-columns: auto auto;
+    gap: 1rem;
+
+    min-height: 70px;
+  }
+
+  .logo-image {
+    height: 44px;
+  }
+
+  .navigation-actions {
+    gap: 0.5rem;
+  }
+
+  .navigation-button {
+    min-width: auto;
+    min-height: 40px;
+    padding: 0.5rem 0.85rem;
+
+    font-size: 0.85rem;
+  }
+
+  .navigation-button--login {
+    display: none;
+  }
+}
+
 @media (max-width: 420px) {
   .container {
     width: min(calc(100% - 1.25rem), var(--max-width));
+  }
+
+  .navigation {
+    gap: 0.75rem;
+  }
+
+  .logo-image {
+    height: 40px;
+  }
+
+  .navigation-button {
+    min-height: 38px;
+    padding: 0.45rem 0.75rem;
+
+    font-size: 0.8rem;
   }
 
   .hero-actions {

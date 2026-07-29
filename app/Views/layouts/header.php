@@ -28,7 +28,7 @@ $pageTitle = $pageTitle ?? 'Brymon';
 <body>
 <header class="site-header">
     <div class="container navigation">
-        <a class="logo" href="/" aria-label="Brymon Home">
+        <a class="logo" href="/" aria-label="Brymon home">
             <img
                 src="/images/logo/brymon-horizontal.png"
                 alt="Brymon"
@@ -36,18 +36,24 @@ $pageTitle = $pageTitle ?? 'Brymon';
             >
         </a>
 
-        <nav aria-label="Primary navigation">
+        <nav class="primary-navigation" aria-label="Primary navigation">
             <a href="/">Home</a>
+            <a href="/team-builder">Team Builder</a>
+            <a href="/teams">Saved Teams</a>
             <a href="/about">About</a>
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
-            <a
-                href="https://github.com/bryanarius/Brymon-Team-Builder"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                GitHub
-            </a>
         </nav>
+
+        <div class="navigation-actions">
+            <a href="/login" class="navigation-button navigation-button--login">
+                Sign In
+            </a>
+
+            <a
+                href="/register"
+                class="navigation-button navigation-button--register"
+            >
+                Sign Up
+            </a>
+        </div>
     </div>
 </header>
