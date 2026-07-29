@@ -264,3 +264,5 @@ $formatDate = static function (?string $date): string {
 
     </div>
 </section>
+
+<?php require dirname(__DIR__) . '/layouts/footer.php'; ?>

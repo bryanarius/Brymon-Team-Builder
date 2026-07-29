@@ -138,3 +138,5 @@ require dirname(__DIR__) . '/layouts/header.php';
     </div>
 
 </section>
+
+<?php require dirname(__DIR__) . '/layouts/footer.php'; ?>
