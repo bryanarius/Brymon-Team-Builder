@@ -28,11 +28,19 @@ $pageTitle = $pageTitle ?? 'Brymon';
 <body>
 <header class="site-header">
     <div class="container navigation">
-        <a class="logo" href="/">Brymon</a>
+        <a class="logo" href="/" aria-label="Brymon Home">
+            <img
+                src="/images/logo/brymon-horizontal.png"
+                alt="Brymon"
+                class="logo-image"
+            >
+        </a>
 
         <nav aria-label="Primary navigation">
             <a href="/">Home</a>
             <a href="/about">About</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
             <a
                 href="https://github.com/bryanarius/Brymon-Team-Builder"
                 target="_blank"

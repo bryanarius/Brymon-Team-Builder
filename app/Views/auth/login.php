@@ -19,8 +19,11 @@ $old = $old ?? [];
     <section class="auth-container">
         <div class="auth-brand">
             <a href="/" class="auth-logo" aria-label="Brymon home">
-                <span class="auth-logo-icon">B</span>
-                <span class="auth-logo-text">Brymon</span>
+                <img
+                    src="/images/logo/brymon-stacked.png"
+                    alt="Brymon"
+                    class="auth-logo-image auth-logo-image--stacked"
+                >
             </a>
 
             <span class="auth-eyebrow">BUILD • STRATEGIZE • BATTLE</span>
