@@ -120,7 +120,7 @@ $formatDate = static function (?string $date): string {
                     lineup.
                 </p>
 
-                <a class="teams-primary-button" href="/teams/create">
+                <a class="teams-primary-button" href="/teams/teambuilder">
                     Create Your First Team
                 </a>
             </div>
@@ -244,7 +244,7 @@ $formatDate = static function (?string $date): string {
                     </article>
                 <?php endforeach; ?>
 
-                <a class="create-team-card" href="/teams/create">
+                <a class="create-team-card" href="/teams/teambuilder">
                     <span class="create-team-icon" aria-hidden="true">
                         +
                     </span>

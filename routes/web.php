@@ -44,4 +44,5 @@ $router->get('/dashboard', [DashboardController::class, 'index']);
 */
 
 $router->get('/teams', [TeamController::class, 'index']);
-$router->get('/teams/create', [TeamController::class, 'create']);
+$router->get('/teambuilder', [TeamController::class, 'builder']);
+$router->post('/teams', [TeamController::class, 'save']);

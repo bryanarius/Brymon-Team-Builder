@@ -38,7 +38,7 @@ $pageTitle = $pageTitle ?? 'Brymon';
 
         <nav class="primary-navigation" aria-label="Primary navigation">
             <a href="/">Home</a>
-            <a href="/team-builder">Team Builder</a>
+            <a href="/teambuilder">Team Builder</a>
             <a href="/teams">Saved Teams</a>
             <a href="/about">About</a>
         </nav>
