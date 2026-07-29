@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
 use App\Controllers\PageController;
+use App\Controllers\TeamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,3 +36,12 @@ $router->post('/login',[AuthController::class, 'login']);
 */
 
 $router->get('/dashboard', [DashboardController::class, 'index']);
+
+/*
+|--------------------------------------------------------------------------
+| Team Routes
+|--------------------------------------------------------------------------
+*/
+
+$router->get('/teams', [TeamController::class, 'index']);
+$router->get('/teams/create', [TeamController::class, 'create']);
