@@ -120,18 +120,23 @@ h3 {
 .navigation.container {
   width: min(calc(100% - 3rem), 1380px);
 }
+
 .logo {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  padding: 0;
-  text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: .1rem;
 }
-.logo-image {
-  display: block;
-  width: auto;
-  height: 58px;
+
+.logo-symbol {
+    width: 42px;
+    height: 42px;
 }
+
+.logo-wordmark {
+    height: 34px;
+    width: auto;
+}
+
 .primary-navigation {
   display: flex;
   align-items: center;

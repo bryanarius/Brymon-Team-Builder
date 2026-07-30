@@ -36,12 +36,9 @@ $pageTitle = $pageTitle ?? 'Brymon';
 <body>
 <header class="site-header">
     <div class="container navigation">
-        <a class="logo" href="/" aria-label="Brymon home">
-            <img
-                src="/images/logo/brymon-horizontal.png"
-                alt="Brymon"
-                class="logo-image"
-            >
+        <a class="logo" href="/">
+            <img src="/images/logo/brymon-symbol.png" class="logo-symbol" alt="">
+            <img src="/images/logo/brymon-stacked.png" class="logo-wordmark" alt="Brymon">
         </a>
 
         <nav class="primary-navigation" aria-label="Primary navigation">
