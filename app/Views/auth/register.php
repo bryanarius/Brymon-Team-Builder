@@ -215,3 +215,5 @@ $old = $old ?? [];
         </div>
     </section>
 </main>
+
+<?php require dirname(__DIR__) . '/layouts/footer.php'; ?>

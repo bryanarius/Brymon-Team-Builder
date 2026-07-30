@@ -2029,6 +2029,70 @@ h3 {
   margin-bottom: 0;
 }
 
+/* Mobile Nav */
+
+.mobile-nav-toggle,
+.mobile-navigation {
+    display: none;
+}
+
+.mobile-nav-toggle {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.mobile-nav-toggle span {
+    display: block;
+    width: 25px;
+    height: 2px;
+    margin: 5px auto;
+    border-radius: 999px;
+    background: currentColor;
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.mobile-nav-toggle.is-open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.mobile-nav-toggle.is-open span:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-nav-toggle.is-open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+.mobile-navigation-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.mobile-navigation a,
+.mobile-navigation-link {
+    display: block;
+    width: 100%;
+    padding: 0.9rem 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.mobile-navigation form {
+    margin: 0;
+}
+
 /* Responsive: Large Tablets */
 @media (max-width: 1050px) {
   /* Navigation */
@@ -2137,15 +2201,43 @@ h3 {
 /* Responsive: Small Tablets */
 @media (max-width: 860px) {
   /* Navigation */
-  .navigation {
-    grid-template-columns: auto auto;
-    justify-content: space-between;
-    gap: 1.5rem;
-    min-height: 76px;
-  }
-  .primary-navigation {
-    display: none;
-  }
+      .navigation {
+        grid-template-columns: auto auto;
+        justify-content: space-between;
+        gap: 1.5rem;
+        min-height: 76px;
+    }
+
+    .primary-navigation {
+        display: none;
+    }
+
+    .navigation-actions {
+        justify-self: end;
+    }
+
+    .mobile-nav-toggle {
+        display: block;
+    }
+
+    .mobile-navigation {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        width: 100%;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        background: var(--surface, #fff);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .mobile-navigation.is-open {
+        display: block;
+    }
+
+    .site-header {
+        position: relative;
+    }
   .logo-image {
     height: 50px;
   }
@@ -2264,6 +2356,13 @@ h3 {
   .pokemon-search-results {
     min-height: 220px;
     max-height: 420px;
+  }
+
+  .navigation-actions {
+      display: none;
+  }
+  .navigation-button--login {
+    display: none;
   }
 }
 
@@ -2529,15 +2628,18 @@ h3 {
 /* Responsive: Navigation */
 @media (max-width: 560px) {
   .navigation {
-    grid-template-columns: auto auto;
-    gap: 1rem;
-    min-height: 70px;
+      grid-template-columns: auto auto;
+      justify-content: space-between;
   }
+
   .logo-image {
     height: 44px;
   }
   .navigation-actions {
-    gap: 0.5rem;
+      display: none;
+  }
+  .navigation-button--login {
+    display: none;
   }
   .navigation-button {
     min-width: auto;
@@ -2545,10 +2647,7 @@ h3 {
     padding: 0.5rem 0.85rem;
     font-size: 0.85rem;
   }
-  .navigation-button--login {
-    display: none;
-  }
-
+  
   /* Team Builder */
   .team-builder-page .container {
     width: min(calc(100% - 1.25rem), 1500px);

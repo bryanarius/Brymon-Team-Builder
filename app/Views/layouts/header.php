@@ -39,51 +39,101 @@ $pageTitle = $pageTitle ?? 'Brymon';
 
         <nav class="primary-navigation" aria-label="Primary navigation">
             <a href="/">Home</a>
+
             <?php if (Auth::check()): ?>
                 <a href="/teambuilder">Team Builder</a>
                 <a href="/teams">Saved Teams</a>
             <?php endif; ?>
+
             <a href="/about">About</a>
         </nav>
 
         <div class="navigation-actions">
+            <?php if (Auth::check()): ?>
 
-        <?php if (Auth::check()): ?>
+                <a
+                    href="/dashboard"
+                    class="navigation-button navigation-button--login"
+                >
+                    <?= htmlspecialchars(
+                        Auth::username() ?? 'Dashboard',
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </a>
 
-            <a
-                href="/dashboard"
-                class="navigation-button navigation-button--login"
-            >
-                <?= htmlspecialchars(Auth::username() ?? 'Dashboard') ?>
-            </a>
+                <form action="/logout" method="POST">
+                    <button
+                        type="submit"
+                        class="navigation-button navigation-button--register"
+                    >
+                        Logout
+                    </button>
+                </form>
 
-            <form action="/logout" method="POST">
-                <button
-                    type="submit"
+            <?php else: ?>
+
+                <a
+                    href="/login"
+                    class="navigation-button navigation-button--login"
+                >
+                    Sign In
+                </a>
+
+                <a
+                    href="/register"
                     class="navigation-button navigation-button--register"
                 >
-                    Logout
-                </button>
-            </form>
+                    Sign Up
+                </a>
 
-        <?php else: ?>
-
-            <a
-                href="/login"
-                class="navigation-button navigation-button--login"
-            >
-                Sign In
-            </a>
-
-            <a
-                href="/register"
-                class="navigation-button navigation-button--register"
-            >
-                Sign Up
-            </a>
-
-        <?php endif; ?>
-
+            <?php endif; ?>
         </div>
+
+        <button
+            type="button"
+            class="mobile-nav-toggle"
+            aria-label="Open navigation menu"
+            aria-controls="mobile-navigation"
+            aria-expanded="false"
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </div>
+
+    <nav
+        id="mobile-navigation"
+        class="mobile-navigation"
+        aria-label="Mobile navigation"
+        hidden
+    >
+        <div class="container mobile-navigation-inner">
+            <a href="/">Home</a>
+
+            <?php if (Auth::check()): ?>
+                <a href="/teambuilder">Team Builder</a>
+                <a href="/teams">Saved Teams</a>
+                <a href="/dashboard">
+                    <?= htmlspecialchars(
+                        Auth::username() ?? 'Dashboard',
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </a>
+
+                <form action="/logout" method="POST">
+                    <button type="submit" class="mobile-navigation-link">
+                        Logout
+                    </button>
+                </form>
+            <?php else: ?>
+                <a href="/login">Sign In</a>
+                <a href="/register">Sign Up</a>
+            <?php endif; ?>
+
+            <a href="/about">About</a>
+        </div>
+    </nav>
 </header>
