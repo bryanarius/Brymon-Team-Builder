@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Core\Auth;
 use App\Core\Controller;
 use App\Core\Validator;
 use App\Models\User;
@@ -23,6 +24,7 @@ final class AuthController extends Controller
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         $passwordConfirmation = $_POST['password_confirmation'] ?? '';
+        Auth::guestOnly();
 
         $errors = [];
 
@@ -96,6 +98,7 @@ final class AuthController extends Controller
 
     public function showLogin(): void
     {
+        Auth::guestOnly();
         $this->view('auth/login', [
             'pageTitle' => 'Login',
         ]);
@@ -105,6 +108,7 @@ final class AuthController extends Controller
     {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
+        Auth::guestOnly();
 
         $errors = [];
 
@@ -155,6 +159,8 @@ final class AuthController extends Controller
 
     public function logout(): void
     {
+        Auth::requireLogin();
+        
         $_SESSION = [];
 
         if (ini_get('session.use_cookies')) {

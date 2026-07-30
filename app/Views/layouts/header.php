@@ -1,6 +1,7 @@
 <?php
-
 declare(strict_types=1);
+
+use App\Core\Auth;
 
 $pageTitle = $pageTitle ?? 'Brymon';
 ?>
@@ -38,13 +39,39 @@ $pageTitle = $pageTitle ?? 'Brymon';
 
         <nav class="primary-navigation" aria-label="Primary navigation">
             <a href="/">Home</a>
-            <a href="/teambuilder">Team Builder</a>
-            <a href="/teams">Saved Teams</a>
+            <?php if (Auth::check()): ?>
+                <a href="/teambuilder">Team Builder</a>
+                <a href="/teams">Saved Teams</a>
+            <?php endif; ?>
             <a href="/about">About</a>
         </nav>
 
         <div class="navigation-actions">
-            <a href="/login" class="navigation-button navigation-button--login">
+
+        <?php if (Auth::check()): ?>
+
+            <a
+                href="/dashboard"
+                class="navigation-button navigation-button--login"
+            >
+                <?= htmlspecialchars(Auth::username() ?? 'Dashboard') ?>
+            </a>
+
+            <form action="/logout" method="POST">
+                <button
+                    type="submit"
+                    class="navigation-button navigation-button--register"
+                >
+                    Logout
+                </button>
+            </form>
+
+        <?php else: ?>
+
+            <a
+                href="/login"
+                class="navigation-button navigation-button--login"
+            >
                 Sign In
             </a>
 
@@ -54,6 +81,9 @@ $pageTitle = $pageTitle ?? 'Brymon';
             >
                 Sign Up
             </a>
+
+        <?php endif; ?>
+
         </div>
     </div>
 </header>

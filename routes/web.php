@@ -29,6 +29,8 @@ $router->post('/register', [AuthController::class, 'register']);
 $router->get('/login', [AuthController::class, 'showLogin']);
 $router->post('/login',[AuthController::class, 'login']);
 
+$router->post('/logout', [AuthController::class, 'logout']);
+
 /*
 |--------------------------------------------------------------------------
 | Temp Dash Route
