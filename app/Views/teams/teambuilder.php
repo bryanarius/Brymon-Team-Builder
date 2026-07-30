@@ -40,21 +40,6 @@ require dirname(__DIR__) . '/layouts/header.php';
                             <h2>Pokémon Search</h2>
                         </header>
 
-                        <div class="form-group">
-
-                            <label for="pokemon-search">
-                                Search Pokémon
-                            </label>
-
-                            <input
-                                id="pokemon-search"
-                                type="search"
-                                placeholder="Search Pokémon..."
-                                autocomplete="off"
-                            >
-
-                        </div>
-
                         <div class="pokemon-browser-filters">
 
                             <div class="form-group">
@@ -95,12 +80,28 @@ require dirname(__DIR__) . '/layouts/header.php';
 
                             </div>
 
-                            <button
-                                type="button"
-                                class="button button-secondary clear-filters-button"
+                        <div class="form-group">
+
+                            <label for="pokemon-search">
+                                Search Pokémon
+                            </label>
+
+                            <input
+                                id="pokemon-search"
+                                type="search"
+                                placeholder="Search Pokémon..."
+                                autocomplete="off"
                             >
-                                Clear Filters
-                            </button>
+
+                        </div>
+
+                        <button
+                            id="clear-pokemon-filters"
+                            type="button"
+                            class="button button-secondary clear-filters-button"
+                        >
+                            Clear Filters
+                        </button>
 
                         </div>
 
@@ -111,6 +112,7 @@ require dirname(__DIR__) . '/layouts/header.php';
                             <span
                                 class="pokemon-result-count"
                                 id="pokemon-result-count"
+                                aria-live="polite"
                             >
                                 0 results
                             </span>
@@ -120,10 +122,10 @@ require dirname(__DIR__) . '/layouts/header.php';
                         <div
                             class="pokemon-search-results"
                             id="pokemon-search-results"
+                            aria-live="polite"
+                            aria-busy="false"
                         >
-
                             <div class="pokemon-search-empty">
-
                                 <span
                                     class="search-empty-icon"
                                     aria-hidden="true"
@@ -134,11 +136,9 @@ require dirname(__DIR__) . '/layouts/header.php';
                                 <h3>Find a Pokémon</h3>
 
                                 <p>
-                                    Search results will appear here.
+                                    Start typing a Pokémon name to see matching results.
                                 </p>
-
                             </div>
-
                         </div>
 
                     </section>
