@@ -153,7 +153,7 @@ final class AuthController extends Controller
         $_SESSION['username'] = $user['username'];
         $_SESSION['email'] = $user['email'];
 
-        header('Location: /dashboard');
+        header('Location: /');
         exit;
     }
 
