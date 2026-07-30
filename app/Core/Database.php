@@ -8,7 +8,7 @@ use PDO;
 use PDOException;
 use RuntimeException;
 
-class Database
+final class Database
 {
     private static ?PDO $connection = null;
 
@@ -18,18 +18,34 @@ class Database
             return self::$connection;
         }
 
-        $host = Config::get('DB_HOST', 'localhost');
-        $port = Config::get('DB_PORT', '5432');
-        $name = Config::get('DB_NAME');
-        $user = Config::get('DB_USER');
-        $password = Config::get('DB_PASSWORD');
+        $databaseUrl = Config::get('DATABASE_URL');
 
-        $dsn = sprintf(
-            'pgsql:host=%s;port=%s;dbname=%s',
-            $host,
-            $port,
-            $name
-        );
+        if ($databaseUrl !== null && $databaseUrl !== '') {
+            [$dsn, $user, $password] = self::parseDatabaseUrl($databaseUrl);
+        } else {
+            $host = Config::get('DB_HOST', 'localhost');
+            $port = Config::get('DB_PORT', '5432');
+            $name = Config::get('DB_NAME');
+            $user = Config::get('DB_USER');
+            $password = Config::get('DB_PASSWORD');
+
+            if (
+                $name === null ||
+                $user === null ||
+                $password === null
+            ) {
+                throw new RuntimeException(
+                    'Local database configuration is incomplete.'
+                );
+            }
+
+            $dsn = sprintf(
+                'pgsql:host=%s;port=%s;dbname=%s',
+                $host,
+                $port,
+                $name
+            );
+        }
 
         try {
             self::$connection = new PDO(
@@ -43,6 +59,10 @@ class Database
                 ]
             );
         } catch (PDOException $exception) {
+            error_log(
+                'Database connection failed: ' . $exception->getMessage()
+            );
+
             throw new RuntimeException(
                 'Database connection failed.',
                 0,
@@ -51,5 +71,50 @@ class Database
         }
 
         return self::$connection;
+    }
+
+    /**
+     * @return array{0: string, 1: string, 2: string}
+     */
+    private static function parseDatabaseUrl(string $databaseUrl): array
+    {
+        $parts = parse_url($databaseUrl);
+
+        if ($parts === false) {
+            throw new RuntimeException('DATABASE_URL is invalid.');
+        }
+
+        $host = $parts['host'] ?? null;
+        $port = (string) ($parts['port'] ?? 5432);
+        $database = isset($parts['path'])
+            ? ltrim($parts['path'], '/')
+            : null;
+        $user = isset($parts['user'])
+            ? urldecode($parts['user'])
+            : null;
+        $password = isset($parts['pass'])
+            ? urldecode($parts['pass'])
+            : null;
+
+        if (
+            $host === null ||
+            $database === null ||
+            $database === '' ||
+            $user === null ||
+            $password === null
+        ) {
+            throw new RuntimeException(
+                'DATABASE_URL is missing required connection details.'
+            );
+        }
+
+        $dsn = sprintf(
+            'pgsql:host=%s;port=%s;dbname=%s',
+            $host,
+            $port,
+            $database
+        );
+
+        return [$dsn, $user, $password];
     }
 }
