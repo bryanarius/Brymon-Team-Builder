@@ -122,19 +122,19 @@ h3 {
 }
 
 .logo {
-    display: inline-flex;
-    align-items: center;
-    gap: .1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
 }
 
 .logo-symbol {
-    width: 42px;
-    height: 42px;
+  width: 42px;
+  height: 42px;
 }
 
 .logo-wordmark {
-    height: 34px;
-    width: auto;
+  height: 34px;
+  width: auto;
 }
 
 .primary-navigation {
@@ -1752,6 +1752,33 @@ h3 {
   margin-top: auto;
 }
 
+.team-slot-pokemon-image {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+.team-slot-pokemon-name {
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.team-slot-pokemon-number {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.team-slot.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(244, 197, 66, 0.15);
+}
+
+.selected-pokemon-empty[hidden],
+.selected-pokemon-editor[hidden] {
+  display: none;
+}
+
 /* Authentication Pages */
 .auth-page {
   position: relative;
@@ -2147,64 +2174,64 @@ h3 {
 
 .mobile-nav-toggle,
 .mobile-navigation {
-    display: none;
+  display: none;
 }
 
 .mobile-nav-toggle {
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 .mobile-nav-toggle span {
-    display: block;
-    width: 25px;
-    height: 2px;
-    margin: 5px auto;
-    border-radius: 999px;
-    background: currentColor;
-    transition:
-        transform 0.2s ease,
-        opacity 0.2s ease;
+  display: block;
+  width: 25px;
+  height: 2px;
+  margin: 5px auto;
+  border-radius: 999px;
+  background: currentColor;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .mobile-nav-toggle.is-open span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
+  transform: translateY(7px) rotate(45deg);
 }
 
 .mobile-nav-toggle.is-open span:nth-child(2) {
-    opacity: 0;
+  opacity: 0;
 }
 
 .mobile-nav-toggle.is-open span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 .mobile-navigation-inner {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .mobile-navigation a,
 .mobile-navigation-link {
-    display: block;
-    width: 100%;
-    padding: 0.9rem 0;
-    border: 0;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    text-align: left;
-    text-decoration: none;
-    cursor: pointer;
+  display: block;
+  width: 100%;
+  padding: 0.9rem 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .mobile-navigation form {
-    margin: 0;
+  margin: 0;
 }
 
 /* Responsive: Large Tablets */
@@ -2315,43 +2342,43 @@ h3 {
 /* Responsive: Small Tablets */
 @media (max-width: 860px) {
   /* Navigation */
-      .navigation {
-        grid-template-columns: auto auto;
-        justify-content: space-between;
-        gap: 1.5rem;
-        min-height: 76px;
-    }
+  .navigation {
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: 76px;
+  }
 
-    .primary-navigation {
-        display: none;
-    }
+  .primary-navigation {
+    display: none;
+  }
 
-    .navigation-actions {
-        justify-self: end;
-    }
+  .navigation-actions {
+    justify-self: end;
+  }
 
-    .mobile-nav-toggle {
-        display: block;
-    }
+  .mobile-nav-toggle {
+    display: block;
+  }
 
-    .mobile-navigation {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        z-index: 1000;
-        width: 100%;
-        border-top: 1px solid rgba(0, 0, 0, 0.08);
-        background: var(--surface, #fff);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-    }
+  .mobile-navigation {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    background: var(--surface, #fff);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  }
 
-    .mobile-navigation.is-open {
-        display: block;
-    }
+  .mobile-navigation.is-open {
+    display: block;
+  }
 
-    .site-header {
-        position: relative;
-    }
+  .site-header {
+    position: relative;
+  }
   .logo-image {
     height: 50px;
   }
@@ -2473,7 +2500,7 @@ h3 {
   }
 
   .navigation-actions {
-      display: none;
+    display: none;
   }
   .navigation-button--login {
     display: none;
@@ -2556,8 +2583,8 @@ h3 {
     padding: 1.5rem 0 2.5rem;
   }
   .team-builder-page .container {
-  width: min(calc(100% - 2rem), 1600px);
-  margin-inline: auto;
+    width: min(calc(100% - 2rem), 1600px);
+    margin-inline: auto;
   }
   .team-slots {
     grid-template-columns: 1fr;
@@ -2743,15 +2770,15 @@ h3 {
 /* Responsive: Navigation */
 @media (max-width: 560px) {
   .navigation {
-      grid-template-columns: auto auto;
-      justify-content: space-between;
+    grid-template-columns: auto auto;
+    justify-content: space-between;
   }
 
   .logo-image {
     height: 44px;
   }
   .navigation-actions {
-      display: none;
+    display: none;
   }
   .navigation-button--login {
     display: none;
@@ -2762,7 +2789,7 @@ h3 {
     padding: 0.5rem 0.85rem;
     font-size: 0.85rem;
   }
-  
+
   /* Team Builder */
   .team-builder-page .container {
     width: min(calc(100% - 1.25rem), 1500px);

@@ -8,6 +8,50 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultsContainer = document.querySelector("#pokemon-search-results");
   const resultCount = document.querySelector("#pokemon-result-count");
   const clearFiltersButton = document.querySelector("#clear-pokemon-filters");
+  const teamSlots = [...document.querySelectorAll(".team-slot")];
+
+  const selectedPokemonEmpty = document.querySelector(
+    "#selected-pokemon-empty",
+  );
+  const selectedPokemonEditor = document.querySelector(
+    "#selected-pokemon-editor",
+  );
+
+  const selectedPokemonImage = document.querySelector(
+    "#selected-pokemon-image",
+  );
+  const selectedPokemonName = document.querySelector("#selected-pokemon-name");
+  const selectedPokemonNumber = document.querySelector(
+    "#selected-pokemon-number",
+  );
+  const selectedPokemonTypes = document.querySelector(
+    "#selected-pokemon-types",
+  );
+
+  const selectedSlotInput = document.querySelector("#selected-slot");
+  const selectedPokemonIdInput = document.querySelector("#selected-pokemon-id");
+
+  const nicknameInput = document.querySelector("#pokemon-nickname");
+  const abilitySelect = document.querySelector("#pokemon-ability");
+  const itemSelect = document.querySelector("#pokemon-item");
+  const natureSelect = document.querySelector("#pokemon-nature");
+
+  const moveSelects = [
+    document.querySelector("#pokemon-move-1"),
+    document.querySelector("#pokemon-move-2"),
+    document.querySelector("#pokemon-move-3"),
+    document.querySelector("#pokemon-move-4"),
+  ];
+
+  const deletePokemonButton = document.querySelector("#delete-pokemon-button");
+
+  const summaryPokemonCount = document.querySelector("#summary-pokemon-count");
+
+  const teamState = {
+    selectedSlot: null,
+
+    slots: [null, null, null, null, null, null],
+  };
 
   if (
     !searchInput ||
@@ -25,6 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
     pokemonList: [],
     detailCache: new Map(),
     generationCache: new Map(),
+    itemList: [],
+    natureList: [],
     searchTimeout: null,
     filterVersion: 0,
   };
@@ -57,63 +103,61 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     addButton.disabled = true;
-    addButton.setAttribute("aria-busy", "true");
 
     try {
       const pokemon = await getPokemonDetails(pokemonName);
 
-      console.log("Selected Pokémon:", pokemon);
-
-      /*
-       * The next step will be:
-       * addPokemonToTeam(pokemon);
-       */
+      addPokemonToTeam(pokemon);
     } catch (error) {
       console.error(error);
     } finally {
       addButton.disabled = false;
-      addButton.removeAttribute("aria-busy");
     }
-  });
-
-  clearFiltersButton?.addEventListener("click", () => {
-    searchInput.value = "";
-    generationSelect.value = "";
-    typeSelect.value = "";
-    sortSelect.value = "name-asc";
-
-    renderEmptyState(
-      "Find a Pokémon",
-      "Start typing a Pokémon name or choose a filter.",
-    );
-
-    updateResultCount(0);
   });
 
   async function initializePokemonBrowser() {
     renderStatus("Loading Pokémon...");
 
     try {
-      const [pokemonResponse, generationResponse, typeResponse] =
-        await Promise.all([
-          fetch("https://pokeapi.co/api/v2/pokemon?limit=2000"),
-          fetch("https://pokeapi.co/api/v2/generation?limit=20"),
-          fetch("https://pokeapi.co/api/v2/type?limit=50"),
-        ]);
+      const [
+        pokemonResponse,
+        generationResponse,
+        typeResponse,
+        itemResponse,
+        natureResponse,
+      ] = await Promise.all([
+        fetch("https://pokeapi.co/api/v2/pokemon?limit=2000"),
+        fetch("https://pokeapi.co/api/v2/generation?limit=20"),
+        fetch("https://pokeapi.co/api/v2/type?limit=50"),
+        fetch("https://pokeapi.co/api/v2/item?limit=3000"),
+        fetch("https://pokeapi.co/api/v2/nature?limit=50"),
+      ]);
 
-      if (!pokemonResponse.ok || !generationResponse.ok || !typeResponse.ok) {
-        throw new Error("Unable to load Pokémon filters.");
+      if (
+        !pokemonResponse.ok ||
+        !generationResponse.ok ||
+        !typeResponse.ok ||
+        !itemResponse.ok ||
+        !natureResponse.ok
+      ) {
+        throw new Error("Unable to load Pokémon browser data.");
       }
 
       const pokemonData = await pokemonResponse.json();
       const generationData = await generationResponse.json();
       const typeData = await typeResponse.json();
+      const itemData = await itemResponse.json();
+      const natureData = await natureResponse.json();
 
       state.pokemonList = pokemonData.results.map((pokemon) => ({
         name: pokemon.name,
         url: pokemon.url,
         id: getPokemonIdFromUrl(pokemon.url),
       }));
+
+      state.itemList = itemData.results.map((item) => item.name);
+
+      state.natureList = natureData.results.map((nature) => nature.name);
 
       populateGenerationFilter(generationData.results);
       populateTypeFilter(typeData.results);
@@ -439,7 +483,353 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateResultCount(count) {
     resultCount.textContent = `${count} ${count === 1 ? "result" : "results"}`;
   }
+
+  function addPokemonToTeam(pokemon) {
+    const emptySlotIndex = teamState.slots.findIndex((slot) => slot === null);
+
+    if (emptySlotIndex === -1) {
+      console.warn("The team is already full.");
+      return;
+    }
+
+    teamState.slots[emptySlotIndex] = createTeamPokemon(pokemon);
+
+    renderTeamSlot(emptySlotIndex);
+    updateTeamSummary();
+    selectTeamSlot(emptySlotIndex);
+  }
+
+  function createTeamPokemon(pokemon) {
+    return {
+      id: pokemon.id,
+      name: pokemon.name,
+
+      image:
+        pokemon.sprites.other["official-artwork"].front_default ??
+        pokemon.sprites.front_default ??
+        "",
+
+      types: pokemon.types.map((entry) => entry.type.name),
+
+      abilities: pokemon.abilities.map((entry) => entry.ability.name),
+
+      availableMoves: pokemon.moves.map((entry) => entry.move.name),
+
+      stats: Object.fromEntries(
+        pokemon.stats.map((entry) => [entry.stat.name, entry.base_stat]),
+      ),
+
+      nickname: "",
+      ability: "",
+      item: "",
+      nature: "",
+
+      moves: ["", "", "", ""],
+    };
+  }
+
+  function renderTeamSlot(slotIndex) {
+    const slotButton = teamSlots[slotIndex];
+    const pokemon = teamState.slots[slotIndex];
+
+    if (!slotButton) {
+      return;
+    }
+
+    if (!pokemon) {
+      renderEmptyTeamSlot(slotIndex);
+      return;
+    }
+
+    slotButton.dataset.populated = "true";
+
+    slotButton.setAttribute(
+      "aria-label",
+      `Configure ${formatPokemonName(pokemon.name)} in slot ${slotIndex + 1}`,
+    );
+
+    slotButton.innerHTML = `
+    <img
+      class="team-slot-pokemon-image"
+      src="${pokemon.image}"
+      alt=""
+    >
+
+    <span class="team-slot-pokemon-name">
+      ${formatPokemonName(pokemon.name)}
+    </span>
+
+    <span class="team-slot-pokemon-number">
+      #${String(pokemon.id).padStart(4, "0")}
+    </span>
+  `;
+  }
+
+  function renderEmptyTeamSlot(slotIndex) {
+    const slotButton = teamSlots[slotIndex];
+
+    slotButton.dataset.populated = "false";
+
+    slotButton.setAttribute(
+      "aria-label",
+      `Add Pokémon to slot ${slotIndex + 1}`,
+    );
+
+    slotButton.innerHTML = `
+    <span class="slot-index">
+      ${slotIndex + 1}
+    </span>
+
+    <span class="slot-plus" aria-hidden="true">
+      +
+    </span>
+
+    <span class="slot-number">
+      Add Pokémon
+    </span>
+  `;
+  }
+
+  teamSlots.forEach((slotButton, slotIndex) => {
+    slotButton.addEventListener("click", () => {
+      if (!teamState.slots[slotIndex]) {
+        return;
+      }
+
+      selectTeamSlot(slotIndex);
+    });
+  });
+
+  function selectTeamSlot(slotIndex) {
+    const pokemon = teamState.slots[slotIndex];
+
+    if (!pokemon) {
+      return;
+    }
+
+    teamState.selectedSlot = slotIndex;
+
+    teamSlots.forEach((slotButton, index) => {
+      slotButton.classList.toggle("is-selected", index === slotIndex);
+    });
+
+    renderSelectedPokemon(pokemon, slotIndex);
+  }
+
+  function renderSelectedPokemon(pokemon, slotIndex) {
+    selectedPokemonEmpty.hidden = true;
+    selectedPokemonEditor.hidden = false;
+
+    selectedSlotInput.value = String(slotIndex + 1);
+    selectedPokemonIdInput.value = String(pokemon.id);
+
+    selectedPokemonImage.src = pokemon.image;
+    selectedPokemonImage.alt = formatPokemonName(pokemon.name);
+
+    selectedPokemonName.textContent = formatPokemonName(pokemon.name);
+
+    selectedPokemonNumber.textContent = `#${String(pokemon.id).padStart(4, "0")}`;
+
+    renderSelectedPokemonTypes(pokemon.types);
+
+    nicknameInput.value = pokemon.nickname;
+
+    populateSelect(
+      abilitySelect,
+      pokemon.abilities,
+      "Select ability",
+      pokemon.ability,
+    );
+
+    populateSelect(itemSelect, state.itemList, "Select item", pokemon.item);
+
+    populateSelect(
+      natureSelect,
+      state.natureList,
+      "Select nature",
+      pokemon.nature,
+    );
+
+    moveSelects.forEach((select, moveIndex) => {
+      populateSelect(
+        select,
+        pokemon.availableMoves,
+        `Move ${moveIndex + 1}`,
+        pokemon.moves[moveIndex],
+      );
+    });
+
+    renderPokemonStats(pokemon.stats);
+  }
+
+  function renderSelectedPokemonTypes(types) {
+    selectedPokemonTypes.replaceChildren();
+
+    types.forEach((typeName) => {
+      const badge = document.createElement("span");
+
+      badge.className = `pokemon-type-badge pokemon-type-${typeName}`;
+
+      badge.textContent = formatPokemonName(typeName);
+
+      selectedPokemonTypes.appendChild(badge);
+    });
+  }
+
+  function renderPokemonStats(stats) {
+    document.querySelector("#stat-hp").textContent = stats.hp ?? "—";
+
+    document.querySelector("#stat-attack").textContent = stats.attack ?? "—";
+
+    document.querySelector("#stat-defense").textContent = stats.defense ?? "—";
+
+    document.querySelector("#stat-special-attack").textContent =
+      stats["special-attack"] ?? "—";
+
+    document.querySelector("#stat-special-defense").textContent =
+      stats["special-defense"] ?? "—";
+
+    document.querySelector("#stat-speed").textContent = stats.speed ?? "—";
+  }
+
+  itemSelect.addEventListener("change", () => {
+    const pokemon = getSelectedPokemon();
+
+    if (!pokemon) {
+      return;
+    }
+
+    pokemon.item = itemSelect.value;
+  });
+
+  natureSelect.addEventListener("change", () => {
+    const pokemon = getSelectedPokemon();
+
+    if (!pokemon) {
+      return;
+    }
+
+    pokemon.nature = natureSelect.value;
+  });
+
+  nicknameInput.addEventListener("input", () => {
+    const pokemon = getSelectedPokemon();
+
+    if (!pokemon) {
+      return;
+    }
+
+    pokemon.nickname = nicknameInput.value;
+  });
+
+  abilitySelect.addEventListener("change", () => {
+    const pokemon = getSelectedPokemon();
+
+    if (!pokemon) {
+      return;
+    }
+
+    pokemon.ability = abilitySelect.value;
+  });
+
+  moveSelects.forEach((select, moveIndex) => {
+    select?.addEventListener("change", () => {
+      const pokemon = getSelectedPokemon();
+
+      if (!pokemon) {
+        return;
+      }
+
+      pokemon.moves[moveIndex] = select.value;
+    });
+  });
+
+  deletePokemonButton.addEventListener("click", () => {
+    const slotIndex = teamState.selectedSlot;
+
+    if (slotIndex === null) {
+      return;
+    }
+
+    teamState.slots[slotIndex] = null;
+    teamState.selectedSlot = null;
+
+    renderEmptyTeamSlot(slotIndex);
+    updateTeamSummary();
+    clearSelectedPokemonEditor();
+  });
+
+  function clearSelectedPokemonEditor() {
+    teamSlots.forEach((slotButton) => {
+      slotButton.classList.remove("is-selected");
+    });
+
+    selectedPokemonEditor.hidden = true;
+    selectedPokemonEmpty.hidden = false;
+
+    selectedSlotInput.value = "";
+    selectedPokemonIdInput.value = "";
+
+    selectedPokemonImage.src = "";
+    selectedPokemonImage.alt = "";
+    selectedPokemonName.textContent = "";
+    selectedPokemonNumber.textContent = "";
+    selectedPokemonTypes.replaceChildren();
+
+    nicknameInput.value = "";
+
+    populateSelect(abilitySelect, [], "Select ability", "");
+
+    moveSelects.forEach((select, index) => {
+      populateSelect(select, [], `Move ${index + 1}`, "");
+    });
+
+    renderPokemonStats({});
+  }
+
+  function updateTeamSummary() {
+    const pokemonCount = teamState.slots.filter((slot) => slot !== null).length;
+
+    summaryPokemonCount.textContent = `${pokemonCount}/6`;
+  }
+
+  function getSelectedPokemon() {
+    if (teamState.selectedSlot === null) {
+      return null;
+    }
+
+    return teamState.slots[teamState.selectedSlot];
+  }
 });
+
+function populateSelect(select, values, placeholder, selectedValue) {
+  if (!select) {
+    return;
+  }
+
+  const placeholderOption = document.createElement("option");
+
+  placeholderOption.value = "";
+  placeholderOption.textContent = placeholder;
+
+  const fragment = document.createDocumentFragment();
+
+  fragment.appendChild(placeholderOption);
+
+  [...values]
+    .sort((firstValue, secondValue) => firstValue.localeCompare(secondValue))
+    .forEach((value) => {
+      const option = document.createElement("option");
+
+      option.value = value;
+      option.textContent = formatPokemonName(value);
+      option.selected = value === selectedValue;
+
+      fragment.appendChild(option);
+    });
+
+  select.replaceChildren(fragment);
+}
 
 function getPokemonIdFromUrl(url) {
   const urlParts = url.split("/").filter(Boolean);
