@@ -73,9 +73,10 @@ require dirname(__DIR__) . '/layouts/header.php';
                                 </label>
 
                                 <select id="pokemon-sort">
-                                    <option value="name-asc">
-                                        Name (A–Z)
-                                    </option>
+                                    <option value="name-asc">Name (A-Z)</option>
+                                    <option value="name-desc">Name (Z-A)</option>
+                                    <option value="id-asc">Number (Low-High)</option>
+                                    <option value="id-desc">Number (High-Low)</option>
                                 </select>
 
                             </div>
