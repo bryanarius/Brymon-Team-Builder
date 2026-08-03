@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const clearFiltersButton = document.querySelector("#clear-pokemon-filters");
   const teamSlots = [...document.querySelectorAll(".team-slot")];
   const summaryTeamTypes = document.querySelector("#summary-team-types");
+  const teamNameInput = document.querySelector("#name");
+  const teamNotesInput = document.querySelector("#notes");
 
   const selectedPokemonEmpty = document.querySelector(
     "#selected-pokemon-empty",
@@ -61,12 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
     hp: document.querySelector("#pokemon-hp-iv"),
     attack: document.querySelector("#pokemon-attack-iv"),
     defense: document.querySelector("#pokemon-defense-iv"),
-    specialAttack: document.querySelector(
-        "#pokemon-special-attack-iv",
-    ),
-    specialDefense: document.querySelector(
-        "#pokemon-special-defense-iv",
-    ),
+    specialAttack: document.querySelector("#pokemon-special-attack-iv"),
+    specialDefense: document.querySelector("#pokemon-special-defense-iv"),
     speed: document.querySelector("#pokemon-speed-iv"),
     };
 
@@ -365,6 +363,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+    clearFiltersButton?.addEventListener("click", () => {
+    clearTimeout(state.searchTimeout);
+
+    // Invalidate any filter request that is still running.
+    state.filterVersion += 1;
+
+    searchInput.value = "";
+    generationSelect.value = "";
+    typeSelect.value = "";
+    sortSelect.value = "name-asc";
+
+    updateResultCount(0);
+
+    renderEmptyState(
+        "Find a Pokémon",
+        "Start typing a Pokémon name or choose a filter.",
+    );
+
+    searchInput.focus();
+    });
+
   async function getGenerationSpecies(generationName) {
     if (state.generationCache.has(generationName)) {
       return state.generationCache.get(generationName);
@@ -555,6 +574,24 @@ document.addEventListener("DOMContentLoaded", () => {
       nature: "",
 
       moves: ["", "", "", ""],
+
+        ivs: {
+        hp: 31,
+        attack: 31,
+        defense: 31,
+        specialAttack: 31,
+        specialDefense: 31,
+        speed: 31,
+        },
+
+        evs: {
+        hp: 0,
+        attack: 0,
+        defense: 0,
+        specialAttack: 0,
+        specialDefense: 0,
+        speed: 0,
+        },
     };
   }
 
@@ -689,6 +726,19 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     });
 
+    Object.entries(ivInputs).forEach(([statName, input]) => {
+        if (input) {
+            input.value = String(pokemon.ivs[statName]);
+        }
+    });
+
+    Object.entries(evInputs).forEach(([statName, input]) => {
+      if (input) {
+        input.value = String(pokemon.evs[statName]);
+      }
+    });
+
+    updateEvTotal();
     renderPokemonStats(pokemon.stats);
   }
 
@@ -811,14 +861,101 @@ document.addEventListener("DOMContentLoaded", () => {
     populateSelect(abilitySelect, [], "Select ability", "");
     populateSelect(itemSelect, [], "Select item", "");
     populateSelect(natureSelect, [], "Select nature", "");
-    populateSelect(abilitySelect, [],"Select ability", "",);
 
     moveSelects.forEach((select, index) => {
       populateSelect(select, [], `Move ${index + 1}`, "");
     });
 
+    Object.values(evInputs).forEach((input) => {
+    if (input) {
+        input.value = "0";
+    }
+    });
+
+    Object.values(ivInputs).forEach((input) => {
+        if (input) {
+            input.value = "31";
+        }
+    });
+
+    evTotal.textContent = "0 / 510 EVs";
+    evTotalError.hidden = true;
+
     renderPokemonStats({});
   }
+
+    resetIvsButton?.addEventListener("click", () => {
+        const pokemon = getSelectedPokemon();
+
+        if (!pokemon) {
+            return;
+        }
+
+      const value = clampNumber(31, 0, 31);
+
+      Object.keys(pokemon.ivs).forEach((statName) => {
+          pokemon.ivs[statName] = value;
+
+          if (ivInputs[statName]) {
+              ivInputs[statName].value = value;
+          }
+      });
+    });
+
+    Object.entries(evInputs).forEach(([statName, input]) => {
+    input?.addEventListener("input", () => {
+        const pokemon = getSelectedPokemon();
+
+        if (!pokemon) {
+            return;
+        }
+
+        pokemon.evs[statName] = clampNumber(
+            input.value,
+            0,
+            252,
+        );
+
+        input.value = pokemon.evs[statName];
+
+        updateEvTotal();
+    });
+  });
+
+    Object.entries(ivInputs).forEach(([statName, input]) => {
+    input?.addEventListener("input", () => {
+      const pokemon = getSelectedPokemon();
+
+      if (!pokemon) {
+        return;
+      }
+
+      pokemon.ivs[statName] = clampNumber(input.value, 0, 31);
+
+      input.value = pokemon.ivs[statName];
+    });
+  });
+
+  function updateEvTotal() {
+    const pokemon = getSelectedPokemon();
+
+    if (!pokemon || !evTotal || !evTotalError) {
+      return;
+    }
+
+    const total = calculateTotalEvs(pokemon.evs);
+
+    evTotal.textContent = `${total} / 510 EVs`;
+
+    const exceedsLimit = total > 510;
+
+    evTotal.classList.toggle("error", exceedsLimit);
+    evTotalError.hidden = !exceedsLimit;
+    evTotalError.textContent = exceedsLimit
+      ? "Total EVs cannot exceed 510."
+      : "";
+  }
+
 
   function updateTeamSummary() {
     const populatedSlots = teamState.slots.filter(Boolean);
@@ -857,8 +994,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function buildTeamPayload() {
     return {
-      name: document.querySelector("#name").value.trim(),
-      notes: document.querySelector("#notes").value.trim(),
+      name: teamNameInput.value.trim(),
+      notes: teamNotesInput.value.trim(),
 
       pokemon: teamState.slots
         .map((pokemon, index) => {
@@ -877,13 +1014,26 @@ document.addEventListener("DOMContentLoaded", () => {
             move_2: pokemon.moves[1] || null,
             move_3: pokemon.moves[2] || null,
             move_4: pokemon.moves[3] || null,
+
+            hp_ev: pokemon.evs.hp,
+            attack_ev: pokemon.evs.attack,
+            defense_ev: pokemon.evs.defense,
+            special_attack_ev: pokemon.evs.specialAttack,
+            special_defense_ev: pokemon.evs.specialDefense,
+            speed_ev: pokemon.evs.speed,
+
+            hp_iv: pokemon.ivs.hp,
+            attack_iv: pokemon.ivs.attack,
+            defense_iv: pokemon.ivs.defense,
+            special_attack_iv: pokemon.ivs.specialAttack,
+            special_defense_iv: pokemon.ivs.specialDefense,
+            speed_iv: pokemon.ivs.speed,
           };
         })
         .filter(Boolean),
     };
   }
 
-  console.log(buildTeamPayload())
 });
 
 function populateSelect(select, values, placeholder, selectedValue) {
@@ -940,4 +1090,24 @@ function formatPokemonName(name) {
       return word.charAt(0).toUpperCase() + word.slice(1);
     })
     .join(" ");
+}
+
+function clampNumber(value, minimum, maximum) {
+  const parsedValue = Number.parseInt(value, 10);
+
+  if (Number.isNaN(parsedValue)) {
+    return minimum;
+  }
+
+  return Math.min(
+    maximum,
+    Math.max(minimum, parsedValue),
+  );
+}
+
+function calculateTotalEvs(evs) {
+  return Object.values(evs).reduce(
+    (total, value) => total + Number(value || 0),
+    0,
+  );
 }
