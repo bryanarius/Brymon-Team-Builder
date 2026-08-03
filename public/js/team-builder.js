@@ -144,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   async function initializePokemonBrowser() {
+    const NATIONAL_POKEDEX_TOTAL = 1025;
     renderStatus("Loading Pokémon...");
 
     try {
@@ -154,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
         itemResponse,
         natureResponse,
       ] = await Promise.all([
-        fetch("https://pokeapi.co/api/v2/pokemon?limit=2000"),
+        fetch(`https://pokeapi.co/api/v2/pokemon?limit=${NATIONAL_POKEDEX_TOTAL}`),
         fetch("https://pokeapi.co/api/v2/generation?limit=20"),
         fetch("https://pokeapi.co/api/v2/type?limit=50"),
         fetch("https://pokeapi.co/api/v2/item?limit=3000"),
