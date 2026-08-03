@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultCount = document.querySelector("#pokemon-result-count");
   const clearFiltersButton = document.querySelector("#clear-pokemon-filters");
   const teamSlots = [...document.querySelectorAll(".team-slot")];
+  const summaryTeamTypes = document.querySelector("#summary-team-types");
 
   const selectedPokemonEmpty = document.querySelector(
     "#selected-pokemon-empty",
@@ -488,7 +489,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const emptySlotIndex = teamState.slots.findIndex((slot) => slot === null);
 
     if (emptySlotIndex === -1) {
-      console.warn("The team is already full.");
+      alert("Your team already has six Pokémon.");
       return;
     }
 
@@ -788,9 +789,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateTeamSummary() {
-    const pokemonCount = teamState.slots.filter((slot) => slot !== null).length;
+    const populatedSlots = teamState.slots.filter(Boolean);
 
-    summaryPokemonCount.textContent = `${pokemonCount}/6`;
+    summaryPokemonCount.textContent = `${populatedSlots.length}/6`;
+
+    const teamTypes = [
+      ...new Set(populatedSlots.flatMap((pokemon) => pokemon.types)),
+    ];
+
+    summaryTeamTypes.replaceChildren();
+
+    if (teamTypes.length === 0) {
+      summaryTeamTypes.textContent = "—";
+      return;
+    }
+
+    teamTypes.forEach((typeName) => {
+      const badge = document.createElement("span");
+
+      badge.className = `pokemon-type-badge pokemon-type-${typeName}`;
+
+      badge.textContent = formatPokemonName(typeName);
+
+      summaryTeamTypes.appendChild(badge);
+    });
   }
 
   function getSelectedPokemon() {
@@ -799,6 +821,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     return teamState.slots[teamState.selectedSlot];
+  }
+
+  function buildTeamPayload() {
+    return {
+      name: document.querySelector("#name").value.trim(),
+      notes: document.querySelector("#notes").value.trim(),
+
+      pokemon: teamState.slots
+        .map((pokemon, index) => {
+          if (!pokemon) {
+            return null;
+          }
+
+          return {
+            slot_number: index + 1,
+            pokemon_api_id: pokemon.id,
+            nickname: pokemon.nickname || null,
+            ability: pokemon.ability || null,
+            item: pokemon.item || null,
+            nature: pokemon.nature || null,
+            move_1: pokemon.moves[0] || null,
+            move_2: pokemon.moves[1] || null,
+            move_3: pokemon.moves[2] || null,
+            move_4: pokemon.moves[3] || null,
+          };
+        })
+        .filter(Boolean),
+    };
   }
 });
 
