@@ -163,8 +163,8 @@ The project focuses on software architecture, maintainability, database design, 
 - [x] Authentication
 - [x] Pokémon Search
 - [x] Search Filters
-- [ ] Add Pokémon to Team
-- [ ] Pokémon Configuration
+- [x] Add Pokémon to Team
+- [x] Pokémon Configuration
 - [ ] CRUD Functionality
 - [ ] Saved Teams
 
