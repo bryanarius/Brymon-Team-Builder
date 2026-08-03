@@ -443,6 +443,299 @@ require dirname(__DIR__) . '/layouts/header.php';
 
                                     </div>
 
+</fieldset>
+
+<!-- =================================================
+     Effort Values
+================================================== -->
+
+<fieldset class="pokemon-values pokemon-evs">
+
+    <div class="pokemon-values-header">
+
+        <legend>Effort Values</legend>
+
+        <span id="ev-total">
+            0 / 510 EVs
+        </span>
+
+    </div>
+
+    <p class="pokemon-values-description">
+        Each stat can have up to 252 EVs, with a maximum of
+        510 total EVs.
+    </p>
+
+    <div class="pokemon-values-grid">
+
+        <div class="form-group">
+
+            <label for="pokemon-hp-ev">
+                HP
+            </label>
+
+            <input
+                id="pokemon-hp-ev"
+                name="hp_ev"
+                type="number"
+                min="0"
+                max="252"
+                step="1"
+                value="0"
+                inputmode="numeric"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="pokemon-attack-ev">
+                Attack
+            </label>
+
+            <input
+                id="pokemon-attack-ev"
+                name="attack_ev"
+                type="number"
+                min="0"
+                max="252"
+                step="1"
+                value="0"
+                inputmode="numeric"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="pokemon-defense-ev">
+                Defense
+            </label>
+
+            <input
+                id="pokemon-defense-ev"
+                name="defense_ev"
+                type="number"
+                min="0"
+                max="252"
+                step="1"
+                value="0"
+                inputmode="numeric"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="pokemon-special-attack-ev">
+                Special Attack
+            </label>
+
+            <input
+                id="pokemon-special-attack-ev"
+                name="special_attack_ev"
+                type="number"
+                min="0"
+                max="252"
+                step="1"
+                value="0"
+                inputmode="numeric"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="pokemon-special-defense-ev">
+                Special Defense
+            </label>
+
+            <input
+                id="pokemon-special-defense-ev"
+                name="special_defense_ev"
+                type="number"
+                min="0"
+                max="252"
+                step="1"
+                value="0"
+                inputmode="numeric"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="pokemon-speed-ev">
+                Speed
+            </label>
+
+            <input
+                id="pokemon-speed-ev"
+                name="speed_ev"
+                type="number"
+                min="0"
+                max="252"
+                step="1"
+                value="0"
+                inputmode="numeric"
+            >
+
+        </div>
+
+    </div>
+
+    <p
+        class="field-error"
+        id="ev-total-error"
+        hidden
+    >
+        Total EVs cannot exceed 510.
+    </p>
+
+                                </fieldset>
+
+                                <!-- =================================================
+                                    Individual Values
+                                ================================================== -->
+
+                                <fieldset class="pokemon-values pokemon-ivs">
+
+                                    <div class="pokemon-values-header">
+
+                                        <legend>Individual Values</legend>
+
+                                        <button
+                                            type="button"
+                                            class="iv-reset-button"
+                                            id="reset-ivs-button"
+                                        >
+                                            Reset to 31
+                                        </button>
+
+                                    </div>
+
+                                    <p class="pokemon-values-description">
+                                        IVs range from 0 to 31 for each stat.
+                                    </p>
+
+                                    <div class="pokemon-values-grid">
+
+                                        <div class="form-group">
+
+                                            <label for="pokemon-hp-iv">
+                                                HP
+                                            </label>
+
+                                            <input
+                                                id="pokemon-hp-iv"
+                                                name="hp_iv"
+                                                type="number"
+                                                min="0"
+                                                max="31"
+                                                step="1"
+                                                value="31"
+                                                inputmode="numeric"
+                                            >
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <label for="pokemon-attack-iv">
+                                                Attack
+                                            </label>
+
+                                            <input
+                                                id="pokemon-attack-iv"
+                                                name="attack_iv"
+                                                type="number"
+                                                min="0"
+                                                max="31"
+                                                step="1"
+                                                value="31"
+                                                inputmode="numeric"
+                                            >
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <label for="pokemon-defense-iv">
+                                                Defense
+                                            </label>
+
+                                            <input
+                                                id="pokemon-defense-iv"
+                                                name="defense_iv"
+                                                type="number"
+                                                min="0"
+                                                max="31"
+                                                step="1"
+                                                value="31"
+                                                inputmode="numeric"
+                                            >
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <label for="pokemon-special-attack-iv">
+                                                Special Attack
+                                            </label>
+
+                                            <input
+                                                id="pokemon-special-attack-iv"
+                                                name="special_attack_iv"
+                                                type="number"
+                                                min="0"
+                                                max="31"
+                                                step="1"
+                                                value="31"
+                                                inputmode="numeric"
+                                            >
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <label for="pokemon-special-defense-iv">
+                                                Special Defense
+                                            </label>
+
+                                            <input
+                                                id="pokemon-special-defense-iv"
+                                                name="special_defense_iv"
+                                                type="number"
+                                                min="0"
+                                                max="31"
+                                                step="1"
+                                                value="31"
+                                                inputmode="numeric"
+                                            >
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <label for="pokemon-speed-iv">
+                                                Speed
+                                            </label>
+
+                                            <input
+                                                id="pokemon-speed-iv"
+                                                name="speed_iv"
+                                                type="number"
+                                                min="0"
+                                                max="31"
+                                                step="1"
+                                                value="31"
+                                                inputmode="numeric"
+                                            >
+
+                                        </div>
+
+                                    </div>
+
                                 </fieldset>
 
                                 <button

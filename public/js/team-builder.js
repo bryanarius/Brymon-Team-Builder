@@ -44,6 +44,35 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#pokemon-move-4"),
   ];
 
+    const evInputs = {
+    hp: document.querySelector("#pokemon-hp-ev"),
+    attack: document.querySelector("#pokemon-attack-ev"),
+    defense: document.querySelector("#pokemon-defense-ev"),
+    specialAttack: document.querySelector(
+        "#pokemon-special-attack-ev",
+    ),
+    specialDefense: document.querySelector(
+        "#pokemon-special-defense-ev",
+    ),
+    speed: document.querySelector("#pokemon-speed-ev"),
+    };
+
+    const ivInputs = {
+    hp: document.querySelector("#pokemon-hp-iv"),
+    attack: document.querySelector("#pokemon-attack-iv"),
+    defense: document.querySelector("#pokemon-defense-iv"),
+    specialAttack: document.querySelector(
+        "#pokemon-special-attack-iv",
+    ),
+    specialDefense: document.querySelector(
+        "#pokemon-special-defense-iv",
+    ),
+    speed: document.querySelector("#pokemon-speed-iv"),
+    };
+
+    const evTotal = document.querySelector("#ev-total");
+    const evTotalError = document.querySelector("#ev-total-error");
+    const resetIvsButton = document.querySelector("#reset-ivs-button");
   const deletePokemonButton = document.querySelector("#delete-pokemon-button");
 
   const summaryPokemonCount = document.querySelector("#summary-pokemon-count");
@@ -780,6 +809,9 @@ document.addEventListener("DOMContentLoaded", () => {
     nicknameInput.value = "";
 
     populateSelect(abilitySelect, [], "Select ability", "");
+    populateSelect(itemSelect, [], "Select item", "");
+    populateSelect(natureSelect, [], "Select nature", "");
+    populateSelect(abilitySelect, [],"Select ability", "",);
 
     moveSelects.forEach((select, index) => {
       populateSelect(select, [], `Move ${index + 1}`, "");
@@ -850,6 +882,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .filter(Boolean),
     };
   }
+
+  console.log(buildTeamPayload())
 });
 
 function populateSelect(select, values, placeholder, selectedValue) {
