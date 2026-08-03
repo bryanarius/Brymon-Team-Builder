@@ -20,11 +20,12 @@ require dirname(__DIR__) . '/layouts/header.php';
             </div>
         <?php endif; ?>
 
-        <form
-            action="/teambuilder"
-            method="POST"
-            class="team-builder-form"
-        >
+            <form
+                action="/teams"
+                method="POST"
+                id="team-builder-form"
+                class="team-builder-form"
+            >
 
             <div class="team-builder-layout">
 
@@ -164,6 +165,7 @@ require dirname(__DIR__) . '/layouts/header.php';
 
                         <button
                             class="button button-primary"
+                            id="save-team-button"
                             type="submit"
                         >
                             Save Team

@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const summaryTeamTypes = document.querySelector("#summary-team-types");
   const teamNameInput = document.querySelector("#name");
   const teamNotesInput = document.querySelector("#notes");
+  const teamBuilderForm = document.querySelector("#team-builder-form");
+  const saveTeamButton = document.querySelector("#save-team-button");
 
   const selectedPokemonEmpty = document.querySelector(
     "#selected-pokemon-empty",
@@ -1035,6 +1037,105 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+    function validateTeamPayload(payload) {
+    const errors = [];
+
+    if (!payload.name) {
+      errors.push("Team name is required.");
+    }
+
+    if (payload.name.length > 100) {
+      errors.push("Team name must be 100 characters or less.");
+    }
+
+    if (payload.pokemon.length === 0) {
+      errors.push("Add at least one Pokémon to your team.");
+    }
+
+    payload.pokemon.forEach((pokemon, index) => {
+      const totalEvs =
+        pokemon.hp_ev +
+        pokemon.attack_ev +
+        pokemon.defense_ev +
+        pokemon.special_attack_ev +
+        pokemon.special_defense_ev +
+        pokemon.speed_ev;
+
+      if (totalEvs > 510) {
+        errors.push(
+          `Pokémon in slot ${index + 1} exceeds the 510 EV limit.`,
+        );
+      }
+    });
+
+    return errors;
+  }
+
+  teamBuilderForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const payload = buildTeamPayload();
+    const errors = validateTeamPayload(payload);
+
+    if (errors.length > 0) {
+      alert(errors.join("\n"));
+      return;
+    }
+
+    if (!saveTeamButton) {
+      console.error("Save Team button was not found.");
+      return;
+    }
+
+    saveTeamButton.disabled = true;
+    saveTeamButton.textContent = "Saving...";
+
+    try {
+      console.log("Submitting payload:", payload);
+
+      const response = await fetch("/teams", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const responseText = await response.text();
+
+      console.log("Status:", response.status);
+      console.log("Raw response:", responseText);
+
+      let result;
+
+      try {
+        result = JSON.parse(responseText);
+      } catch {
+        throw new Error(
+          "The server did not return valid JSON. Check the console response.",
+        );
+      }
+
+      if (!response.ok) {
+        console.error("Server validation errors:", result.errors);
+
+        throw new Error(
+          result.message ?? "Unable to save the team.",
+        );
+      }
+
+      console.log("Saved team:", result);
+
+      window.location.href = "/teams";
+    } catch (error) {
+      console.error("Save error:", error);
+      alert(error.message);
+    } finally {
+      saveTeamButton.disabled = false;
+      saveTeamButton.textContent = "Save Team";
+    }
+  });
 });
 
 function populateSelect(select, values, placeholder, selectedValue) {

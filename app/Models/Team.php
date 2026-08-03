@@ -6,17 +6,18 @@ namespace App\Models;
 
 use App\Core\Database;
 use PDO;
+use Throwable;
 
 final class Team
 {
     private PDO $database;
 
-    public function __construct() 
+    public function __construct()
     {
         $this->database = Database::connection();
     }
 
-    public function findAllByUserId(int $userId): array 
+    public function findAllByUserId(int $userId): array
     {
         $statement = $this->database->prepare(
             '
@@ -24,7 +25,7 @@ final class Team
                 id,
                 user_id,
                 name,
-                notes
+                notes,
                 created_at,
                 updated_at
             FROM teams
@@ -40,30 +41,205 @@ final class Team
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function create(
+    public function createWithPokemon(
+        int $userId,
+        string $name,
+        ?string $notes,
+        array $pokemon
+    ): int {
+        $this->database->beginTransaction();
+
+        try {
+            $teamId = $this->insertTeam(
+                $userId,
+                $name,
+                $notes
+            );
+
+            foreach ($pokemon as $teamPokemon) {
+                $this->insertTeamPokemon(
+                    $teamId,
+                    $teamPokemon
+                );
+            }
+
+            $this->database->commit();
+
+            return $teamId;
+        } catch (Throwable $exception) {
+            if ($this->database->inTransaction()) {
+                $this->database->rollBack();
+            }
+
+            throw $exception;
+        }
+    }
+
+    private function insertTeam(
         int $userId,
         string $name,
         ?string $notes
-    ): bool {
+    ): int {
         $statement = $this->database->prepare(
             '
             INSERT INTO teams (
                 user_id,
                 name,
                 notes
-                )
-                VALUES (
+            )
+            VALUES (
                 :user_id,
                 :name,
                 :notes
-                )
+            )
+            RETURNING id
             '
         );
 
-        return $statement->execute([
+        $statement->execute([
             'user_id' => $userId,
             'name' => $name,
             'notes' => $notes,
         ]);
+
+        return (int) $statement->fetchColumn();
+    }
+
+    private function insertTeamPokemon(
+        int $teamId,
+        array $pokemon
+    ): void {
+        $statement = $this->database->prepare(
+            '
+            INSERT INTO team_pokemon (
+                team_id,
+                pokemon_api_id,
+                slot_number,
+                nickname,
+                ability,
+                item,
+                nature,
+                move_1,
+                move_2,
+                move_3,
+                move_4,
+                hp_ev,
+                attack_ev,
+                defense_ev,
+                special_attack_ev,
+                special_defense_ev,
+                speed_ev,
+                hp_iv,
+                attack_iv,
+                defense_iv,
+                special_attack_iv,
+                special_defense_iv,
+                speed_iv
+            )
+            VALUES (
+                :team_id,
+                :pokemon_api_id,
+                :slot_number,
+                :nickname,
+                :ability,
+                :item,
+                :nature,
+                :move_1,
+                :move_2,
+                :move_3,
+                :move_4,
+                :hp_ev,
+                :attack_ev,
+                :defense_ev,
+                :special_attack_ev,
+                :special_defense_ev,
+                :speed_ev,
+                :hp_iv,
+                :attack_iv,
+                :defense_iv,
+                :special_attack_iv,
+                :special_defense_iv,
+                :speed_iv
+            )
+            '
+        );
+
+        $statement->execute([
+            'team_id' => $teamId,
+            'pokemon_api_id' =>
+                (int) $pokemon['pokemon_api_id'],
+            'slot_number' =>
+                (int) $pokemon['slot_number'],
+
+            'nickname' =>
+                $this->nullableString(
+                    $pokemon['nickname'] ?? null
+                ),
+            'ability' =>
+                $this->nullableString(
+                    $pokemon['ability'] ?? null
+                ),
+            'item' =>
+                $this->nullableString(
+                    $pokemon['item'] ?? null
+                ),
+            'nature' =>
+                $this->nullableString(
+                    $pokemon['nature'] ?? null
+                ),
+            'move_1' =>
+                $this->nullableString(
+                    $pokemon['move_1'] ?? null
+                ),
+            'move_2' =>
+                $this->nullableString(
+                    $pokemon['move_2'] ?? null
+                ),
+            'move_3' =>
+                $this->nullableString(
+                    $pokemon['move_3'] ?? null
+                ),
+            'move_4' =>
+                $this->nullableString(
+                    $pokemon['move_4'] ?? null
+                ),
+
+            'hp_ev' =>
+                (int) ($pokemon['hp_ev'] ?? 0),
+            'attack_ev' =>
+                (int) ($pokemon['attack_ev'] ?? 0),
+            'defense_ev' =>
+                (int) ($pokemon['defense_ev'] ?? 0),
+            'special_attack_ev' =>
+                (int) ($pokemon['special_attack_ev'] ?? 0),
+            'special_defense_ev' =>
+                (int) ($pokemon['special_defense_ev'] ?? 0),
+            'speed_ev' =>
+                (int) ($pokemon['speed_ev'] ?? 0),
+
+            'hp_iv' =>
+                (int) ($pokemon['hp_iv'] ?? 31),
+            'attack_iv' =>
+                (int) ($pokemon['attack_iv'] ?? 31),
+            'defense_iv' =>
+                (int) ($pokemon['defense_iv'] ?? 31),
+            'special_attack_iv' =>
+                (int) ($pokemon['special_attack_iv'] ?? 31),
+            'special_defense_iv' =>
+                (int) ($pokemon['special_defense_iv'] ?? 31),
+            'speed_iv' =>
+                (int) ($pokemon['speed_iv'] ?? 31),
+        ]);
+    }
+
+    private function nullableString(mixed $value): ?string
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return $value === '' ? null : $value;
     }
 }
