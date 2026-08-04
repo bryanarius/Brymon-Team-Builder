@@ -7,6 +7,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewButtons = [
     ...document.querySelectorAll(".view-button"),
   ];
+    const url = new URL(window.location.href);
+    const successMessage = url.searchParams.get("success");
+
+    if (successMessage) {
+    showToast(successMessage, {
+        type: "success",
+        title: "Team saved",
+    });
+
+    url.searchParams.delete("success");
+
+    window.history.replaceState(
+        {},
+        "",
+        url.pathname + url.search,
+    );
+    }
 
   if (!teamsGrid) {
     return;

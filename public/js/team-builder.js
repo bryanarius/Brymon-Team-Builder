@@ -673,7 +673,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const emptySlotIndex = teamState.slots.findIndex((slot) => slot === null);
 
     if (emptySlotIndex === -1) {
-      alert("Your team already has six Pokémon.");
+        showToast("Your team already has six Pokémon.", {
+        type: "info",
+        title: "Team is full",
+      });
       return;
     }
 
@@ -1215,7 +1218,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const errors = validateTeamPayload(payload);
 
     if (errors.length > 0) {
-      alert(errors.join("\n"));
+      showToast(errors.join(" "), {
+        type: "error",
+        title: "Check your team",
+        duration: 6000,
+      });
+
       return;
     }
 
@@ -1268,10 +1276,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // console.log("Saved team:", result);
 
-      window.location.href = "/teams";
+      const successMessage = isEditing
+      ? "Team updated successfully."
+      : "Team saved successfully.";
+
+      window.location.href = `/teams?success=${encodeURIComponent(successMessage)}`;
     } catch (error) {
       console.error("Save error:", error);
-      alert(error.message);
+      showToast(error.message, {
+        type: "error",
+        title: "Unable to save team",
+        duration: 6000,
+      });
     } finally {
       saveTeamButton.disabled = false;
       saveTeamButton.textContent = isEditing

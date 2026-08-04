@@ -1620,6 +1620,116 @@ h3 {
   color: #ffb8b8;
 }
 
+.toast-container {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 9999;
+  display: flex;
+  width: min(380px, calc(100% - 2rem));
+  flex-direction: column;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.toast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: #102445;
+  color: #f8fafc;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.32);
+  opacity: 0;
+  transform: translateY(-12px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+  pointer-events: auto;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-success {
+  border-color: rgba(82, 199, 122, 0.75);
+}
+
+.toast-error {
+  border-color: rgba(255, 116, 116, 0.75);
+}
+
+.toast-info {
+  border-color: rgba(91, 143, 243, 0.75);
+}
+
+.toast-icon {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.toast-success .toast-icon {
+  background: rgba(82, 199, 122, 0.18);
+  color: var(--success);
+}
+
+.toast-error .toast-icon {
+  background: rgba(255, 116, 116, 0.18);
+  color: var(--danger);
+}
+
+.toast-info .toast-icon {
+  background: rgba(91, 143, 243, 0.18);
+  color: var(--blue-light);
+}
+
+.toast-content {
+  min-width: 0;
+}
+
+.toast-title {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 0.95rem;
+}
+
+.toast-message {
+  margin: 0;
+  color: #bdc9da;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.toast-close {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--app-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.toast-close:hover {
+  color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transition: none;
+  }
+}
+
 /* Buttons */
 .team-builder-page .button {
   display: inline-flex;
@@ -3544,6 +3654,13 @@ h3 {
   .team-detail-pokemon-image {
     width: 110px;
     height: 130px;
+  }
+
+    .toast-container {
+    top: 0.75rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
   }
 }
 

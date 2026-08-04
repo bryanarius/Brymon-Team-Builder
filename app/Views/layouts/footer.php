@@ -7,7 +7,14 @@
 
         <p>Built with PHP, PostgreSQL, and PokéAPI.</p>
     </div>
+    <div
+        id="toast-container"
+        class="toast-container"
+        aria-live="polite"
+        aria-atomic="true">
+    </div>
 </footer>
+<script src="/js/toast.js" defer></script>
 <script src="/js/navigation.js" defer></script>
 <script src="/js/team-builder.js"></script>
 <script src="/js/team-show.js" defer></script>
