@@ -40,22 +40,51 @@ $teamPokemon = $team['pokemon'] ?? [];
             <?php foreach ($teamPokemon as $pokemon): ?>
                 <?php
                 $pokemonApiId = (int) $pokemon['pokemon_api_id'];
+
+                $pokemonName = trim(
+                    (string) ($pokemon['pokemon_name'] ?? '')
+                );
+
+                $nickname = trim(
+                    (string) ($pokemon['nickname'] ?? '')
+                );
+
+                $formattedPokemonName = $pokemonName !== ''
+                    ? ucwords(str_replace('-', ' ', $pokemonName))
+                    : 'Pokémon #' . $pokemonApiId;
+
+                $displayName = $nickname !== ''
+                    ? $nickname
+                    : $formattedPokemonName;
                 ?>
 
                 <article class="saved-team-card">
                     <img
                         src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/<?= $pokemonApiId ?>.png"
-                        alt="Pokémon #<?= $pokemonApiId ?>"
+                        alt="<?= htmlspecialchars(
+                            $formattedPokemonName,
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>"
                     >
 
                     <h2>
                         <?= htmlspecialchars(
-                            $pokemon['nickname']
-                                ?: "Pokémon #{$pokemonApiId}",
+                            $displayName,
                             ENT_QUOTES,
                             'UTF-8'
                         ) ?>
                     </h2>
+
+                    <?php if ($nickname !== '' && $pokemonName !== ''): ?>
+                        <p class="pokemon-species">
+                            <?= htmlspecialchars(
+                                $formattedPokemonName,
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>
+                        </p>
+                    <?php endif; ?>
 
                     <p>
                         Slot <?= (int) $pokemon['slot_number'] ?>

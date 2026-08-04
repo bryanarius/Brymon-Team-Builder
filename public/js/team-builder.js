@@ -1009,6 +1009,7 @@ document.addEventListener("DOMContentLoaded", () => {
           return {
             slot_number: index + 1,
             pokemon_api_id: pokemon.id,
+            pokemon_name: pokemon.name,
             nickname: pokemon.nickname || null,
             ability: pokemon.ability || null,
             item: pokemon.item || null,

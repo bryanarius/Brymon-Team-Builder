@@ -139,6 +139,7 @@ final class Team
             INSERT INTO team_pokemon (
                 team_id,
                 pokemon_api_id,
+                pokemon_name,
                 slot_number,
                 nickname,
                 ability,
@@ -164,6 +165,7 @@ final class Team
             VALUES (
                 :team_id,
                 :pokemon_api_id,
+                :pokemon_name,
                 :slot_number,
                 :nickname,
                 :ability,
@@ -193,6 +195,10 @@ final class Team
             'team_id' => $teamId,
             'pokemon_api_id' =>
                 (int) $pokemon['pokemon_api_id'],
+            'pokemon_name' =>
+            $this->nullableString(
+                $pokemon['pokemon_name'] ?? null
+            ),
             'slot_number' =>
                 (int) $pokemon['slot_number'],
 
@@ -285,6 +291,7 @@ final class Team
                 id,
                 team_id,
                 pokemon_api_id,
+                pokemon_name,
                 slot_number,
                 nickname
             FROM team_pokemon
@@ -345,6 +352,7 @@ final class Team
                 id,
                 team_id,
                 pokemon_api_id,
+                pokemon_name,
                 slot_number,
                 nickname,
                 ability,
