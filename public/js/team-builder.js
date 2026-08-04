@@ -154,7 +154,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function initializePokemonBrowser() {
     const NATIONAL_POKEDEX_TOTAL = 1025;
-    renderStatus("Loading Pokémon...");
+
+    setPokemonBrowserDisabled(true);
+    renderStatus("Loading Pokémon data...");
 
     try {
       const [
@@ -164,7 +166,9 @@ document.addEventListener("DOMContentLoaded", () => {
         itemResponse,
         natureResponse,
       ] = await Promise.all([
-        fetch(`https://pokeapi.co/api/v2/pokemon?limit=${NATIONAL_POKEDEX_TOTAL}`),
+        fetch(
+          `https://pokeapi.co/api/v2/pokemon?limit=${NATIONAL_POKEDEX_TOTAL}`,
+        ),
         fetch("https://pokeapi.co/api/v2/generation?limit=20"),
         fetch("https://pokeapi.co/api/v2/type?limit=50"),
         fetch("https://pokeapi.co/api/v2/item?limit=3000"),
@@ -178,7 +182,9 @@ document.addEventListener("DOMContentLoaded", () => {
         !itemResponse.ok ||
         !natureResponse.ok
       ) {
-        throw new Error("Unable to load Pokémon browser data.");
+        throw new Error(
+          "Unable to load Pokémon browser data.",
+        );
       }
 
       const pokemonData = await pokemonResponse.json();
@@ -187,15 +193,21 @@ document.addEventListener("DOMContentLoaded", () => {
       const itemData = await itemResponse.json();
       const natureData = await natureResponse.json();
 
-      state.pokemonList = pokemonData.results.map((pokemon) => ({
-        name: pokemon.name,
-        url: pokemon.url,
-        id: getPokemonIdFromUrl(pokemon.url),
-      }));
+      state.pokemonList = pokemonData.results.map(
+        (pokemon) => ({
+          name: pokemon.name,
+          url: pokemon.url,
+          id: getPokemonIdFromUrl(pokemon.url),
+        }),
+      );
 
-      state.itemList = itemData.results.map((item) => item.name);
+      state.itemList = itemData.results.map(
+        (item) => item.name,
+      );
 
-      state.natureList = natureData.results.map((nature) => nature.name);
+      state.natureList = natureData.results.map(
+        (nature) => nature.name,
+      );
 
       populateGenerationFilter(generationData.results);
       populateTypeFilter(typeData.results);
@@ -213,6 +225,8 @@ document.addEventListener("DOMContentLoaded", () => {
         "Unable to load Pokémon",
         "Please refresh the page and try again.",
       );
+    } finally {
+      setPokemonBrowserDisabled(false);
     }
   }
 
@@ -603,12 +617,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderStatus(message) {
-    const status = document.createElement("p");
+    const status = document.createElement("div");
     status.className = "pokemon-search-status";
-    status.textContent = message;
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+
+    const spinner = document.createElement("span");
+    spinner.className = "pokemon-search-spinner";
+    spinner.setAttribute("aria-hidden", "true");
+
+    const text = document.createElement("span");
+    text.textContent = message;
+
+    status.append(spinner, text);
 
     resultsContainer.replaceChildren(status);
   }
+
+  function setPokemonBrowserDisabled(disabled) {
+  searchInput.disabled = disabled;
+  generationSelect.disabled = disabled;
+  typeSelect.disabled = disabled;
+  sortSelect.disabled = disabled;
+
+  if (clearFiltersButton) {
+    clearFiltersButton.disabled = disabled;
+  }
+}
 
   function renderEmptyState(title, message) {
     const wrapper = document.createElement("div");

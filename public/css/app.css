@@ -1574,6 +1574,39 @@ h3 {
   text-align: center;
 }
 
+.pokemon-search-status {
+  display: flex;
+  min-height: 140px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.pokemon-search-spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid rgba(91, 143, 243, 0.25);
+  border-top-color: var(--app-blue);
+  border-radius: 50%;
+  animation: pokemon-search-spin 0.75s linear infinite;
+}
+
+@keyframes pokemon-search-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pokemon-search-spinner {
+    animation-duration: 1.5s;
+  }
+}
+
 /* Alerts */
 .alert {
   margin-bottom: 1.5rem;
