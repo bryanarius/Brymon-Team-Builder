@@ -48,3 +48,4 @@ $router->get('/dashboard', [DashboardController::class, 'index']);
 $router->get('/teams', [TeamController::class, 'index']);
 $router->get('/teambuilder', [TeamController::class, 'builder']);
 $router->post('/teams', [TeamController::class, 'save']);
+$router->get('/teams/{id}', [TeamController::class,'show',]);

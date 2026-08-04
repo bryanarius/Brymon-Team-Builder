@@ -195,4 +195,48 @@ final class TeamController extends Controller
             | JSON_UNESCAPED_UNICODE
         );
     }
+
+    public function show(string $id): void
+    {
+        Auth::requireLogin();
+
+        $teamId = filter_var(
+            $id,
+            FILTER_VALIDATE_INT,
+            [
+                'options' => [
+                    'min_range' => 1,
+                ],
+            ]
+        );
+
+        if ($teamId === false) {
+            $this->notFound();
+            return;
+        }
+
+        $teamModel = new Team();
+
+        $team = $teamModel->findByIdAndUserId(
+            (int) $teamId,
+            (int) $_SESSION['user_id']
+        );
+
+        if ($team === null) {
+            $this->notFound();
+            return;
+        }
+
+        $this->view('teams/show', [
+            'pageTitle' => $team['name'],
+            'team' => $team,
+        ]);
+    }
+
+    private function notFound(): void
+    {
+        http_response_code(404);
+
+        require dirname(__DIR__) . '/Views/errors/404.php';
+    }
 }

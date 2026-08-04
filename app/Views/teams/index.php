@@ -128,13 +128,17 @@ $formatDate = static function (?string $date): string {
         <?php else: ?>
 
             <div class="teams-grid" id="teams-grid">
-
                 <?php foreach ($teams as $team): ?>
                     <?php
                     $teamId = (int) $team['id'];
                     $teamName = (string) $team['name'];
                     $teamNotes = trim((string) ($team['notes'] ?? ''));
                     $updatedAt = $team['updated_at'] ?? null;
+
+                    $teamPokemon = $team['pokemon'] ?? [];
+                    $pokemonCount = (int) (
+                        $team['pokemon_count'] ?? count($teamPokemon)
+                    );
                     ?>
 
                     <article
@@ -188,14 +192,55 @@ $formatDate = static function (?string $date): string {
                             aria-label="Pokémon team slots"
                         >
                             <?php for ($slot = 1; $slot <= 6; $slot++): ?>
-                                <div
-                                    class="pokemon-preview-slot"
-                                    aria-label="Empty Pokémon slot <?= $slot ?>"
-                                >
-                                    <span aria-hidden="true">
-                                        +
-                                    </span>
-                                </div>
+                                <?php
+                                $slotPokemon = null;
+
+                                foreach ($teamPokemon as $pokemon) {
+                                    if ((int) $pokemon['slot_number'] === $slot) {
+                                        $slotPokemon = $pokemon;
+                                        break;
+                                    }
+                                }
+                                ?>
+
+                                <?php if ($slotPokemon !== null): ?>
+                                    <?php
+                                    $pokemonApiId = (int) $slotPokemon['pokemon_api_id'];
+                                    $nickname = trim(
+                                        (string) ($slotPokemon['nickname'] ?? '')
+                                    );
+
+                                    $label = $nickname !== ''
+                                        ? $nickname
+                                        : "Pokémon #{$pokemonApiId}";
+                                    ?>
+
+                                    <div
+                                        class="pokemon-preview-slot is-populated"
+                                        aria-label="<?= htmlspecialchars(
+                                            $label,
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>"
+                                    >
+                                        <img
+                                            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/<?= $pokemonApiId ?>.png"
+                                            alt="<?= htmlspecialchars(
+                                                $label,
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>"
+                                            loading="lazy"
+                                        >
+                                    </div>
+                                <?php else: ?>
+                                    <div
+                                        class="pokemon-preview-slot"
+                                        aria-label="Empty Pokémon slot <?= $slot ?>"
+                                    >
+                                        <span aria-hidden="true">+</span>
+                                    </div>
+                                <?php endif; ?>
                             <?php endfor; ?>
                         </div>
 
@@ -215,7 +260,9 @@ $formatDate = static function (?string $date): string {
                                     Pokémon
                                 </span>
 
-                                <strong>0/6</strong>
+                                <strong>
+                                    <?= $pokemonCount ?>/6
+                                </strong>
                             </div>
 
                             <div class="team-summary-item">
@@ -244,7 +291,7 @@ $formatDate = static function (?string $date): string {
                     </article>
                 <?php endforeach; ?>
 
-                <a class="create-team-card" href="/teams/teambuilder">
+                <a class="create-team-card" href="/teambuilder">
                     <span class="create-team-icon" aria-hidden="true">
                         +
                     </span>

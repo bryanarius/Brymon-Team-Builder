@@ -22,15 +22,19 @@ final class Team
         $statement = $this->database->prepare(
             '
             SELECT
-                id,
-                user_id,
-                name,
-                notes,
-                created_at,
-                updated_at
+                teams.id,
+                teams.user_id,
+                teams.name,
+                teams.notes,
+                teams.created_at,
+                teams.updated_at,
+                COUNT(team_pokemon.id)::int AS pokemon_count
             FROM teams
-            WHERE user_id = :user_id
-            ORDER BY created_at DESC
+            LEFT JOIN team_pokemon
+                ON team_pokemon.team_id = teams.id
+            WHERE teams.user_id = :user_id
+            GROUP BY teams.id
+            ORDER BY teams.updated_at DESC
             '
         );
 
@@ -38,7 +42,28 @@ final class Team
             'user_id' => $userId,
         ]);
 
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $teams = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($teams === []) {
+            return [];
+        }
+
+        $teamIds = array_map(
+            static fn (array $team): int => (int) $team['id'],
+            $teams
+        );
+
+        $pokemonByTeam = $this->findPokemonByTeamIds($teamIds);
+
+        foreach ($teams as &$team) {
+            $teamId = (int) $team['id'];
+
+            $team['pokemon'] = $pokemonByTeam[$teamId] ?? [];
+        }
+
+        unset($team);
+
+        return $teams;
     }
 
     public function createWithPokemon(
@@ -241,5 +266,120 @@ final class Team
         $value = trim($value);
 
         return $value === '' ? null : $value;
+    }
+
+    private function findPokemonByTeamIds(array $teamIds): array
+    {
+        if ($teamIds === []) {
+            return [];
+        }
+
+        $placeholders = implode(
+            ', ',
+            array_fill(0, count($teamIds), '?')
+        );
+
+        $statement = $this->database->prepare(
+            "
+            SELECT
+                id,
+                team_id,
+                pokemon_api_id,
+                slot_number,
+                nickname
+            FROM team_pokemon
+            WHERE team_id IN ($placeholders)
+            ORDER BY team_id, slot_number
+            "
+        );
+
+        $statement->execute($teamIds);
+
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $pokemonByTeam = [];
+
+        foreach ($rows as $pokemon) {
+            $teamId = (int) $pokemon['team_id'];
+
+            $pokemonByTeam[$teamId][] = $pokemon;
+        }
+
+        return $pokemonByTeam;
+    }
+
+        public function findByIdAndUserId(
+        int $teamId,
+        int $userId
+    ): ?array {
+        $statement = $this->database->prepare(
+            '
+            SELECT
+                id,
+                user_id,
+                name,
+                notes,
+                created_at,
+                updated_at
+            FROM teams
+            WHERE id = :team_id
+            AND user_id = :user_id
+            LIMIT 1
+            '
+        );
+
+        $statement->execute([
+            'team_id' => $teamId,
+            'user_id' => $userId,
+        ]);
+
+        $team = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($team === false) {
+            return null;
+        }
+
+        $pokemonStatement = $this->database->prepare(
+            '
+            SELECT
+                id,
+                team_id,
+                pokemon_api_id,
+                slot_number,
+                nickname,
+                ability,
+                item,
+                nature,
+                move_1,
+                move_2,
+                move_3,
+                move_4,
+                hp_ev,
+                attack_ev,
+                defense_ev,
+                special_attack_ev,
+                special_defense_ev,
+                speed_ev,
+                hp_iv,
+                attack_iv,
+                defense_iv,
+                special_attack_iv,
+                special_defense_iv,
+                speed_iv
+            FROM team_pokemon
+            WHERE team_id = :team_id
+            ORDER BY slot_number
+            '
+        );
+
+        $pokemonStatement->execute([
+            'team_id' => $teamId,
+        ]);
+
+        $team['pokemon'] = $pokemonStatement->fetchAll(
+            PDO::FETCH_ASSOC
+        );
+
+        return $team;
     }
 }

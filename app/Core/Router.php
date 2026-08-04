@@ -7,7 +7,10 @@ namespace App\Core;
 final class Router
 {
     /**
-     * @var array<string, array<string, callable|array>>
+     * @var array<string, array<int, array{
+     *     path: string,
+     *     handler: callable|array
+     * }>>
      */
     private array $routes = [];
 
@@ -26,9 +29,10 @@ final class Router
         string $path,
         callable|array $handler
     ): void {
-        $normalizedPath = $this->normalizePath($path);
-
-        $this->routes[$method][$normalizedPath] = $handler;
+        $this->routes[$method][] = [
+            'path' => $this->normalizePath($path),
+            'handler' => $handler,
+        ];
     }
 
     public function dispatch(string $method, string $uri): void
@@ -51,23 +55,82 @@ final class Router
         }
 
         $path = $this->normalizePath($path);
-        $handler = $this->routes[$method][$path] ?? null;
 
-        if ($handler === null) {
+        $matchedRoute = $this->matchRoute($method, $path);
+
+        if ($matchedRoute === null) {
             $this->renderNotFound();
             return;
         }
+
+        $handler = $matchedRoute['handler'];
+        $parameters = $matchedRoute['parameters'];
 
         if (is_array($handler)) {
             [$controllerClass, $action] = $handler;
 
             $controller = new $controllerClass();
-            $controller->$action();
+
+            $controller->$action(...array_values($parameters));
 
             return;
         }
 
-        $handler();
+        $handler(...array_values($parameters));
+    }
+
+    /**
+     * @return array{
+     *     handler: callable|array,
+     *     parameters: array<string, string>
+     * }|null
+     */
+    private function matchRoute(
+        string $method,
+        string $requestPath
+    ): ?array {
+        $routes = $this->routes[$method] ?? [];
+
+        foreach ($routes as $route) {
+            $parameterNames = [];
+
+            $pattern = preg_replace_callback(
+                '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+                static function (array $matches) use (&$parameterNames): string {
+                    $parameterNames[] = $matches[1];
+
+                    return '([^/]+)';
+                },
+                $route['path']
+            );
+
+            if (!is_string($pattern)) {
+                continue;
+            }
+
+            $pattern = '#^' . $pattern . '$#';
+
+            if (!preg_match($pattern, $requestPath, $matches)) {
+                continue;
+            }
+
+            array_shift($matches);
+
+            $parameters = [];
+
+            foreach ($parameterNames as $index => $name) {
+                $parameters[$name] = urldecode(
+                    $matches[$index] ?? ''
+                );
+            }
+
+            return [
+                'handler' => $route['handler'],
+                'parameters' => $parameters,
+            ];
+        }
+
+        return null;
     }
 
     private function normalizePath(string $path): string

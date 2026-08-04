@@ -1101,6 +1101,29 @@ h3 {
 .teams-primary-button:hover {
   background: #ffd43b;
 }
+.pokemon-preview-slot {
+  overflow: hidden;
+}
+
+.pokemon-preview-slot img {
+  display: block;
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+}
+
+.pokemon-preview-slot.is-populated {
+  border-color: #3d6da8;
+  background: #102445;
+}
+
+.teams-grid {
+  align-items: stretch;
+}
+
+.saved-team-card {
+  height: 100%;
+}
 
 /* Team Builder Page */
 .team-builder-page {
@@ -2765,7 +2788,7 @@ h3 {
     display: none;
   }
 
-    .selected-pokemon-editor {
+  .selected-pokemon-editor {
     grid-template-columns: 160px minmax(0, 1fr);
   }
 
@@ -3246,7 +3269,7 @@ h3 {
     height: 90px;
   }
 
-    .selected-pokemon-fields {
+  .selected-pokemon-fields {
     gap: 0.75rem;
   }
 
