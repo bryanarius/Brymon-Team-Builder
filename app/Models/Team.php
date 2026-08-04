@@ -455,4 +455,24 @@ final class Team
             throw $exception;
         }
     }
+
+    public function deleteByIdAndUserId(
+    int $teamId,
+    int $userId
+    ): bool {
+        $statement = $this->database->prepare(
+            '
+            DELETE FROM teams
+            WHERE id = :team_id
+            AND user_id = :user_id
+            '
+        );
+
+        $statement->execute([
+            'team_id' => $teamId,
+            'user_id' => $userId,
+        ]);
+
+        return $statement->rowCount() === 1;
+    }
 }

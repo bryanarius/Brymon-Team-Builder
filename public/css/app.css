@@ -1125,6 +1125,34 @@ h3 {
   height: 100%;
 }
 
+.team-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.delete-team-form {
+  margin: 0;
+}
+
+.delete-team-button {
+  min-height: 46px;
+  padding: 0.7rem 1.25rem;
+  border: 2px solid #d64550;
+  border-radius: 9px;
+  background: transparent;
+  color: #ff737c;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.delete-team-button:hover {
+  background: rgba(214, 69, 80, 0.14);
+}
+
 /* Team Builder Page */
 .team-builder-page {
   min-height: calc(100vh - 80px);

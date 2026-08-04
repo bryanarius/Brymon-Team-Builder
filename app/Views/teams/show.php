@@ -35,13 +35,28 @@ $teamPokemon = $team['pokemon'] ?? [];
                 ) ?>
             </p>
         <?php endif; ?>
-
-        <a
-            href="/teams/<?= (int) $team['id'] ?>/edit"
-            class="view-team-button"
+        
+        <div class="team-detail-actions">
+            <a
+                href="/teams/<?= (int) $team['id'] ?>/edit"
+                class="view-team-button"
             >
-            Edit Team
-        </a>
+                Edit Team
+            </a>
+
+            <form
+                action="/teams/<?= (int) $team['id'] ?>/delete"
+                method="POST"
+                class="delete-team-form"
+            >
+                <button
+                    type="submit"
+                    class="delete-team-button"
+                >
+                    Delete Team
+                </button>
+            </form>
+        </div>
 
         <div class="team-pokemon-preview">
             <?php foreach ($teamPokemon as $pokemon): ?>

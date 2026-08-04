@@ -402,4 +402,49 @@ final class TeamController extends Controller
             ], 500);
         }
     }
+
+    public function destroy(string $id): void
+    {
+        Auth::requireLogin();
+
+        $teamId = filter_var(
+            $id,
+            FILTER_VALIDATE_INT,
+            [
+                'options' => [
+                    'min_range' => 1,
+                ],
+            ]
+        );
+
+        if ($teamId === false) {
+            http_response_code(404);
+
+            $this->view('errors/404', [
+                'pageTitle' => 'Team Not Found',
+            ]);
+
+            return;
+        }
+
+        $teamModel = new Team();
+
+        $deleted = $teamModel->deleteByIdAndUserId(
+            (int) $teamId,
+            (int) $_SESSION['user_id']
+        );
+
+        if (!$deleted) {
+            http_response_code(404);
+
+            $this->view('errors/404', [
+                'pageTitle' => 'Team Not Found',
+            ]);
+
+            return;
+        }
+
+        header('Location: /teams');
+        exit;
+    }
 }

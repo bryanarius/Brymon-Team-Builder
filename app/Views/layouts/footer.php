@@ -10,5 +10,6 @@
 </footer>
 <script src="/js/navigation.js" defer></script>
 <script src="/js/team-builder.js"></script>
+<script src="/js/team-show.js" defer></script>
 </body>
 </html>
