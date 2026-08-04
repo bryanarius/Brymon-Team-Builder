@@ -217,6 +217,7 @@ $formatDate = static function (?string $date): string {
 
                                     <div
                                         class="pokemon-preview-slot is-populated"
+                                        data-pokemon-id="<?= $pokemonApiId ?>"
                                         aria-label="<?= htmlspecialchars(
                                             $label,
                                             ENT_QUOTES,
@@ -270,15 +271,9 @@ $formatDate = static function (?string $date): string {
                                     Types
                                 </span>
 
-                                <strong>—</strong>
-                            </div>
-
-                            <div class="team-summary-item">
-                                <span class="team-summary-label">
-                                    Team Coverage
-                                </span>
-
-                                <strong>—</strong>
+                                    <div class="saved-team-types">
+                                        <span>Loading...</span>
+                                    </div>
                             </div>
                         </div>
 
