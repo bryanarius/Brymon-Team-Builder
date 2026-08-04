@@ -165,8 +165,10 @@ The project focuses on software architecture, maintainability, database design, 
 - [x] Search Filters
 - [x] Add Pokémon to Team
 - [x] Pokémon Configuration
-- [ ] CRUD Functionality
-- [ ] Saved Teams
+- [x] CRUD Functionality
+- [x] Saved Teams
+- [ ] Type Analysis
+- [ ] Pokemon Showdown Import/Export
 
 ---
 
