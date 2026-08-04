@@ -924,6 +924,54 @@ h3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem;
 }
+
+.teams-grid.teams-grid--list {
+  grid-template-columns: 1fr;
+}
+
+.teams-grid.teams-grid--list .saved-team-card {
+  display: grid;
+  grid-template-columns:
+    minmax(180px, 1fr)
+    minmax(300px, 1.5fr)
+    auto;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: auto;
+}
+
+.teams-grid.teams-grid--list
+  .saved-team-card-header {
+  align-self: start;
+}
+
+.teams-grid.teams-grid--list
+  .team-pokemon-preview {
+  margin-top: 0;
+}
+
+.teams-grid.teams-grid--list
+  .saved-team-notes {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.teams-grid.teams-grid--list
+  .saved-team-summary {
+  margin-top: 0;
+}
+
+.teams-grid.teams-grid--list
+  .view-team-button {
+  width: 160px;
+  margin-top: 0;
+}
+
+.teams-grid.teams-grid--list
+  .create-team-card {
+  min-height: 140px;
+}
+
 .saved-team-card {
   display: flex;
   flex-direction: column;
@@ -932,6 +980,9 @@ h3 {
   border: 1px solid var(--app-border);
   border-radius: 10px;
   background: #0e1e3c;
+}
+.saved-team-card[hidden] {
+  display: none;
 }
 .saved-team-card-header {
   display: flex;
@@ -1125,6 +1176,7 @@ h3 {
   height: 100%;
 }
 
+/* Detail Page */
 .team-detail-actions {
   display: flex;
   flex-wrap: wrap;
@@ -2776,6 +2828,24 @@ h3 {
   }
   .team-pokemon-preview {
     gap: 0.5rem;
+  }
+
+    .teams-grid,
+  .teams-grid.teams-grid--list {
+    grid-template-columns: 1fr;
+  }
+
+  .teams-grid.teams-grid--list
+    .saved-team-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .teams-grid.teams-grid--list
+    .view-team-button {
+    width: min(190px, 100%);
+    margin-top: auto;
   }
 
   /* Team Builder */

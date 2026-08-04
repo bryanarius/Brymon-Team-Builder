@@ -1194,7 +1194,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ? "Updating..."
     : "Saving...";
     try {
-      console.log("Submitting payload:", payload);
+      // console.log("Submitting payload:", payload);
       const requestUrl =
         isEditing && initialTeam?.id
           ? `/teams/${initialTeam.id}`
@@ -1210,8 +1210,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const responseText = await response.text();
 
-      console.log("Status:", response.status);
-      console.log("Raw response:", responseText);
+      // console.log("Status:", response.status);
+      // console.log("Raw response:", responseText);
 
       let result;
 
@@ -1231,7 +1231,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
 
-      console.log("Saved team:", result);
+      // console.log("Saved team:", result);
 
       window.location.href = "/teams";
     } catch (error) {
@@ -1322,5 +1322,5 @@ function calculateTotalEvs(evs) {
   );
 }
 
-console.log("Initial team:", window.BRYMON_INITIAL_TEAM);
-console.log("Editing:", window.BRYMON_IS_EDITING);
+// console.log("Initial team:", window.BRYMON_INITIAL_TEAM);
+// console.log("Editing:", window.BRYMON_IS_EDITING);
