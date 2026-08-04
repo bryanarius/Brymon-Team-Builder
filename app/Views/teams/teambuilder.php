@@ -6,6 +6,17 @@ $pageTitle = $pageTitle ?? 'Team Builder';
 
 $errors = $errors ?? [];
 $old = $old ?? [];
+$team = $team ?? null;
+$isEditing = $isEditing ?? false;
+
+$initialTeamData = $team !== null
+    ? [
+        'id' => (int) $team['id'],
+        'name' => (string) $team['name'],
+        'notes' => (string) ($team['notes'] ?? ''),
+        'pokemon' => $team['pokemon'] ?? [],
+    ]
+    : null;
 
 require dirname(__DIR__) . '/layouts/header.php';
 ?>
@@ -873,5 +884,19 @@ require dirname(__DIR__) . '/layouts/header.php';
     </div>
 
 </section>
+
+<script>
+    window.BRYMON_INITIAL_TEAM = <?= json_encode(
+        $initialTeamData,
+        JSON_UNESCAPED_SLASHES
+        | JSON_UNESCAPED_UNICODE
+        | JSON_HEX_TAG
+        | JSON_HEX_AMP
+        | JSON_HEX_APOS
+        | JSON_HEX_QUOT
+    ) ?>;
+
+    window.BRYMON_IS_EDITING = <?= $isEditing ? 'true' : 'false' ?>;
+</script>
 
 <?php require dirname(__DIR__) . '/layouts/footer.php'; ?>

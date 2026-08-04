@@ -49,3 +49,5 @@ $router->get('/teams', [TeamController::class, 'index']);
 $router->get('/teambuilder', [TeamController::class, 'builder']);
 $router->post('/teams', [TeamController::class, 'save']);
 $router->get('/teams/{id}', [TeamController::class,'show',]);
+$router->get('/teams/{id}/edit', [TeamController::class,'edit',]);
+$router->post('/teams/{id}', [TeamController::class,'update',]);

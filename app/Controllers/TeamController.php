@@ -239,4 +239,167 @@ final class TeamController extends Controller
 
         require dirname(__DIR__) . '/Views/errors/404.php';
     }
+
+    public function edit(string $id): void
+    {
+        Auth::requireLogin();
+
+        $teamId = filter_var(
+            $id,
+            FILTER_VALIDATE_INT,
+            [
+                'options' => [
+                    'min_range' => 1,
+                ],
+            ]
+        );
+
+        if ($teamId === false) {
+            http_response_code(404);
+            return;
+        }
+
+        $teamModel = new Team();
+
+        $team = $teamModel->findByIdAndUserId(
+            (int) $teamId,
+            (int) $_SESSION['user_id']
+        );
+
+        if ($team === null) {
+            http_response_code(404);
+            return;
+        }
+
+        $this->view('teams/teambuilder', [
+            'pageTitle' => 'Edit Team',
+            'errors' => [],
+            'old' => [
+                'name' => $team['name'],
+                'notes' => $team['notes'],
+            ],
+            'team' => $team,
+            'isEditing' => true,
+        ]);
+    }
+
+    public function update(string $id): void
+    {
+        Auth::requireLogin();
+
+        header('Content-Type: application/json; charset=UTF-8');
+
+        $teamId = filter_var(
+            $id,
+            FILTER_VALIDATE_INT,
+            [
+                'options' => [
+                    'min_range' => 1,
+                ],
+            ]
+        );
+
+        if ($teamId === false) {
+            $this->sendJson([
+                'message' => 'Invalid team ID.',
+            ], 404);
+
+            return;
+        }
+
+        $rawBody = file_get_contents('php://input');
+
+        if ($rawBody === false || $rawBody === '') {
+            $this->sendJson([
+                'message' => 'The request body is empty.',
+            ], 400);
+
+            return;
+        }
+
+        try {
+            $data = json_decode(
+                $rawBody,
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+        } catch (\JsonException) {
+            $this->sendJson([
+                'message' => 'Invalid JSON request.',
+            ], 400);
+
+            return;
+        }
+
+        $name = trim((string) ($data['name'] ?? ''));
+        $notes = trim((string) ($data['notes'] ?? ''));
+        $pokemon = $data['pokemon'] ?? [];
+
+        $errors = [];
+
+        if ($name === '') {
+            $errors['name'] = 'Team name is required.';
+        } elseif (mb_strlen($name) > 100) {
+            $errors['name'] =
+                'Team name cannot be longer than 100 characters.';
+        }
+
+        if (mb_strlen($notes) > 1000) {
+            $errors['notes'] =
+                'Team notes cannot be longer than 1000 characters.';
+        }
+
+        if (!is_array($pokemon) || $pokemon === []) {
+            $errors['pokemon'] =
+                'Add at least one Pokémon to the team.';
+        } elseif (count($pokemon) > 6) {
+            $errors['pokemon'] =
+                'A team cannot contain more than six Pokémon.';
+        }
+
+        if ($errors !== []) {
+            $this->sendJson([
+                'message' => 'Validation failed.',
+                'errors' => $errors,
+            ], 422);
+
+            return;
+        }
+
+        try {
+            $teamModel = new Team();
+
+            $updated = $teamModel->updateWithPokemon(
+                (int) $teamId,
+                (int) $_SESSION['user_id'],
+                $name,
+                $notes === '' ? null : $notes,
+                $pokemon
+            );
+
+            if (!$updated) {
+                $this->sendJson([
+                    'message' => 'Team not found.',
+                ], 404);
+
+                return;
+            }
+
+            $this->sendJson([
+                'message' => 'Team updated successfully.',
+                'team_id' => (int) $teamId,
+            ], 200);
+        } catch (\Throwable $exception) {
+            error_log(
+                'Failed to update team: '
+                . $exception->getMessage()
+            );
+
+            $this->sendJson([
+                'message' =>
+                    'Unable to update the team. Please try again.',
+            ], 500);
+        }
+    }
 }

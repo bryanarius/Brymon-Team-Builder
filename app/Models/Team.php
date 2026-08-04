@@ -390,4 +390,69 @@ final class Team
 
         return $team;
     }
+
+    public function updateWithPokemon(
+    int $teamId,
+    int $userId,
+    string $name,
+    ?string $notes,
+    array $pokemon
+    ): bool {
+        $this->database->beginTransaction();
+
+        try {
+            $statement = $this->database->prepare(
+                '
+                UPDATE teams
+                SET
+                    name = :name,
+                    notes = :notes,
+                    updated_at = NOW()
+                WHERE id = :team_id
+                AND user_id = :user_id
+                '
+            );
+
+            $statement->execute([
+                'team_id' => $teamId,
+                'user_id' => $userId,
+                'name' => $name,
+                'notes' => $notes,
+            ]);
+
+            if ($statement->rowCount() === 0) {
+                $this->database->rollBack();
+
+                return false;
+            }
+
+            $deleteStatement = $this->database->prepare(
+                '
+                DELETE FROM team_pokemon
+                WHERE team_id = :team_id
+                '
+            );
+
+            $deleteStatement->execute([
+                'team_id' => $teamId,
+            ]);
+
+            foreach ($pokemon as $teamPokemon) {
+                $this->insertTeamPokemon(
+                    $teamId,
+                    $teamPokemon
+                );
+            }
+
+            $this->database->commit();
+
+            return true;
+        } catch (\Throwable $exception) {
+            if ($this->database->inTransaction()) {
+                $this->database->rollBack();
+            }
+
+            throw $exception;
+        }
+    }
 }

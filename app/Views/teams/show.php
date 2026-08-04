@@ -36,6 +36,13 @@ $teamPokemon = $team['pokemon'] ?? [];
             </p>
         <?php endif; ?>
 
+        <a
+            href="/teams/<?= (int) $team['id'] ?>/edit"
+            class="view-team-button"
+            >
+            Edit Team
+        </a>
+
         <div class="team-pokemon-preview">
             <?php foreach ($teamPokemon as $pokemon): ?>
                 <?php

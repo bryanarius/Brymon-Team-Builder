@@ -105,7 +105,14 @@ document.addEventListener("DOMContentLoaded", () => {
     filterVersion: 0,
   };
 
-  initializePokemonBrowser();
+  initializePokemonBrowser().then(() => {
+    if (
+      window.BRYMON_IS_EDITING &&
+      window.BRYMON_INITIAL_TEAM
+    ) {
+      hydrateInitialTeam(window.BRYMON_INITIAL_TEAM);
+    }
+  });
 
   searchInput.addEventListener("input", () => {
     clearTimeout(state.searchTimeout);
@@ -432,6 +439,97 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return pokemon;
   }
+
+  async function hydrateInitialTeam(initialTeam) {
+  teamNameInput.value = initialTeam.name ?? "";
+  teamNotesInput.value = initialTeam.notes ?? "";
+
+  const savedPokemon = Array.isArray(initialTeam.pokemon)
+    ? initialTeam.pokemon
+    : [];
+
+  for (const savedEntry of savedPokemon) {
+    const slotIndex = Number(savedEntry.slot_number) - 1;
+
+    if (slotIndex < 0 || slotIndex >= teamState.slots.length) {
+      continue;
+    }
+
+    const pokemonIdentifier =
+      savedEntry.pokemon_name ||
+      savedEntry.pokemon_api_id;
+
+    try {
+      const pokemonDetails = await getPokemonDetails(
+        String(pokemonIdentifier),
+      );
+
+      const hydratedPokemon = createTeamPokemon(pokemonDetails);
+
+      hydratedPokemon.nickname =
+        savedEntry.nickname ?? "";
+
+      hydratedPokemon.ability =
+        savedEntry.ability ?? "";
+
+      hydratedPokemon.item =
+        savedEntry.item ?? "";
+
+      hydratedPokemon.nature =
+        savedEntry.nature ?? "";
+
+      hydratedPokemon.moves = [
+        savedEntry.move_1 ?? "",
+        savedEntry.move_2 ?? "",
+        savedEntry.move_3 ?? "",
+        savedEntry.move_4 ?? "",
+      ];
+
+      hydratedPokemon.evs = {
+        hp: Number(savedEntry.hp_ev ?? 0),
+        attack: Number(savedEntry.attack_ev ?? 0),
+        defense: Number(savedEntry.defense_ev ?? 0),
+        specialAttack: Number(
+          savedEntry.special_attack_ev ?? 0,
+        ),
+        specialDefense: Number(
+          savedEntry.special_defense_ev ?? 0,
+        ),
+        speed: Number(savedEntry.speed_ev ?? 0),
+      };
+
+      hydratedPokemon.ivs = {
+        hp: Number(savedEntry.hp_iv ?? 31),
+        attack: Number(savedEntry.attack_iv ?? 31),
+        defense: Number(savedEntry.defense_iv ?? 31),
+        specialAttack: Number(
+          savedEntry.special_attack_iv ?? 31,
+        ),
+        specialDefense: Number(
+          savedEntry.special_defense_iv ?? 31,
+        ),
+        speed: Number(savedEntry.speed_iv ?? 31),
+      };
+
+      teamState.slots[slotIndex] = hydratedPokemon;
+
+      renderTeamSlot(slotIndex);
+    } catch (error) {
+      console.error(
+        `Unable to hydrate Pokémon in slot ${slotIndex + 1}.`,
+        error,
+      );
+    }
+  }
+
+  updateTeamSummary();
+
+  const firstPopulatedSlot = teamState.slots.findIndex(Boolean);
+
+  if (firstPopulatedSlot !== -1) {
+    selectTeamSlot(firstPopulatedSlot);
+  }
+}
 
   function renderPokemonResults(pokemonResults) {
     const fragment = document.createDocumentFragment();
@@ -1075,6 +1173,9 @@ document.addEventListener("DOMContentLoaded", () => {
   teamBuilderForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    
+    const isEditing = Boolean(window.BRYMON_IS_EDITING);
+    const initialTeam = window.BRYMON_INITIAL_TEAM;
     const payload = buildTeamPayload();
     const errors = validateTeamPayload(payload);
 
@@ -1089,12 +1190,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     saveTeamButton.disabled = true;
-    saveTeamButton.textContent = "Saving...";
-
+    saveTeamButton.textContent = isEditing
+    ? "Updating..."
+    : "Saving...";
     try {
       console.log("Submitting payload:", payload);
-
-      const response = await fetch("/teams", {
+      const requestUrl =
+        isEditing && initialTeam?.id
+          ? `/teams/${initialTeam.id}`
+          : "/teams";
+      const response = await fetch(requestUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1134,7 +1239,9 @@ document.addEventListener("DOMContentLoaded", () => {
       alert(error.message);
     } finally {
       saveTeamButton.disabled = false;
-      saveTeamButton.textContent = "Save Team";
+      saveTeamButton.textContent = isEditing
+      ? "Update Team"
+      : "Save Team";
     }
   });
 });
@@ -1214,3 +1321,6 @@ function calculateTotalEvs(evs) {
     0,
   );
 }
+
+console.log("Initial team:", window.BRYMON_INITIAL_TEAM);
+console.log("Editing:", window.BRYMON_IS_EDITING);
