@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.querySelector("#team-search");
   const sortSelect = document.querySelector("#team-sort");
   const teamsGrid = document.querySelector("#teams-grid");
+  const menuButtons = document.querySelectorAll(".team-card-menu-button",);
+
   const viewButtons = [
     ...document.querySelectorAll(".view-button"),
   ];
@@ -225,4 +227,42 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   updateTeams();
+
+  
+  menuButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+
+      const menu =
+        button.closest(".team-card-menu");
+
+      const dropdown =
+        menu.querySelector(
+          ".team-card-menu-dropdown",
+        );
+
+      document
+        .querySelectorAll(
+          ".team-card-menu-dropdown",
+        )
+        .forEach((otherDropdown) => {
+          if (otherDropdown !== dropdown) {
+            otherDropdown.hidden = true;
+          }
+        });
+
+      dropdown.hidden = !dropdown.hidden;
+    });
+  });
+
+  document.addEventListener("click", () => {
+    document
+      .querySelectorAll(
+        ".team-card-menu-dropdown",
+      )
+      .forEach((dropdown) => {
+        dropdown.hidden = true;
+      });
+  });
+
 });

@@ -174,17 +174,36 @@ $formatDate = static function (?string $date): string {
                                 </p>
                             </div>
 
-                            <button
-                                class="team-menu-button"
-                                type="button"
-                                aria-label="Open options for <?= htmlspecialchars(
-                                    $teamName,
-                                    ENT_QUOTES,
-                                    'UTF-8'
-                                ) ?>"
-                            >
-                                &#8942;
-                            </button>
+                            <div class="team-card-menu">
+                                <button
+                                    class="team-card-menu-button"
+                                    type="button"
+                                    aria-label="Team actions"
+                                >
+                                    ⋮
+                                </button>
+
+                                <div class="team-card-menu-dropdown" hidden>
+                                    <a
+                                        href="/teams/<?= $teamId ?>/edit"
+                                        class="team-card-menu-item"
+                                    >
+                                        Edit Team
+                                    </a>
+
+                                    <form
+                                        action="/teams/<?= $teamId ?>/delete"
+                                        method="POST"
+                                    >
+                                        <button
+                                            type="submit"
+                                            class="team-card-menu-item team-card-menu-delete"
+                                        >
+                                            Delete Team
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
 
                         <div
