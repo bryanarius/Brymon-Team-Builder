@@ -1349,6 +1349,349 @@ h3 {
   line-height: 1.45;
 }
 
+.team-analysis {
+  margin-top: 3rem;
+}
+
+.team-analysis-header {
+  margin-bottom: 1.75rem;
+}
+
+.team-analysis-header h2 {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  letter-spacing: -0.03em;
+}
+
+.team-analysis-header p {
+  max-width: 680px;
+  margin: 0;
+  color: var(--app-muted);
+  line-height: 1.5;
+}
+
+.team-analysis-status {
+  padding: 1.5rem;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: #0e1e3c;
+  color: var(--app-muted);
+  text-align: center;
+}
+
+.team-analysis-content {
+  display: grid;
+  gap: 2rem;
+}
+
+.team-analysis-content[hidden] {
+  display: none;
+}
+
+.team-analysis-card {
+  min-width: 0;
+}
+
+.team-analysis-card h3 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+}
+
+/* Analysis grids */
+
+.analysis-type-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  grid-auto-rows: max-content;
+  gap: 0.75rem;
+}
+
+/* Shared base card */
+
+.analysis-type-item {
+  min-width: 0;
+  height: fit-content;
+  border: 1px solid rgba(49, 88, 142, 0.75);
+  border-radius: 9px;
+  background: #0d1d39;
+}
+
+/* Static cards, such as Team Types */
+
+.analysis-type-item:not(.analysis-type-details) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 74px;
+  padding: 0.85rem;
+}
+
+.analysis-type-item:not(.analysis-type-details)
+  .analysis-type-item-content {
+  display: flex;
+  min-width: 0;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-align: right;
+}
+
+/* Expandable weakness and immunity cards */
+
+.analysis-type-details {
+  display: block;
+  align-self: start;
+  overflow: hidden;
+}
+
+.analysis-type-summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 70px;
+  padding: 0.85rem;
+  cursor: pointer;
+  list-style: none;
+  transition: background-color 150ms ease;
+}
+
+.analysis-type-summary::-webkit-details-marker {
+  display: none;
+}
+
+.analysis-type-summary::marker {
+  content: "";
+}
+
+.analysis-type-summary:hover {
+  background: rgba(49, 88, 142, 0.14);
+}
+
+.analysis-type-summary:focus-visible {
+  outline: 2px solid var(--app-blue);
+  outline-offset: -2px;
+}
+
+.analysis-type-details[open]
+  .analysis-type-summary {
+  border-bottom: 1px solid var(--app-border);
+}
+
+.analysis-type-item-content {
+  display: flex;
+  min-width: 0;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-align: right;
+}
+
+.analysis-type-item-content strong {
+  color: #f8fafc;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+.analysis-severity {
+  font-size: 0.73rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.analysis-severity-major {
+  color: #ff7474;
+}
+
+.analysis-severity-moderate {
+  color: #ff9f59;
+}
+
+.analysis-severity-minor {
+  color: #f4c542;
+}
+
+.analysis-severity-positive {
+  color: #52c77a;
+}
+
+.analysis-severity-neutral {
+  color: #9fb4d2;
+}
+
+/* Dropdown arrow */
+
+.analysis-expand-icon {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  color: #8ea4c2;
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 180ms ease;
+}
+
+.analysis-type-details[open]
+  .analysis-expand-icon {
+  transform: rotate(180deg);
+}
+
+/* Expanded Pokémon list */
+
+.analysis-pokemon-breakdown {
+  padding: 0.85rem;
+  background: rgba(5, 16, 34, 0.35);
+}
+
+.analysis-breakdown-heading {
+  margin: 0 0 0.65rem;
+  color: var(--app-muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.analysis-pokemon-list {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.analysis-pokemon-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #dce7f6;
+  font-size: 0.85rem;
+}
+
+.analysis-damage-multiplier {
+  flex-shrink: 0;
+  color: #ff9f59;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+/* Empty states */
+
+.analysis-empty-message {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 1.25rem;
+  border: 1px solid var(--app-border);
+  border-radius: 9px;
+  background: #0d1d39;
+  color: var(--app-muted);
+  text-align: center;
+}
+
+/* Type badge sizing inside analysis */
+
+.team-analysis .pokemon-type-badge {
+  flex-shrink: 0;
+  min-height: 22px;
+  padding: 0.16rem 0.5rem;
+  font-size: 0.7rem;
+}
+
+.team-analysis-summary {
+  padding: 1.25rem;
+  border: 1px solid rgba(49, 88, 142, 0.8);
+  border-radius: 12px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(20, 132, 245, 0.08),
+      transparent 60%
+    ),
+    #0d1d39;
+}
+
+.team-analysis-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.team-analysis-summary-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.team-analysis-summary-label {
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(20, 132, 245, 0.14);
+  color: #8dc5ff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.team-analysis-summary-list {
+  display: grid;
+  grid-template-columns: repeat(
+    2,
+    minmax(0, 1fr)
+  );
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.team-analysis-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  min-width: 0;
+  padding: 0.85rem;
+  border: 1px solid rgba(49, 88, 142, 0.55);
+  border-radius: 9px;
+  background: rgba(7, 22, 47, 0.65);
+  color: #dce7f6;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.team-analysis-summary-icon {
+  display: grid;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.summary-warning
+  .team-analysis-summary-icon {
+  background: rgba(255, 159, 89, 0.15);
+  color: #ff9f59;
+}
+
+.summary-positive
+  .team-analysis-summary-icon {
+  background: rgba(82, 199, 122, 0.15);
+  color: #52c77a;
+}
+
+.summary-neutral
+  .team-analysis-summary-icon {
+  background: rgba(91, 143, 243, 0.15);
+  color: #8db4ff;
+}
+
 /* Team Builder Page */
 .team-builder-page {
   min-height: calc(100vh - 80px);
@@ -3185,6 +3528,14 @@ h3 {
     height: 160px;
   }
 
+  .analysis-type-list {
+    grid-template-columns: repeat(
+      2,
+      minmax(0, 1fr)
+    );
+  }
+  
+
   /* Team Builder */
   .team-builder-layout {
     grid-template-columns: 1fr;
@@ -3466,6 +3817,15 @@ h3 {
   .team-detail-ability {
     margin-top: 1rem;
   }
+
+    .team-analysis-summary-list {
+    grid-template-columns: 1fr;
+  }
+
+  .team-analysis-summary-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 /* Responsive: Small Mobile */
@@ -3672,6 +4032,10 @@ h3 {
     right: 0.75rem;
     left: 0.75rem;
     width: auto;
+  }
+
+  .analysis-type-list {
+    grid-template-columns: 1fr;
   }
 }
 

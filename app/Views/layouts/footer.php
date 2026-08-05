@@ -17,6 +17,7 @@
 <script src="/js/toast.js" defer></script>
 <script src="/js/navigation.js" defer></script>
 <script src="/js/team-builder.js"></script>
+<script src="/js/team-analysis.js" defer></script>
 <script src="/js/team-show.js" defer></script>
 <script src="/js/saved-teams.js" defer></script>
 </body>

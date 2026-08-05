@@ -82,7 +82,10 @@ $teamPokemon = $team['pokemon'] ?? [];
                     : $formattedPokemonName;
                 ?>
 
-                <article class="team-detail-pokemon-card">
+                <article
+                class="team-detail-pokemon-card"
+                data-pokemon-id="<?= $pokemonApiId ?>"
+                >
                     <img
                         class="team-detail-pokemon-image"
                         src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/<?= $pokemonApiId ?>.png"
@@ -128,6 +131,73 @@ $teamPokemon = $team['pokemon'] ?? [];
                 </article>
             <?php endforeach; ?>
         </div>
+
+        <section class="team-analysis" id="team-analysis">
+            <div class="team-analysis-header">
+                <h2>Team Analysis</h2>
+
+                <p>
+                    Review your team’s shared weaknesses,
+                    immunities, and type distribution.
+                </p>
+            </div>
+
+            <div
+                class="team-analysis-status"
+                id="team-analysis-status"
+                role="status"
+                aria-live="polite"
+            >
+                Loading team analysis...
+            </div>
+
+            <div
+                class="team-analysis-content"
+                id="team-analysis-content"
+                hidden
+            >
+                <article class="team-analysis-summary">
+                    <div class="team-analysis-summary-header">
+                        <h3>Summary</h3>
+
+                        <span class="team-analysis-summary-label">
+                            Key Findings
+                        </span>
+                    </div>
+
+                    <ul
+                        class="team-analysis-summary-list"
+                        id="team-analysis-summary-list"
+                    ></ul>
+                </article>
+                <article class="team-analysis-card">
+                    <h3>Shared Weaknesses</h3>
+
+                    <div
+                        class="analysis-type-list"
+                        id="analysis-weaknesses"
+                    ></div>
+                </article>
+
+                <article class="team-analysis-card">
+                    <h3>Immunities</h3>
+
+                    <div
+                        class="analysis-type-list"
+                        id="analysis-immunities"
+                    ></div>
+                </article>
+
+                <article class="team-analysis-card">
+                    <h3>Team Types</h3>
+
+                    <div
+                        class="analysis-type-list"
+                        id="analysis-team-types"
+                    ></div>
+                </article>
+            </div>
+        </section>
 
     </div>
 </section>
