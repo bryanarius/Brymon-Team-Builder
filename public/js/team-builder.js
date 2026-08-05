@@ -1232,10 +1232,17 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (saveTeamButton.disabled) {
+     return;
+    }
+
     saveTeamButton.disabled = true;
     saveTeamButton.textContent = isEditing
-    ? "Updating..."
-    : "Saving...";
+      ? "Updating..."
+      : "Saving...";
+
+    teamBuilderForm.setAttribute("aria-busy", "true");
+
     try {
       // console.log("Submitting payload:", payload);
       const requestUrl =
@@ -1257,9 +1264,11 @@ document.addEventListener("DOMContentLoaded", () => {
       // console.log("Raw response:", responseText);
 
       let result;
+      let requestSucceeded = false;
 
       try {
         result = JSON.parse(responseText);
+        requestSucceeded = true;
       } catch {
         throw new Error(
           "The server did not return valid JSON. Check the console response.",
@@ -1281,18 +1290,29 @@ document.addEventListener("DOMContentLoaded", () => {
       : "Team saved successfully.";
 
       window.location.href = `/teams?success=${encodeURIComponent(successMessage)}`;
-    } catch (error) {
-      console.error("Save error:", error);
-      showToast(error.message, {
-        type: "error",
-        title: "Unable to save team",
-        duration: 6000,
-      });
-    } finally {
-      saveTeamButton.disabled = false;
-      saveTeamButton.textContent = isEditing
-      ? "Update Team"
-      : "Save Team";
+      } catch (error) {
+        console.error("Save error:", error);
+
+        showToast(
+          error instanceof Error
+            ? error.message
+            : "Unable to save the team.",
+          {
+            type: "error",
+            title: isEditing
+              ? "Unable to update team"
+              : "Unable to save team",
+            duration: 6000,
+          },
+        );
+      } finally {
+        if (!requestSucceeded) {
+        saveTeamButton.disabled = false;
+        saveTeamButton.textContent = isEditing
+        ? "Update Team"
+        : "Save Team";
+        teamBuilderForm.removeAttribute("aria-busy");
+      }
     }
   });
 });
