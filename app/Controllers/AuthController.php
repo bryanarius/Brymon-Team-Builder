@@ -8,65 +8,75 @@ use App\Core\Auth;
 use App\Core\Controller;
 use App\Core\Validator;
 use App\Models\User;
+use Throwable;
 
 final class AuthController extends Controller
 {
     public function showRegister(): void
     {
+        Auth::guestOnly();
+
         $this->view('auth/register', [
             'pageTitle' => 'Register',
         ]);
     }
 
-    public function register(): void 
+    public function register(): void
     {
+        Auth::guestOnly();
+
         $username = trim($_POST['username'] ?? '');
-        $email = trim($_POST['email'] ?? '');
+        $email = strtolower(trim($_POST['email'] ?? ''));
         $password = $_POST['password'] ?? '';
         $passwordConfirmation = $_POST['password_confirmation'] ?? '';
-        Auth::guestOnly();
 
         $errors = [];
 
-        if(!Validator::required($username)) {
-            $errors['username'] = 'Username is required';
-        } elseif (!Validator::minLength($username, 3)){
-            $errors['username'] = 'Username must be at least 3 characters';
-        } elseif (!Validator::maxLength($username, 50)){
-            $errors['username'] = 'Username must be 50 characters or less';
+        if (!Validator::required($username)) {
+            $errors['username'] = 'Username is required.';
+        } elseif (!Validator::minLength($username, 3)) {
+            $errors['username'] = 'Username must be at least 3 characters.';
+        } elseif (!Validator::maxLength($username, 50)) {
+            $errors['username'] = 'Username must be 50 characters or less.';
         }
 
-        if(!Validator::required($email)) {
-            $errors['email'] = 'Email is required';
-        } elseif(!Validator::email($email)) {
-            $errors['email'] = 'Must enter a valid email';
-        } elseif(!Validator::maxLength($email, 255)) {
-            $errors['email'] = "Email must be 255 characters or less";
+        if (!Validator::required($email)) {
+            $errors['email'] = 'Email is required.';
+        } elseif (!Validator::email($email)) {
+            $errors['email'] = 'Please enter a valid email.';
+        } elseif (!Validator::maxLength($email, 255)) {
+            $errors['email'] = 'Email must be 255 characters or less.';
         }
 
-        if(!Validator::required($password)) {
-            $errors['password'] = 'Password is required';
-        } elseif(!Validator::minLength($password, 6)) {
-            $errors['password'] = 'Password must be at least 6 characters';
+        if (!Validator::required($password)) {
+            $errors['password'] = 'Password is required.';
+        } elseif (!Validator::minLength($password, 8)) {
+            $errors['password'] = 'Password must be at least 8 characters.';
         }
 
-        if(!Validator::required($passwordConfirmation)) {
-            $errors['password_confirmation'] = 'Please confirm your password';
-        } elseif(!Validator::matches($password, $passwordConfirmation)) {
-            $errors['password_confirmation'] = 'Passwords do not match';
+        if (!Validator::required($passwordConfirmation)) {
+            $errors['password_confirmation'] = 'Please confirm your password.';
+        } elseif (!Validator::matches($password, $passwordConfirmation)) {
+            $errors['password_confirmation'] = 'Passwords do not match.';
         }
 
         $userModel = new User();
 
-        if (!isset($errors['username']) && $userModel->findByUsername($username)) {
+        if (
+            !isset($errors['username'])
+            && $userModel->findByUsername($username) !== false
+        ) {
             $errors['username'] = 'That username is already taken.';
         }
 
-        if (!isset($errors['email']) && $userModel->findByEmail($email)) {
+        if (
+            !isset($errors['email'])
+            && $userModel->findByEmail($email) !== false
+        ) {
             $errors['email'] = 'An account with that email already exists.';
         }
 
-         if ($errors !== []) {
+        if ($errors !== []) {
             $this->view('auth/register', [
                 'pageTitle' => 'Register',
                 'errors' => $errors,
@@ -79,26 +89,55 @@ final class AuthController extends Controller
             return;
         }
 
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        try {
+            $hashedPassword = password_hash(
+                $password,
+                PASSWORD_DEFAULT
+            );
 
-        $userId = $userModel->create(
-            $username,
-            $email,
-            $hashedPassword
-        );
+            if ($hashedPassword === false) {
+                throw new \RuntimeException(
+                    'Password hashing failed.'
+                );
+            }
 
-        if ($userId === false) {
-            // Temporary until we have better error handling
-            die('Failed to create user.');
+            $userId = $userModel->create(
+                $username,
+                $email,
+                $hashedPassword
+            );
+
+            if ($userId === false) {
+                throw new \RuntimeException(
+                    'User model failed to create an account.'
+                );
+            }
+        } catch (Throwable $exception) {
+            error_log((string) $exception);
+
+            $this->view('auth/register', [
+                'pageTitle' => 'Register',
+                'errors' => [
+                    'register' =>
+                        'We could not create your account. Please try again.',
+                ],
+                'old' => [
+                    'username' => $username,
+                    'email' => $email,
+                ],
+            ]);
+
+            return;
         }
 
-        header('Location: /login');
+        header('Location: /login?registered=1');
         exit;
     }
 
     public function showLogin(): void
     {
         Auth::guestOnly();
+
         $this->view('auth/login', [
             'pageTitle' => 'Login',
         ]);
@@ -106,9 +145,10 @@ final class AuthController extends Controller
 
     public function login(): void
     {
-        $email = trim($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
         Auth::guestOnly();
+
+        $email = strtolower(trim($_POST['email'] ?? ''));
+        $password = $_POST['password'] ?? '';
 
         $errors = [];
 
@@ -122,17 +162,21 @@ final class AuthController extends Controller
             $errors['password'] = 'Password is required.';
         }
 
-        $userModel = new User();
+        $user = false;
 
-        $user = $userModel->findByEmail($email);
+        if ($errors === []) {
+            $userModel = new User();
+            $user = $userModel->findByEmail($email);
 
-        if ($user === false) {
-            $errors['login'] = 'Invalid email or password';
-        }
-
-        if ($user !== false && 
-        !password_verify($password, $user['password_hash'])) {
-            $errors['login'] =  'Invalid email or password';
+            if (
+                $user === false
+                || !password_verify(
+                    $password,
+                    $user['password_hash']
+                )
+            ) {
+                $errors['login'] = 'Invalid email or password.';
+            }
         }
 
         if ($errors !== []) {
@@ -140,7 +184,7 @@ final class AuthController extends Controller
                 'pageTitle' => 'Login',
                 'errors' => $errors,
                 'old' => [
-                'email' => $email,
+                    'email' => $email,
                 ],
             ]);
 
@@ -149,9 +193,13 @@ final class AuthController extends Controller
 
         session_regenerate_id(true);
 
+        $currentTime = time();
+
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['email'] = $user['email'];
+        $_SESSION['login_time'] = $currentTime;
+        $_SESSION['last_activity'] = $currentTime;
 
         header('Location: /');
         exit;
@@ -160,24 +208,7 @@ final class AuthController extends Controller
     public function logout(): void
     {
         Auth::requireLogin();
-        
-        $_SESSION = [];
-
-        if (ini_get('session.use_cookies')) {
-            $params = session_get_cookie_params();
-
-            setcookie(
-                session_name(),
-                '',
-                time() - 42000,
-                $params['path'],
-                $params['domain'],
-                $params['secure'],
-                $params['httponly']
-            );
-        }
-
-        session_destroy();
+        Auth::destroySession();
 
         header('Location: /');
         exit;
