@@ -1317,72 +1317,106 @@ document.addEventListener("DOMContentLoaded", () => {
     showdownImportText?.focus();
   });
 
-  confirmShowdownImport?.addEventListener("click", async () => {
-    try {
-      const parsedTeam = parseShowdownTeam(showdownImportText.value);
+  confirmShowdownImport?.addEventListener(
+    "click",
+    async () => {
+      try {
+        const parsedTeam = parseShowdownTeam(
+          showdownImportText.value,
+        );
 
-      console.log(parsedTeam);
-
-      teamState.slots = [null, null, null, null, null, null];
-
-      for (let i = 0; i < parsedTeam.length; i++) {
-        const imported = parsedTeam[i];
-
-        const details = await getPokemonDetails(imported.species);
-
-        const pokemon = createTeamPokemon(details);
-
-        pokemon.nickname = imported.nickname;
-        pokemon.item = imported.item;
-        pokemon.ability = imported.ability;
-        pokemon.nature = imported.nature;
-
-        pokemon.moves = [
-          imported.moves[0] ?? "",
-          imported.moves[1] ?? "",
-          imported.moves[2] ?? "",
-          imported.moves[3] ?? "",
+        const importedSlots = [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
         ];
 
-        pokemon.evs = {
-          hp: imported.evs.hp,
-          attack: imported.evs.attack,
-          defense: imported.evs.defense,
-          specialAttack: imported.evs.specialAttack,
-          specialDefense: imported.evs.specialDefense,
-          speed: imported.evs.speed,
-        };
+        for (
+          let index = 0;
+          index < parsedTeam.length;
+          index++
+        ) {
+          const imported = parsedTeam[index];
 
-        pokemon.ivs = {
-          hp: imported.ivs.hp,
-          attack: imported.ivs.attack,
-          defense: imported.ivs.defense,
-          specialAttack: imported.ivs.specialAttack,
-          specialDefense: imported.ivs.specialDefense,
-          speed: imported.ivs.speed,
-        };
+          const details = await getPokemonDetails(
+            imported.species,
+          );
 
-        teamState.slots[i] = pokemon;
+          const pokemon =
+            createTeamPokemon(details);
 
-        renderTeamSlot(i);
+          pokemon.nickname = imported.nickname;
+          pokemon.item = imported.item;
+          pokemon.ability = imported.ability;
+          pokemon.nature = imported.nature;
+
+          pokemon.moves = [
+            imported.moves[0] ?? "",
+            imported.moves[1] ?? "",
+            imported.moves[2] ?? "",
+            imported.moves[3] ?? "",
+          ];
+
+          pokemon.evs = {
+            ...imported.evs,
+          };
+
+          pokemon.ivs = {
+            ...imported.ivs,
+          };
+
+          importedSlots[index] = pokemon;
+        }
+
+        teamState.slots = importedSlots;
+        teamState.selectedSlot = null;
+
+        teamState.slots.forEach(
+          (_, slotIndex) => {
+            renderTeamSlot(slotIndex);
+          },
+        );
+
+        updateTeamSummary();
+
+        if (teamState.slots[0]) {
+          selectTeamSlot(0);
+        } else {
+          clearSelectedPokemonEditor();
+        }
+
+        showdownImportText.value = "";
+        importShowdownDialog.close();
+
+        showToast(
+          `${parsedTeam.length} Pokémon imported successfully.`,
+          {
+            type: "success",
+            title: "Team imported",
+          },
+        );
+      } catch (error) {
+        console.error(
+          "Showdown import error:",
+          error,
+        );
+
+        showToast(
+          error instanceof Error
+            ? error.message
+            : "Unable to import the team.",
+          {
+            type: "error",
+            title: "Import failed",
+            duration: 6000,
+          },
+        );
       }
-
-      updateTeamSummary();
-
-      if (teamState.slots[0]) {
-        selectTeamSlot(0);
-      }
-
-      showdownImportText.value = "";
-
-      importShowdownDialog.close();
-    } catch (error) {
-      showToast(error.message, {
-        type: "error",
-        title: "Import failed",
-      });
-    }
-  });
+    },
+  );
 });
 
 function parseShowdownTeam(text) {
