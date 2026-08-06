@@ -2060,7 +2060,11 @@ h3 {
     minmax(600px, 1fr)
     minmax(250px, 280px);
   gap: 1.5rem;
-  align-items: stretch;
+  align-items: start;
+}
+.pokemon-browser,
+.team-summary-sidebar {
+  align-self: start;
 }
 .pokemon-browser,
 .builder-workspace,
