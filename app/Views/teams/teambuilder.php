@@ -188,6 +188,13 @@ require dirname(__DIR__) . '/layouts/header.php';
                             >
                             Export Showdown
                         </button>
+                        <button
+                        type="button"
+                        class="button button-secondary"
+                        id="import-showdown-button"
+                        >
+                         Import Showdown
+                        </button>
 
                     </header>
 
@@ -887,6 +894,58 @@ require dirname(__DIR__) . '/layouts/header.php';
             </div>
 
         </form>
+
+        <dialog
+        class="showdown-dialog"
+        id="import-showdown-dialog"
+        >
+            <form method="dialog" class="showdown-dialog-content">
+                <div class="showdown-dialog-header">
+                <div>
+                    <h2>Import from Pokémon Showdown</h2>
+                    <p>
+                    Paste a Showdown team below. Importing will replace
+                    the current Pokémon slots.
+                    </p>
+                </div>
+
+                <button
+                    type="submit"
+                    class="showdown-dialog-close"
+                    aria-label="Close import dialog"
+                >
+                    ×
+                </button>
+                </div>
+
+                <label for="showdown-import-text">
+                Showdown team
+                </label>
+
+                <textarea
+                id="showdown-import-text"
+                rows="18"
+                placeholder="Paste your Pokémon Showdown team here..."
+                ></textarea>
+
+                <div class="showdown-dialog-actions">
+                <button
+                    type="submit"
+                    class="button button-secondary"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    class="button button-primary"
+                    id="confirm-showdown-import"
+                >
+                    Import Team
+                </button>
+                </div>
+            </form>
+        </dialog>
 
     </div>
 

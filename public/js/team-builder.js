@@ -17,7 +17,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const exportShowdownButton = document.querySelector(
     "#export-showdown-button",
   );
+  const importShowdownButton = document.querySelector(
+    "#import-showdown-button",
+  );
 
+  const importShowdownDialog = document.querySelector(
+    "#import-showdown-dialog",
+  );
+
+  const showdownImportText = document.querySelector("#showdown-import-text");
+
+  const confirmShowdownImport = document.querySelector(
+    "#confirm-showdown-import",
+  );
   const selectedPokemonEmpty = document.querySelector(
     "#selected-pokemon-empty",
   );
@@ -1299,7 +1311,245 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   });
+
+  importShowdownButton?.addEventListener("click", () => {
+    importShowdownDialog?.showModal();
+    showdownImportText?.focus();
+  });
+
+  confirmShowdownImport?.addEventListener("click", async () => {
+    try {
+      const parsedTeam = parseShowdownTeam(showdownImportText.value);
+
+      console.log(parsedTeam);
+
+      teamState.slots = [null, null, null, null, null, null];
+
+      for (let i = 0; i < parsedTeam.length; i++) {
+        const imported = parsedTeam[i];
+
+        const details = await getPokemonDetails(imported.species);
+
+        const pokemon = createTeamPokemon(details);
+
+        pokemon.nickname = imported.nickname;
+        pokemon.item = imported.item;
+        pokemon.ability = imported.ability;
+        pokemon.nature = imported.nature;
+
+        pokemon.moves = [
+          imported.moves[0] ?? "",
+          imported.moves[1] ?? "",
+          imported.moves[2] ?? "",
+          imported.moves[3] ?? "",
+        ];
+
+        pokemon.evs = {
+          hp: imported.evs.hp,
+          attack: imported.evs.attack,
+          defense: imported.evs.defense,
+          specialAttack: imported.evs.specialAttack,
+          specialDefense: imported.evs.specialDefense,
+          speed: imported.evs.speed,
+        };
+
+        pokemon.ivs = {
+          hp: imported.ivs.hp,
+          attack: imported.ivs.attack,
+          defense: imported.ivs.defense,
+          specialAttack: imported.ivs.specialAttack,
+          specialDefense: imported.ivs.specialDefense,
+          speed: imported.ivs.speed,
+        };
+
+        teamState.slots[i] = pokemon;
+
+        renderTeamSlot(i);
+      }
+
+      updateTeamSummary();
+
+      if (teamState.slots[0]) {
+        selectTeamSlot(0);
+      }
+
+      showdownImportText.value = "";
+
+      importShowdownDialog.close();
+    } catch (error) {
+      showToast(error.message, {
+        type: "error",
+        title: "Import failed",
+      });
+    }
+  });
 });
+
+function parseShowdownTeam(text) {
+  const normalizedText = String(text).replace(/\r\n/g, "\n").trim();
+
+  if (!normalizedText) {
+    throw new Error("Paste at least one Pokémon set.");
+  }
+
+  const blocks = normalizedText
+    .split(/\n\s*\n/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  if (blocks.length > 6) {
+    throw new Error("A team cannot contain more than six Pokémon.");
+  }
+
+  return blocks.map(parseShowdownPokemon);
+}
+
+function parseShowdownHeading(line) {
+  const [identityPart, itemPart = ""] = String(line).split(/\s+@\s+/, 2);
+
+  const nicknameMatch = identityPart.match(/^(.*?)\s+\((.+)\)$/);
+
+  if (nicknameMatch) {
+    return {
+      nickname: nicknameMatch[1].trim(),
+
+      species: normalizeShowdownName(nicknameMatch[2]),
+
+      item: normalizeShowdownName(itemPart),
+    };
+  }
+
+  return {
+    nickname: "",
+
+    species: normalizeShowdownName(identityPart),
+
+    item: normalizeShowdownName(itemPart),
+  };
+}
+
+function createDefaultShowdownStats(defaultValue) {
+  return {
+    hp: defaultValue,
+    attack: defaultValue,
+    defense: defaultValue,
+    specialAttack: defaultValue,
+    specialDefense: defaultValue,
+    speed: defaultValue,
+  };
+}
+
+const SHOWDOWN_STAT_KEYS = {
+  hp: "hp",
+  atk: "attack",
+  def: "defense",
+  spa: "specialAttack",
+  spd: "specialDefense",
+  spe: "speed",
+};
+
+function applyShowdownStats(statObject, valueText) {
+  String(valueText)
+    .split("/")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .forEach((part) => {
+      const match = part.match(/^(\d+)\s+(HP|Atk|Def|SpA|SpD|Spe)$/i);
+
+      if (!match) {
+        return;
+      }
+
+      const value = Number(match[1]);
+
+      const abbreviation = match[2].toLowerCase();
+
+      const property = SHOWDOWN_STAT_KEYS[abbreviation];
+
+      if (!property) {
+        return;
+      }
+
+      statObject[property] = value;
+    });
+}
+
+function normalizeShowdownName(value) {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/♀/g, "-f")
+    .replace(/♂/g, "-m")
+    .replace(/[.'’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function parseShowdownPokemon(block) {
+  const lines = block
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length === 0) {
+    throw new Error("An imported Pokémon set is empty.");
+  }
+
+  const heading = parseShowdownHeading(lines.shift());
+
+  const parsedPokemon = {
+    species: heading.species,
+    nickname: heading.nickname,
+    item: heading.item,
+    ability: "",
+    nature: "",
+    moves: [],
+    evs: createDefaultShowdownStats(0),
+    ivs: createDefaultShowdownStats(31),
+  };
+
+  lines.forEach((line) => {
+    if (line.startsWith("Ability:")) {
+      parsedPokemon.ability = normalizeShowdownName(
+        line.slice("Ability:".length),
+      );
+
+      return;
+    }
+
+    if (line.startsWith("EVs:")) {
+      applyShowdownStats(parsedPokemon.evs, line.slice("EVs:".length));
+
+      return;
+    }
+
+    if (line.startsWith("IVs:")) {
+      applyShowdownStats(parsedPokemon.ivs, line.slice("IVs:".length));
+
+      return;
+    }
+
+    if (line.endsWith(" Nature")) {
+      parsedPokemon.nature = normalizeShowdownName(
+        line.slice(0, -" Nature".length),
+      );
+
+      return;
+    }
+
+    if (line.startsWith("- ")) {
+      parsedPokemon.moves.push(normalizeShowdownName(line.slice(2)));
+    }
+  });
+
+  if (parsedPokemon.moves.length > 4) {
+    throw new Error(
+      `${formatShowdownName(parsedPokemon.species)} has more than four moves.`,
+    );
+  }
+
+  return parsedPokemon;
+}
 
 const SHOWDOWN_STATS = [
   ["hp", "HP"],
