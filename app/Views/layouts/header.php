@@ -53,27 +53,49 @@ $pageTitle = $pageTitle ?? 'Brymon';
         </nav>
 
         <div class="navigation-actions">
-            <?php if (Auth::check()): ?>
+        <?php if (Auth::check()): ?>
 
-                <a
-                    href="/dashboard"
-                    class="navigation-button navigation-button--login"
+            <div class="account-menu">
+                <button
+                    type="button"
+                    class="navigation-button navigation-button--login account-menu-button"
+                    id="account-menu-button"
+                    aria-expanded="false"
+                    aria-controls="account-menu-dropdown"
+                    aria-haspopup="true"
                 >
-                    <?= htmlspecialchars(
-                        Auth::username() ?? 'Dashboard',
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
-                </a>
+                    <span>
+                        <?= htmlspecialchars(
+                            Auth::username() ?? 'Account',
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
+                    </span>
 
-                <form action="/logout" method="POST">
-                    <button
-                        type="submit"
-                        class="navigation-button navigation-button--register"
+                    <span
+                        class="account-menu-chevron"
+                        aria-hidden="true"
                     >
-                        Logout
-                    </button>
-                </form>
+                        ▾
+                    </span>
+                </button>
+
+                <div
+                    class="account-menu-dropdown"
+                    id="account-menu-dropdown"
+                    hidden
+                >
+                    <form action="/logout" method="POST">
+                        <button
+                            type="submit"
+                            class="account-menu-link account-menu-logout"
+                        >
+                        <span>↩</span>
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
 
             <?php else: ?>
 
@@ -119,13 +141,16 @@ $pageTitle = $pageTitle ?? 'Brymon';
             <?php if (Auth::check()): ?>
                 <a href="/teambuilder">Team Builder</a>
                 <a href="/teams">Saved Teams</a>
-                <a href="/dashboard">
-                    <?= htmlspecialchars(
-                        Auth::username() ?? 'Dashboard',
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
-                </a>
+                <span class="mobile-navigation-username">
+                    Signed in as
+                    <strong>
+                        <?= htmlspecialchars(
+                            Auth::username() ?? 'Account',
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
+                    </strong>
+                </span>
 
                 <form action="/logout" method="POST">
                     <button type="submit" class="mobile-navigation-link">

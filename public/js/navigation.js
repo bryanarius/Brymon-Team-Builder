@@ -2,6 +2,71 @@
 
 const toggle = document.querySelector('.mobile-nav-toggle');
 const menu = document.querySelector('#mobile-navigation');
+"use strict";
+
+document.addEventListener("DOMContentLoaded", () => {
+  const accountMenuButton = document.querySelector(
+    "#account-menu-button",
+  );
+
+  const accountMenuDropdown = document.querySelector(
+    "#account-menu-dropdown",
+  );
+
+  if (!accountMenuButton || !accountMenuDropdown) {
+    return;
+  }
+
+  function closeAccountMenu() {
+    accountMenuDropdown.hidden = true;
+
+    accountMenuButton.setAttribute(
+      "aria-expanded",
+      "false",
+    );
+  }
+
+  accountMenuButton.addEventListener(
+    "click",
+    (event) => {
+      event.stopPropagation();
+
+      const willOpen =
+        accountMenuDropdown.hidden;
+
+      accountMenuDropdown.hidden = !willOpen;
+
+      accountMenuButton.setAttribute(
+        "aria-expanded",
+        String(willOpen),
+      );
+    },
+  );
+
+  accountMenuDropdown.addEventListener(
+    "click",
+    (event) => {
+      event.stopPropagation();
+    },
+  );
+
+  document.addEventListener(
+    "click",
+    closeAccountMenu,
+  );
+
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      closeAccountMenu();
+      accountMenuButton.focus();
+    },
+  );
+});
 
 if (toggle && menu) {
     const closeMenu = () => {
