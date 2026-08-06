@@ -174,28 +174,31 @@ require dirname(__DIR__) . '/layouts/header.php';
                             </p>
                         </div>
 
+                        <div class="team-builder-actions">
                         <button
-                            class="button button-primary"
+                            class="button button-primary team-builder-action"
                             id="save-team-button"
                             type="submit"
                         >
                             Save Team
                         </button>
+
                         <button
                             type="button"
-                            class="button button-secondary"
+                            class="button button-secondary team-builder-action"
                             id="export-showdown-button"
-                            >
+                        >
                             Export Showdown
                         </button>
-                        <button
-                        type="button"
-                        class="button button-secondary"
-                        id="import-showdown-button"
-                        >
-                         Import Showdown
-                        </button>
 
+                        <button
+                            type="button"
+                            class="button button-secondary team-builder-action"
+                            id="import-showdown-button"
+                        >
+                            Import Showdown
+                        </button>
+                        </div>
                     </header>
 
                     <!-- Team name is required by TeamController::save() -->
@@ -470,154 +473,154 @@ require dirname(__DIR__) . '/layouts/header.php';
 
                                     </div>
 
-</fieldset>
+                                </fieldset>
 
-<!-- =================================================
-     Effort Values
-================================================== -->
+                                <!-- =================================================
+                                    Effort Values
+                                ================================================== -->
 
-<fieldset class="pokemon-values pokemon-evs">
+                                <fieldset class="pokemon-values pokemon-evs">
 
-    <div class="pokemon-values-header">
+                                    <div class="pokemon-values-header">
 
-        <legend>Effort Values</legend>
+                                        <legend>Effort Values</legend>
 
-        <span id="ev-total">
-            0 / 510 EVs
-        </span>
+                                        <span id="ev-total">
+                                            0 / 510 EVs
+                                        </span>
 
-    </div>
+                                    </div>
 
-    <p class="pokemon-values-description">
-        Each stat can have up to 252 EVs, with a maximum of
-        510 total EVs.
-    </p>
+                                    <p class="pokemon-values-description">
+                                        Each stat can have up to 252 EVs, with a maximum of
+                                        510 total EVs.
+                                    </p>
 
-    <div class="pokemon-values-grid">
+                                    <div class="pokemon-values-grid">
 
-        <div class="form-group">
+                                        <div class="form-group">
 
-            <label for="pokemon-hp-ev">
-                HP
-            </label>
+                                            <label for="pokemon-hp-ev">
+                                                HP
+                                            </label>
 
-            <input
-                id="pokemon-hp-ev"
-                name="hp_ev"
-                type="number"
-                min="0"
-                max="252"
-                step="1"
-                value="0"
-                inputmode="numeric"
-            >
+                                            <input
+                                                id="pokemon-hp-ev"
+                                                name="hp_ev"
+                                                type="number"
+                                                min="0"
+                                                max="252"
+                                                step="1"
+                                                value="0"
+                                                inputmode="numeric"
+                                            >
 
-        </div>
+                                        </div>
 
-        <div class="form-group">
+                                        <div class="form-group">
 
-            <label for="pokemon-attack-ev">
-                Attack
-            </label>
+                                            <label for="pokemon-attack-ev">
+                                                Attack
+                                            </label>
 
-            <input
-                id="pokemon-attack-ev"
-                name="attack_ev"
-                type="number"
-                min="0"
-                max="252"
-                step="1"
-                value="0"
-                inputmode="numeric"
-            >
+                                            <input
+                                                id="pokemon-attack-ev"
+                                                name="attack_ev"
+                                                type="number"
+                                                min="0"
+                                                max="252"
+                                                step="1"
+                                                value="0"
+                                                inputmode="numeric"
+                                            >
 
-        </div>
+                                        </div>
 
-        <div class="form-group">
+                                        <div class="form-group">
 
-            <label for="pokemon-defense-ev">
-                Defense
-            </label>
+                                            <label for="pokemon-defense-ev">
+                                                Defense
+                                            </label>
 
-            <input
-                id="pokemon-defense-ev"
-                name="defense_ev"
-                type="number"
-                min="0"
-                max="252"
-                step="1"
-                value="0"
-                inputmode="numeric"
-            >
+                                            <input
+                                                id="pokemon-defense-ev"
+                                                name="defense_ev"
+                                                type="number"
+                                                min="0"
+                                                max="252"
+                                                step="1"
+                                                value="0"
+                                                inputmode="numeric"
+                                            >
 
-        </div>
+                                        </div>
 
-        <div class="form-group">
+                                        <div class="form-group">
 
-            <label for="pokemon-special-attack-ev">
-                Special Attack
-            </label>
+                                            <label for="pokemon-special-attack-ev">
+                                                Special Attack
+                                            </label>
 
-            <input
-                id="pokemon-special-attack-ev"
-                name="special_attack_ev"
-                type="number"
-                min="0"
-                max="252"
-                step="1"
-                value="0"
-                inputmode="numeric"
-            >
+                                            <input
+                                                id="pokemon-special-attack-ev"
+                                                name="special_attack_ev"
+                                                type="number"
+                                                min="0"
+                                                max="252"
+                                                step="1"
+                                                value="0"
+                                                inputmode="numeric"
+                                            >
 
-        </div>
+                                        </div>
 
-        <div class="form-group">
+                                        <div class="form-group">
 
-            <label for="pokemon-special-defense-ev">
-                Special Defense
-            </label>
+                                            <label for="pokemon-special-defense-ev">
+                                                Special Defense
+                                            </label>
 
-            <input
-                id="pokemon-special-defense-ev"
-                name="special_defense_ev"
-                type="number"
-                min="0"
-                max="252"
-                step="1"
-                value="0"
-                inputmode="numeric"
-            >
+                                            <input
+                                                id="pokemon-special-defense-ev"
+                                                name="special_defense_ev"
+                                                type="number"
+                                                min="0"
+                                                max="252"
+                                                step="1"
+                                                value="0"
+                                                inputmode="numeric"
+                                            >
 
-        </div>
+                                        </div>
 
-        <div class="form-group">
+                                        <div class="form-group">
 
-            <label for="pokemon-speed-ev">
-                Speed
-            </label>
+                                            <label for="pokemon-speed-ev">
+                                                Speed
+                                            </label>
 
-            <input
-                id="pokemon-speed-ev"
-                name="speed_ev"
-                type="number"
-                min="0"
-                max="252"
-                step="1"
-                value="0"
-                inputmode="numeric"
-            >
+                                            <input
+                                                id="pokemon-speed-ev"
+                                                name="speed_ev"
+                                                type="number"
+                                                min="0"
+                                                max="252"
+                                                step="1"
+                                                value="0"
+                                                inputmode="numeric"
+                                            >
 
-        </div>
+                                        </div>
 
-    </div>
+                                    </div>
 
-    <p
-        class="field-error"
-        id="ev-total-error"
-        hidden
-    >
-        Total EVs cannot exceed 510.
-    </p>
+                                    <p
+                                        class="field-error"
+                                        id="ev-total-error"
+                                        hidden
+                                    >
+                                        Total EVs cannot exceed 510.
+                                    </p>
 
                                 </fieldset>
 

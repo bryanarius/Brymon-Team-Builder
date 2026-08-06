@@ -2296,10 +2296,70 @@ h3 {
 /* Center Workspace Header */
 .team-builder-topbar {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1.5rem;
 }
+
+.team-builder-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.team-builder-action {
+  min-width: 150px;
+  min-height: 48px;
+  padding: 0.75rem 1.1rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  white-space: nowrap;
+
+  font-weight: 700;
+  line-height: 1;
+}
+
+.team-builder-action.button-primary {
+  border: 1px solid #ffc629;
+  background: #ffc629;
+  color: #07162f;
+
+  box-shadow: 0 8px 20px rgba(255, 198, 41, 0.2);
+}
+
+.team-builder-action.button-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(255, 198, 41, 0.28);
+}
+
+.team-builder-action.button-secondary {
+  border: 1px solid #365d91;
+  background: #10213f;
+  color: #f4f7ff;
+}
+
+.team-builder-action.button-secondary:hover {
+  border-color: #4f86c9;
+  background: #152b50;
+  transform: translateY(-1px);
+}
+
+.team-builder-action:focus-visible {
+  outline: 3px solid rgba(255, 198, 41, 0.35);
+  outline-offset: 3px;
+}
+
+.team-builder-action:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .team-builder-topbar h1 {
   margin: 0;
   font-size: clamp(2rem, 4vw, 2.6rem);
@@ -2853,6 +2913,175 @@ h3 {
   gap: 0.35rem;
 }
 
+/* Import Modal */
+.showdown-dialog {
+  width: min(760px, calc(100% - 2rem));
+  max-height: calc(100vh - 2rem);
+  padding: 0;
+
+  border: 1px solid #365d91;
+  border-radius: 16px;
+
+  background: #0d1d38;
+  color: #f4f7ff;
+
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+
+  overflow: hidden;
+}
+
+.showdown-dialog::backdrop {
+  background: rgba(2, 10, 24, 0.78);
+  backdrop-filter: blur(4px);
+}
+
+.showdown-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  padding: 1.5rem;
+  margin: 0;
+
+  background: transparent;
+}
+
+.showdown-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.showdown-dialog-header h2 {
+  margin: 0 0 0.4rem;
+
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.15;
+
+  color: #ffffff;
+}
+
+.showdown-dialog-header p {
+  margin: 0;
+  max-width: 600px;
+
+  color: #8fb3e8;
+  line-height: 1.6;
+}
+
+.showdown-dialog-close {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid #365d91;
+  border-radius: 10px;
+
+  background: #132746;
+  color: #ffffff;
+
+  font-size: 1.4rem;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.showdown-dialog-close:hover {
+  background: #1a345d;
+  border-color: #4f86c9;
+}
+
+.showdown-dialog-content label {
+  display: block;
+  margin-bottom: -0.75rem;
+
+  color: #dce9ff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+#showdown-import-text {
+  width: 100%;
+  min-height: 360px;
+  max-height: 55vh;
+  resize: vertical;
+
+  padding: 1rem;
+
+  border: 1px solid #365d91;
+  border-radius: 12px;
+
+  background: #09172d;
+  color: #f4f7ff;
+
+  font: inherit;
+  line-height: 1.55;
+
+  outline: none;
+}
+
+#showdown-import-text::placeholder {
+  color: #7395c4;
+}
+
+#showdown-import-text:focus {
+  border-color: #ffc629;
+
+  box-shadow:
+    0 0 0 3px rgba(255, 198, 41, 0.18);
+}
+
+.showdown-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.showdown-dialog-actions .button {
+  min-width: 130px;
+  min-height: 46px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.showdown-dialog-actions .button-primary {
+  background: #ffc629;
+  border: 1px solid #ffc629;
+  color: #07162f;
+
+  box-shadow: 0 8px 18px rgba(255, 198, 41, 0.18);
+}
+
+.showdown-dialog-actions .button-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(255, 198, 41, 0.26);
+}
+
+.showdown-dialog-actions .button-secondary {
+  background: #132746;
+  border: 1px solid #365d91;
+  color: #f4f7ff;
+}
+
+.showdown-dialog-actions .button-secondary:hover {
+  background: #1a345d;
+  border-color: #4f86c9;
+}
+
 /* Authentication Pages */
 .auth-page {
   position: relative;
@@ -3309,6 +3538,31 @@ h3 {
 }
 
 /* Responsive: Large Tablets */
+@media (max-width: 1400px) {
+  .team-builder-topbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .team-builder-topbar > div:first-child {
+    min-width: 0;
+  }
+
+  .team-builder-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .team-builder-action {
+    width: 100%;
+    min-width: 0;
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 1050px) {
   /* Navigation */
   .navigation {
@@ -3639,8 +3893,22 @@ h3 {
     min-height: auto;
   }
   .team-builder-topbar {
-    align-items: flex-start;
     flex-direction: column;
+  }
+
+  .team-builder-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .team-builder-action {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .team-builder-action:first-child {
+    grid-column: 1 / -1;
   }
   .team-builder-topbar .button-primary {
     width: 100%;
@@ -4098,6 +4366,36 @@ h3 {
     border-bottom: 0;
   }
 
+    .showdown-dialog {
+    width: calc(100% - 1rem);
+    max-height: calc(100vh - 1rem);
+    border-radius: 12px;
+  }
+
+  .showdown-dialog-content {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .showdown-dialog-header h2 {
+    font-size: 1.4rem;
+  }
+
+  #showdown-import-text {
+    min-height: 280px;
+    max-height: 48vh;
+  }
+
+  .showdown-dialog-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .showdown-dialog-actions .button {
+    width: 100%;
+    min-width: 0;
+  }
+
   /* Team Detail */
     .team-detail-actions {
     grid-template-columns: 1fr;
@@ -4170,6 +4468,17 @@ h3 {
     width: 40px;
     height: 40px;
     font-size: 1.6rem;
+  }
+  .team-builder-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .team-builder-action:first-child {
+    grid-column: auto;
+  }
+
+  .team-builder-action {
+    min-height: 46px;
   }
 }
 
