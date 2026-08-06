@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const teamNotesInput = document.querySelector("#notes");
   const teamBuilderForm = document.querySelector("#team-builder-form");
   const saveTeamButton = document.querySelector("#save-team-button");
+  const exportShowdownButton = document.querySelector(
+    "#export-showdown-button",
+  );
 
   const selectedPokemonEmpty = document.querySelector(
     "#selected-pokemon-empty",
@@ -48,31 +51,27 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#pokemon-move-4"),
   ];
 
-    const evInputs = {
+  const evInputs = {
     hp: document.querySelector("#pokemon-hp-ev"),
     attack: document.querySelector("#pokemon-attack-ev"),
     defense: document.querySelector("#pokemon-defense-ev"),
-    specialAttack: document.querySelector(
-        "#pokemon-special-attack-ev",
-    ),
-    specialDefense: document.querySelector(
-        "#pokemon-special-defense-ev",
-    ),
+    specialAttack: document.querySelector("#pokemon-special-attack-ev"),
+    specialDefense: document.querySelector("#pokemon-special-defense-ev"),
     speed: document.querySelector("#pokemon-speed-ev"),
-    };
+  };
 
-    const ivInputs = {
+  const ivInputs = {
     hp: document.querySelector("#pokemon-hp-iv"),
     attack: document.querySelector("#pokemon-attack-iv"),
     defense: document.querySelector("#pokemon-defense-iv"),
     specialAttack: document.querySelector("#pokemon-special-attack-iv"),
     specialDefense: document.querySelector("#pokemon-special-defense-iv"),
     speed: document.querySelector("#pokemon-speed-iv"),
-    };
+  };
 
-    const evTotal = document.querySelector("#ev-total");
-    const evTotalError = document.querySelector("#ev-total-error");
-    const resetIvsButton = document.querySelector("#reset-ivs-button");
+  const evTotal = document.querySelector("#ev-total");
+  const evTotalError = document.querySelector("#ev-total-error");
+  const resetIvsButton = document.querySelector("#reset-ivs-button");
   const deletePokemonButton = document.querySelector("#delete-pokemon-button");
 
   const summaryPokemonCount = document.querySelector("#summary-pokemon-count");
@@ -106,10 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   initializePokemonBrowser().then(() => {
-    if (
-      window.BRYMON_IS_EDITING &&
-      window.BRYMON_INITIAL_TEAM
-    ) {
+    if (window.BRYMON_IS_EDITING && window.BRYMON_INITIAL_TEAM) {
       hydrateInitialTeam(window.BRYMON_INITIAL_TEAM);
     }
   });
@@ -182,9 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
         !itemResponse.ok ||
         !natureResponse.ok
       ) {
-        throw new Error(
-          "Unable to load Pokémon browser data.",
-        );
+        throw new Error("Unable to load Pokémon browser data.");
       }
 
       const pokemonData = await pokemonResponse.json();
@@ -193,21 +187,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const itemData = await itemResponse.json();
       const natureData = await natureResponse.json();
 
-      state.pokemonList = pokemonData.results.map(
-        (pokemon) => ({
-          name: pokemon.name,
-          url: pokemon.url,
-          id: getPokemonIdFromUrl(pokemon.url),
-        }),
-      );
+      state.pokemonList = pokemonData.results.map((pokemon) => ({
+        name: pokemon.name,
+        url: pokemon.url,
+        id: getPokemonIdFromUrl(pokemon.url),
+      }));
 
-      state.itemList = itemData.results.map(
-        (item) => item.name,
-      );
+      state.itemList = itemData.results.map((item) => item.name);
 
-      state.natureList = natureData.results.map(
-        (nature) => nature.name,
-      );
+      state.natureList = natureData.results.map((nature) => nature.name);
 
       populateGenerationFilter(generationData.results);
       populateTypeFilter(typeData.results);
@@ -387,7 +375,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-    clearFiltersButton?.addEventListener("click", () => {
+  clearFiltersButton?.addEventListener("click", () => {
     clearTimeout(state.searchTimeout);
 
     // Invalidate any filter request that is still running.
@@ -401,12 +389,12 @@ document.addEventListener("DOMContentLoaded", () => {
     updateResultCount(0);
 
     renderEmptyState(
-        "Find a Pokémon",
-        "Start typing a Pokémon name or choose a filter.",
+      "Find a Pokémon",
+      "Start typing a Pokémon name or choose a filter.",
     );
 
     searchInput.focus();
-    });
+  });
 
   async function getGenerationSpecies(generationName) {
     if (state.generationCache.has(generationName)) {
@@ -455,95 +443,82 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function hydrateInitialTeam(initialTeam) {
-  teamNameInput.value = initialTeam.name ?? "";
-  teamNotesInput.value = initialTeam.notes ?? "";
+    teamNameInput.value = initialTeam.name ?? "";
+    teamNotesInput.value = initialTeam.notes ?? "";
 
-  const savedPokemon = Array.isArray(initialTeam.pokemon)
-    ? initialTeam.pokemon
-    : [];
+    const savedPokemon = Array.isArray(initialTeam.pokemon)
+      ? initialTeam.pokemon
+      : [];
 
-  for (const savedEntry of savedPokemon) {
-    const slotIndex = Number(savedEntry.slot_number) - 1;
+    for (const savedEntry of savedPokemon) {
+      const slotIndex = Number(savedEntry.slot_number) - 1;
 
-    if (slotIndex < 0 || slotIndex >= teamState.slots.length) {
-      continue;
+      if (slotIndex < 0 || slotIndex >= teamState.slots.length) {
+        continue;
+      }
+
+      const pokemonIdentifier =
+        savedEntry.pokemon_name || savedEntry.pokemon_api_id;
+
+      try {
+        const pokemonDetails = await getPokemonDetails(
+          String(pokemonIdentifier),
+        );
+
+        const hydratedPokemon = createTeamPokemon(pokemonDetails);
+
+        hydratedPokemon.nickname = savedEntry.nickname ?? "";
+
+        hydratedPokemon.ability = savedEntry.ability ?? "";
+
+        hydratedPokemon.item = savedEntry.item ?? "";
+
+        hydratedPokemon.nature = savedEntry.nature ?? "";
+
+        hydratedPokemon.moves = [
+          savedEntry.move_1 ?? "",
+          savedEntry.move_2 ?? "",
+          savedEntry.move_3 ?? "",
+          savedEntry.move_4 ?? "",
+        ];
+
+        hydratedPokemon.evs = {
+          hp: Number(savedEntry.hp_ev ?? 0),
+          attack: Number(savedEntry.attack_ev ?? 0),
+          defense: Number(savedEntry.defense_ev ?? 0),
+          specialAttack: Number(savedEntry.special_attack_ev ?? 0),
+          specialDefense: Number(savedEntry.special_defense_ev ?? 0),
+          speed: Number(savedEntry.speed_ev ?? 0),
+        };
+
+        hydratedPokemon.ivs = {
+          hp: Number(savedEntry.hp_iv ?? 31),
+          attack: Number(savedEntry.attack_iv ?? 31),
+          defense: Number(savedEntry.defense_iv ?? 31),
+          specialAttack: Number(savedEntry.special_attack_iv ?? 31),
+          specialDefense: Number(savedEntry.special_defense_iv ?? 31),
+          speed: Number(savedEntry.speed_iv ?? 31),
+        };
+
+        teamState.slots[slotIndex] = hydratedPokemon;
+
+        renderTeamSlot(slotIndex);
+      } catch (error) {
+        console.error(
+          `Unable to hydrate Pokémon in slot ${slotIndex + 1}.`,
+          error,
+        );
+      }
     }
 
-    const pokemonIdentifier =
-      savedEntry.pokemon_name ||
-      savedEntry.pokemon_api_id;
+    updateTeamSummary();
 
-    try {
-      const pokemonDetails = await getPokemonDetails(
-        String(pokemonIdentifier),
-      );
+    const firstPopulatedSlot = teamState.slots.findIndex(Boolean);
 
-      const hydratedPokemon = createTeamPokemon(pokemonDetails);
-
-      hydratedPokemon.nickname =
-        savedEntry.nickname ?? "";
-
-      hydratedPokemon.ability =
-        savedEntry.ability ?? "";
-
-      hydratedPokemon.item =
-        savedEntry.item ?? "";
-
-      hydratedPokemon.nature =
-        savedEntry.nature ?? "";
-
-      hydratedPokemon.moves = [
-        savedEntry.move_1 ?? "",
-        savedEntry.move_2 ?? "",
-        savedEntry.move_3 ?? "",
-        savedEntry.move_4 ?? "",
-      ];
-
-      hydratedPokemon.evs = {
-        hp: Number(savedEntry.hp_ev ?? 0),
-        attack: Number(savedEntry.attack_ev ?? 0),
-        defense: Number(savedEntry.defense_ev ?? 0),
-        specialAttack: Number(
-          savedEntry.special_attack_ev ?? 0,
-        ),
-        specialDefense: Number(
-          savedEntry.special_defense_ev ?? 0,
-        ),
-        speed: Number(savedEntry.speed_ev ?? 0),
-      };
-
-      hydratedPokemon.ivs = {
-        hp: Number(savedEntry.hp_iv ?? 31),
-        attack: Number(savedEntry.attack_iv ?? 31),
-        defense: Number(savedEntry.defense_iv ?? 31),
-        specialAttack: Number(
-          savedEntry.special_attack_iv ?? 31,
-        ),
-        specialDefense: Number(
-          savedEntry.special_defense_iv ?? 31,
-        ),
-        speed: Number(savedEntry.speed_iv ?? 31),
-      };
-
-      teamState.slots[slotIndex] = hydratedPokemon;
-
-      renderTeamSlot(slotIndex);
-    } catch (error) {
-      console.error(
-        `Unable to hydrate Pokémon in slot ${slotIndex + 1}.`,
-        error,
-      );
+    if (firstPopulatedSlot !== -1) {
+      selectTeamSlot(firstPopulatedSlot);
     }
   }
-
-  updateTeamSummary();
-
-  const firstPopulatedSlot = teamState.slots.findIndex(Boolean);
-
-  if (firstPopulatedSlot !== -1) {
-    selectTeamSlot(firstPopulatedSlot);
-  }
-}
 
   function renderPokemonResults(pokemonResults) {
     const fragment = document.createDocumentFragment();
@@ -635,15 +610,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setPokemonBrowserDisabled(disabled) {
-  searchInput.disabled = disabled;
-  generationSelect.disabled = disabled;
-  typeSelect.disabled = disabled;
-  sortSelect.disabled = disabled;
+    searchInput.disabled = disabled;
+    generationSelect.disabled = disabled;
+    typeSelect.disabled = disabled;
+    sortSelect.disabled = disabled;
 
-  if (clearFiltersButton) {
-    clearFiltersButton.disabled = disabled;
+    if (clearFiltersButton) {
+      clearFiltersButton.disabled = disabled;
+    }
   }
-}
 
   function renderEmptyState(title, message) {
     const wrapper = document.createElement("div");
@@ -673,7 +648,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const emptySlotIndex = teamState.slots.findIndex((slot) => slot === null);
 
     if (emptySlotIndex === -1) {
-        showToast("Your team already has six Pokémon.", {
+      showToast("Your team already has six Pokémon.", {
         type: "info",
         title: "Team is full",
       });
@@ -714,23 +689,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
       moves: ["", "", "", ""],
 
-        ivs: {
+      ivs: {
         hp: 31,
         attack: 31,
         defense: 31,
         specialAttack: 31,
         specialDefense: 31,
         speed: 31,
-        },
+      },
 
-        evs: {
+      evs: {
         hp: 0,
         attack: 0,
         defense: 0,
         specialAttack: 0,
         specialDefense: 0,
         speed: 0,
-        },
+      },
     };
   }
 
@@ -866,9 +841,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     Object.entries(ivInputs).forEach(([statName, input]) => {
-        if (input) {
-            input.value = String(pokemon.ivs[statName]);
-        }
+      if (input) {
+        input.value = String(pokemon.ivs[statName]);
+      }
     });
 
     Object.entries(evInputs).forEach(([statName, input]) => {
@@ -1006,15 +981,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     Object.values(evInputs).forEach((input) => {
-    if (input) {
+      if (input) {
         input.value = "0";
-    }
+      }
     });
 
     Object.values(ivInputs).forEach((input) => {
-        if (input) {
-            input.value = "31";
-        }
+      if (input) {
+        input.value = "31";
+      }
     });
 
     evTotal.textContent = "0 / 510 EVs";
@@ -1023,45 +998,41 @@ document.addEventListener("DOMContentLoaded", () => {
     renderPokemonStats({});
   }
 
-    resetIvsButton?.addEventListener("click", () => {
-        const pokemon = getSelectedPokemon();
+  resetIvsButton?.addEventListener("click", () => {
+    const pokemon = getSelectedPokemon();
 
-        if (!pokemon) {
-            return;
-        }
+    if (!pokemon) {
+      return;
+    }
 
-      const value = clampNumber(31, 0, 31);
+    const value = clampNumber(31, 0, 31);
 
-      Object.keys(pokemon.ivs).forEach((statName) => {
-          pokemon.ivs[statName] = value;
+    Object.keys(pokemon.ivs).forEach((statName) => {
+      pokemon.ivs[statName] = value;
 
-          if (ivInputs[statName]) {
-              ivInputs[statName].value = value;
-          }
-      });
-    });
-
-    Object.entries(evInputs).forEach(([statName, input]) => {
-    input?.addEventListener("input", () => {
-        const pokemon = getSelectedPokemon();
-
-        if (!pokemon) {
-            return;
-        }
-
-        pokemon.evs[statName] = clampNumber(
-            input.value,
-            0,
-            252,
-        );
-
-        input.value = pokemon.evs[statName];
-
-        updateEvTotal();
+      if (ivInputs[statName]) {
+        ivInputs[statName].value = value;
+      }
     });
   });
 
-    Object.entries(ivInputs).forEach(([statName, input]) => {
+  Object.entries(evInputs).forEach(([statName, input]) => {
+    input?.addEventListener("input", () => {
+      const pokemon = getSelectedPokemon();
+
+      if (!pokemon) {
+        return;
+      }
+
+      pokemon.evs[statName] = clampNumber(input.value, 0, 252);
+
+      input.value = pokemon.evs[statName];
+
+      updateEvTotal();
+    });
+  });
+
+  Object.entries(ivInputs).forEach(([statName, input]) => {
     input?.addEventListener("input", () => {
       const pokemon = getSelectedPokemon();
 
@@ -1094,7 +1065,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ? "Total EVs cannot exceed 510."
       : "";
   }
-
 
   function updateTeamSummary() {
     const populatedSlots = teamState.slots.filter(Boolean);
@@ -1174,7 +1144,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-    function validateTeamPayload(payload) {
+  function validateTeamPayload(payload) {
     const errors = [];
 
     if (!payload.name) {
@@ -1199,9 +1169,7 @@ document.addEventListener("DOMContentLoaded", () => {
         pokemon.speed_ev;
 
       if (totalEvs > 510) {
-        errors.push(
-          `Pokémon in slot ${index + 1} exceeds the 510 EV limit.`,
-        );
+        errors.push(`Pokémon in slot ${index + 1} exceeds the 510 EV limit.`);
       }
     });
 
@@ -1211,7 +1179,6 @@ document.addEventListener("DOMContentLoaded", () => {
   teamBuilderForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    
     const isEditing = Boolean(window.BRYMON_IS_EDITING);
     const initialTeam = window.BRYMON_INITIAL_TEAM;
     const payload = buildTeamPayload();
@@ -1233,22 +1200,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (saveTeamButton.disabled) {
-     return;
+      return;
     }
 
     saveTeamButton.disabled = true;
-    saveTeamButton.textContent = isEditing
-      ? "Updating..."
-      : "Saving...";
+    saveTeamButton.textContent = isEditing ? "Updating..." : "Saving...";
 
     teamBuilderForm.setAttribute("aria-busy", "true");
 
     try {
       // console.log("Submitting payload:", payload);
       const requestUrl =
-        isEditing && initialTeam?.id
-          ? `/teams/${initialTeam.id}`
-          : "/teams";
+        isEditing && initialTeam?.id ? `/teams/${initialTeam.id}` : "/teams";
       const response = await fetch(requestUrl, {
         method: "POST",
         headers: {
@@ -1278,44 +1241,156 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!response.ok) {
         console.error("Server validation errors:", result.errors);
 
-        throw new Error(
-          result.message ?? "Unable to save the team.",
-        );
+        throw new Error(result.message ?? "Unable to save the team.");
       }
 
       // console.log("Saved team:", result);
 
       const successMessage = isEditing
-      ? "Team updated successfully."
-      : "Team saved successfully.";
+        ? "Team updated successfully."
+        : "Team saved successfully.";
 
       window.location.href = `/teams?success=${encodeURIComponent(successMessage)}`;
-      } catch (error) {
-        console.error("Save error:", error);
+    } catch (error) {
+      console.error("Save error:", error);
 
-        showToast(
-          error instanceof Error
-            ? error.message
-            : "Unable to save the team.",
-          {
-            type: "error",
-            title: isEditing
-              ? "Unable to update team"
-              : "Unable to save team",
-            duration: 6000,
-          },
-        );
-      } finally {
-        if (!requestSucceeded) {
+      showToast(
+        error instanceof Error ? error.message : "Unable to save the team.",
+        {
+          type: "error",
+          title: isEditing ? "Unable to update team" : "Unable to save team",
+          duration: 6000,
+        },
+      );
+    } finally {
+      if (!requestSucceeded) {
         saveTeamButton.disabled = false;
-        saveTeamButton.textContent = isEditing
-        ? "Update Team"
-        : "Save Team";
+        saveTeamButton.textContent = isEditing ? "Update Team" : "Save Team";
         teamBuilderForm.removeAttribute("aria-busy");
       }
     }
   });
+
+  exportShowdownButton?.addEventListener("click", async () => {
+    const showdownText = exportTeamToShowdown(teamState.slots);
+
+    if (!showdownText) {
+      showToast("Add at least one Pokémon before exporting.", {
+        type: "error",
+        title: "Nothing to export",
+      });
+
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(showdownText);
+
+      showToast("Showdown team copied to your clipboard.", {
+        type: "success",
+        title: "Export complete",
+      });
+    } catch (error) {
+      console.error("Clipboard export failed:", error);
+
+      showToast("Unable to copy the Showdown team.", {
+        type: "error",
+        title: "Export failed",
+      });
+    }
+  });
 });
+
+const SHOWDOWN_STATS = [
+  ["hp", "HP"],
+  ["attack", "Atk"],
+  ["defense", "Def"],
+  ["special_attack", "SpA"],
+  ["special_defense", "SpD"],
+  ["speed", "Spe"],
+];
+
+function exportTeamToShowdown(slots) {
+  return slots.filter(Boolean).map(formatPokemonForShowdown).join("\n\n");
+}
+
+function formatPokemonForShowdown(pokemon) {
+  const lines = [];
+
+  const species = formatShowdownName(pokemon.name);
+
+  const nickname = String(pokemon.nickname ?? "").trim();
+
+  let heading = nickname ? `${nickname} (${species})` : species;
+
+  if (pokemon.item) {
+    heading += ` @ ${formatShowdownName(pokemon.item)}`;
+  }
+
+  lines.push(heading);
+
+  if (pokemon.ability) {
+    lines.push(`Ability: ${formatShowdownName(pokemon.ability)}`);
+  }
+
+  const evLine = formatShowdownStats("EVs", pokemon.evs, 0);
+
+  if (evLine) {
+    lines.push(evLine);
+  }
+
+  if (pokemon.nature) {
+    lines.push(`${formatShowdownName(pokemon.nature)} Nature`);
+  }
+
+  const ivLine = formatShowdownStats("IVs", pokemon.ivs, 31);
+
+  if (ivLine) {
+    lines.push(ivLine);
+  }
+
+  pokemon.moves.filter(Boolean).forEach((move) => {
+    lines.push(`- ${formatShowdownName(move)}`);
+  });
+
+  return lines.join("\n");
+}
+
+function formatShowdownStats(label, statObject, defaultValue) {
+  const stats = [
+    ["hp", "HP"],
+    ["attack", "Atk"],
+    ["defense", "Def"],
+    ["specialAttack", "SpA"],
+    ["specialDefense", "SpD"],
+    ["speed", "Spe"],
+  ];
+
+  const values = stats
+    .map(([property, abbreviation]) => {
+      const value = Number(statObject[property]);
+
+      if (!Number.isFinite(value) || value === defaultValue) {
+        return null;
+      }
+
+      return `${value} ${abbreviation}`;
+    })
+    .filter(Boolean);
+
+  return values.length ? `${label}: ${values.join(" / ")}` : "";
+}
+
+function formatShowdownName(value) {
+  return String(value)
+    .trim()
+    .split("-")
+    .filter(Boolean)
+    .map((word) => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
 
 function populateSelect(select, values, placeholder, selectedValue) {
   if (!select) {
@@ -1380,10 +1455,7 @@ function clampNumber(value, minimum, maximum) {
     return minimum;
   }
 
-  return Math.min(
-    maximum,
-    Math.max(minimum, parsedValue),
-  );
+  return Math.min(maximum, Math.max(minimum, parsedValue));
 }
 
 function calculateTotalEvs(evs) {

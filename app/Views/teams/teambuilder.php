@@ -181,6 +181,13 @@ require dirname(__DIR__) . '/layouts/header.php';
                         >
                             Save Team
                         </button>
+                        <button
+                            type="button"
+                            class="button button-secondary"
+                            id="export-showdown-button"
+                            >
+                            Export Showdown
+                        </button>
 
                     </header>
 
