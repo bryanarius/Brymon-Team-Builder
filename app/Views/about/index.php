@@ -8,25 +8,26 @@ require dirname(__DIR__) . '/layouts/header.php';
 ?>
 
 <main class="about-page">
-    <!-- Portfolio introduction -->
+    <!-- Hero -->
     <section class="about-hero">
         <div class="container">
-            <p class="eyebrow">About the Project</p>
+            <p class="eyebrow">
+                About Brymon
+            </p>
 
             <h1>
-                Built to explore full-stack
-                PHP development.
+                Built for Pokémon trainers.
             </h1>
 
             <p class="about-introduction">
-                Brymon is a Pokémon team-building application designed
-                to help players create, organize, and manage teams
-                through a simple and intuitive interface.
+                Build, analyze, organize, and export Pokémon teams
+                with a modern team-building experience powered by
+                PokéAPI.
             </p>
         </div>
     </section>
 
-    <!-- Main About section -->
+    <!-- Main overview -->
     <section class="about-overview">
         <div class="container about-overview-grid">
             <article class="about-main-card">
@@ -43,49 +44,84 @@ require dirname(__DIR__) . '/layouts/header.php';
                     </h2>
 
                     <p class="about-main-lead">
-                        Brymon is a clean, simple, and powerful Pokémon
-                        team builder created for fans who want an easier
-                        way to plan and organize their teams.
+                        Brymon is a modern Pokémon team-building
+                        application designed to help trainers create
+                        complete teams, customize Pokémon sets, and
+                        manage their favorite builds in one place.
                     </p>
 
                     <p>
-                        Search for Pokémon, create a team of up to six,
-                        customize team details, and save your builds for
-                        later. Whether you play casually or competitively,
-                        Brymon helps you build with confidence.
+                        Search for Pokémon, configure abilities, items,
+                        moves, EVs, IVs, and natures, review team
+                        composition, and transfer teams between Brymon
+                        and Pokémon Showdown.
                     </p>
 
                     <div class="about-benefit-grid">
                         <article class="about-benefit">
-                            <span class="about-benefit-icon" aria-hidden="true">
-                                01
+                            <span
+                                class="about-benefit-icon"
+                                aria-hidden="true"
+                            >
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M13 2 3 14h8l-1 8 10-12h-8z"></path>
+                                </svg>
                             </span>
 
                             <div>
                                 <h3>Fast</h3>
-                                <p>Quick searching and straightforward results.</p>
+
+                                <p>
+                                    Quickly search for Pokémon and build
+                                    complete teams without unnecessary
+                                    friction.
+                                </p>
                             </div>
                         </article>
 
                         <article class="about-benefit">
-                            <span class="about-benefit-icon" aria-hidden="true">
-                                02
+                            <span
+                                class="about-benefit-icon"
+                                aria-hidden="true"
+                            >
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M12 3v18"></path>
+                                    <path d="M3 12h18"></path>
+                                    <path d="m5 5 14 14"></path>
+                                    <path d="m19 5-14 14"></path>
+                                </svg>
                             </span>
 
                             <div>
                                 <h3>Simple</h3>
-                                <p>A clean interface that stays easy to use.</p>
+
+                                <p>
+                                    A focused interface keeps advanced
+                                    team configuration approachable.
+                                </p>
                             </div>
                         </article>
 
                         <article class="about-benefit">
-                            <span class="about-benefit-icon" aria-hidden="true">
-                                03
+                            <span
+                                class="about-benefit-icon"
+                                aria-hidden="true"
+                            >
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M4 5h16v14H4z"></path>
+                                    <path d="M8 5V3h8v2"></path>
+                                    <path d="M8 9h8"></path>
+                                    <path d="M8 13h8"></path>
+                                </svg>
                             </span>
 
                             <div>
                                 <h3>Organized</h3>
-                                <p>Save and manage your teams in one place.</p>
+
+                                <p>
+                                    Save, edit, and revisit multiple team
+                                    ideas from one account.
+                                </p>
                             </div>
                         </article>
                     </div>
@@ -93,40 +129,80 @@ require dirname(__DIR__) . '/layouts/header.php';
             </article>
 
             <aside class="about-audience-card">
-                <p class="about-card-eyebrow">Built for Trainers</p>
+                <p class="about-card-eyebrow">
+                    Built for Trainers
+                </p>
 
                 <div class="audience-list">
                     <article class="audience-item">
-                        <span class="audience-icon" aria-hidden="true">01</span>
+                        <span
+                            class="audience-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="8"></circle>
+                                <path d="M4 12h16"></path>
+                                <circle cx="12" cy="12" r="2"></circle>
+                            </svg>
+                        </span>
 
                         <div>
                             <h3>Casual Players</h3>
+
                             <p>
-                                Build fun teams and experiment with your
-                                favorite Pokémon.
+                                Experiment with fun team ideas and save
+                                combinations featuring your favorite
+                                Pokémon.
                             </p>
                         </div>
                     </article>
 
                     <article class="audience-item">
-                        <span class="audience-icon" aria-hidden="true">02</span>
+                        <span
+                            class="audience-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="M8 3h8v4a4 4 0 0 1-8 0z"></path>
+                                <path d="M6 5H3v2a4 4 0 0 0 4 4"></path>
+                                <path d="M18 5h3v2a4 4 0 0 1-4 4"></path>
+                                <path d="M12 11v5"></path>
+                                <path d="M8 21h8"></path>
+                                <path d="M10 16h4v5h-4z"></path>
+                            </svg>
+                        </span>
 
                         <div>
-                            <h3>Competitive Players</h3>
+                            <h3>Competitive Battlers</h3>
+
                             <p>
-                                Organize balanced teams and prepare before
-                                entering battle.
+                                Fine-tune complete sets, analyze team
+                                composition, and export directly to
+                                Pokémon Showdown.
                             </p>
                         </div>
                     </article>
 
                     <article class="audience-item">
-                        <span class="audience-icon" aria-hidden="true">03</span>
+                        <span
+                            class="audience-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="M4 5h16v14H4z"></path>
+                                <path d="M8 9h8"></path>
+                                <path d="M8 13h8"></path>
+                                <path d="M8 17h5"></path>
+                            </svg>
+                        </span>
 
                         <div>
-                            <h3>New Trainers</h3>
+                            <h3>Collectors and Planners</h3>
+
                             <p>
-                                Learn, explore, and create teams with confidence.
+                                Organize multiple teams and return to
+                                your saved ideas whenever inspiration
+                                strikes.
                             </p>
                         </div>
                     </article>
@@ -139,89 +215,146 @@ require dirname(__DIR__) . '/layouts/header.php';
     <section class="about-details">
         <div class="container about-details-grid">
             <article class="about-features-card">
-                <p class="about-card-eyebrow">Features</p>
+                <p class="about-card-eyebrow">
+                    Core Features
+                </p>
 
                 <div class="about-feature-grid">
                     <article class="about-feature-item">
-                        <span class="about-feature-icon" aria-hidden="true">
-                            01
+                        <span
+                            class="about-feature-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="11" cy="11" r="7"></circle>
+                                <path d="m20 20-4-4"></path>
+                                <path d="M11 8v6"></path>
+                                <path d="M8 11h6"></path>
+                            </svg>
                         </span>
 
                         <div>
-                            <h3>Search and Filter</h3>
+                            <h3>Pokémon Search</h3>
+
                             <p>
-                                Find Pokémon by name, type, generation,
-                                and other useful details.
+                                Search and filter Pokémon by name, type,
+                                generation, and sort order.
                             </p>
                         </div>
                     </article>
 
                     <article class="about-feature-item">
-                        <span class="about-feature-icon" aria-hidden="true">
-                            02
+                        <span
+                            class="about-feature-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="M4 6h16"></path>
+                                <path d="M4 12h16"></path>
+                                <path d="M4 18h16"></path>
+                                <circle cx="8" cy="6" r="1"></circle>
+                                <circle cx="14" cy="12" r="1"></circle>
+                                <circle cx="10" cy="18" r="1"></circle>
+                            </svg>
                         </span>
 
                         <div>
                             <h3>Set Customization</h3>
+
                             <p>
-                                Customize important team information for
-                                each selected Pokémon.
+                                Configure abilities, items, natures,
+                                moves, EVs, IVs, and nicknames.
                             </p>
                         </div>
                     </article>
 
                     <article class="about-feature-item">
-                        <span class="about-feature-icon" aria-hidden="true">
-                            03
+                        <span
+                            class="about-feature-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="M4 19V9"></path>
+                                <path d="M10 19V5"></path>
+                                <path d="M16 19v-7"></path>
+                                <path d="M22 19V2"></path>
+                            </svg>
                         </span>
 
                         <div>
-                            <h3>Pokémon Details</h3>
+                            <h3>Team Analysis</h3>
+
                             <p>
-                                Review useful Pokémon data while building
-                                your team.
+                                Review shared weaknesses, immunities,
+                                and the team's overall type distribution.
                             </p>
                         </div>
                     </article>
 
                     <article class="about-feature-item">
-                        <span class="about-feature-icon" aria-hidden="true">
-                            04
+                        <span
+                            class="about-feature-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="M5 4h12l2 2v14H5z"></path>
+                                <path d="M8 4v6h8V4"></path>
+                                <path d="M9 17h6"></path>
+                            </svg>
                         </span>
 
                         <div>
-                            <h3>Team Builder</h3>
+                            <h3>Saved Teams</h3>
+
                             <p>
-                                Add up to six Pokémon and arrange your
-                                preferred lineup.
+                                Create, edit, delete, search, and sort
+                                multiple teams from your account.
                             </p>
                         </div>
                     </article>
 
                     <article class="about-feature-item">
-                        <span class="about-feature-icon" aria-hidden="true">
-                            05
+                        <span
+                            class="about-feature-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="M8 7 4 11l4 4"></path>
+                                <path d="M4 11h12"></path>
+                                <path d="m16 17 4-4-4-4"></path>
+                                <path d="M20 13H8"></path>
+                            </svg>
                         </span>
 
                         <div>
-                            <h3>Save and Manage</h3>
+                            <h3>Showdown Integration</h3>
+
                             <p>
-                                Save multiple teams and access them whenever
-                                you return.
+                                Import and export teams using Pokémon
+                                Showdown's familiar text format.
                             </p>
                         </div>
                     </article>
 
                     <article class="about-feature-item">
-                        <span class="about-feature-icon" aria-hidden="true">
-                            06
+                        <span
+                            class="about-feature-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="M4 4h16v16H4z"></path>
+                                <path d="M7 8h10"></path>
+                                <path d="M7 12h10"></path>
+                                <path d="M7 16h6"></path>
+                            </svg>
                         </span>
 
                         <div>
                             <h3>Team Notes</h3>
+
                             <p>
-                                Add reminders and strategy notes to your
-                                saved teams.
+                                Save strategy reminders and useful notes
+                                alongside each team.
                             </p>
                         </div>
                     </article>
@@ -229,11 +362,14 @@ require dirname(__DIR__) . '/layouts/header.php';
             </article>
 
             <aside class="about-source-card">
-                <p class="about-card-eyebrow">Data Source</p>
+                <p class="about-card-eyebrow">
+                    Powered by PokéAPI
+                </p>
 
                 <p>
-                    Brymon uses data from PokéAPI, a free and open-source
-                    Pokémon API.
+                    Brymon uses PokéAPI to retrieve Pokémon species,
+                    sprites, types, abilities, moves, items, stats, and
+                    related game data.
                 </p>
 
                 <a
@@ -262,41 +398,87 @@ require dirname(__DIR__) . '/layouts/header.php';
         </div>
     </section>
 
-    <!-- Portfolio details -->
+    <!-- Project details -->
     <section class="about-project-details">
         <div class="container">
             <div class="about-project-grid">
                 <article class="about-project-card">
-                    <h2>Why I built Brymon</h2>
+                    <h2>About the Project</h2>
 
                     <p>
-                        Brymon is a portfolio project created to demonstrate
-                        application architecture, backend development,
-                        database design, API integration, and responsive
-                        interface design.
+                        Brymon was developed as a full-stack Pokémon
+                        team-building application focused on usability,
+                        organization, and competitive team preparation.
+                    </p>
+
+                    <p>
+                        The project also demonstrates custom PHP
+                        architecture, authentication, relational database
+                        design, third-party API integration, responsive
+                        interface development, and asynchronous JavaScript.
                     </p>
                 </article>
 
                 <article class="about-project-card">
                     <h2>Technology</h2>
 
-                    <ul>
-                        <li>Custom PHP MVC architecture</li>
-                        <li>PostgreSQL database</li>
-                        <li>PokéAPI integration</li>
-                        <li>HTML, CSS, and JavaScript</li>
-                        <li>Composer PSR-4 autoloading</li>
-                    </ul>
+                    <div class="about-technology-groups">
+                        <div>
+                            <h3>Backend</h3>
+
+                            <ul>
+                                <li>PHP 8</li>
+                                <li>Custom MVC architecture</li>
+                                <li>PostgreSQL</li>
+                                <li>PDO</li>
+                                <li>Composer PSR-4 autoloading</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3>Frontend</h3>
+
+                            <ul>
+                                <li>Semantic HTML</li>
+                                <li>Responsive CSS</li>
+                                <li>Vanilla JavaScript</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3>Integrations</h3>
+
+                            <ul>
+                                <li>PokéAPI</li>
+                                <li>Pokémon Showdown import/export</li>
+                            </ul>
+                        </div>
+                    </div>
                 </article>
 
                 <article class="about-project-card">
-                    <h2>Current status</h2>
+                    <h2>Current Version</h2>
 
-                    <p>
-                        Brymon is currently under active development. The
-                        initial release focuses on building, saving, editing,
-                        and managing Pokémon teams.
+                    <p class="about-version">
+                        Version 1.0
                     </p>
+
+                    <ul class="about-version-list">
+                        <li>Authentication</li>
+                        <li>Full team builder</li>
+                        <li>Saved team management</li>
+                        <li>Team analysis</li>
+                        <li>Showdown import and export</li>
+                        <li>Responsive mobile interface</li>
+                    </ul>
+
+                    <h3>Planned for Version 1.1</h3>
+
+                    <ul>
+                        <li>Password reset</li>
+                        <li>Public team sharing</li>
+                        <li>Improved form compatibility</li>
+                    </ul>
                 </article>
             </div>
         </div>

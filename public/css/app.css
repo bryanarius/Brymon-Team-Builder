@@ -808,6 +808,49 @@ h3 {
   line-height: 1.7;
 }
 
+.about-benefit-icon,
+.audience-icon,
+.about-feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-benefit-icon svg,
+.audience-icon svg,
+.about-feature-icon svg {
+  width: 22px;
+  height: 22px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.about-version {
+  margin-bottom: 1rem;
+  color: var(--accent);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.about-version-list {
+  margin-bottom: 1.5rem;
+}
+
+.about-technology-groups {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.about-technology-groups h3 {
+  margin-bottom: 0.5rem;
+  color: var(--blue-light);
+  font-size: 0.95rem;
+}
+
 /* Main overview */
 .about-overview {
   padding-bottom: 1.5rem;
