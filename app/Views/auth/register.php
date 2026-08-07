@@ -144,7 +144,7 @@ $old = $old ?? [];
                                 type="password"
                                 id="password"
                                 name="password"
-                                placeholder="At least 6 characters"
+                                placeholder="At least 8 characters"
                                 autocomplete="new-password"
                                 class="<?= isset($errors['password'])
                                     ? 'input-error'
