@@ -28,7 +28,11 @@ final class AuthController extends Controller
 
         if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
             http_response_code(403);
-            echo 'Invalid request.';
+
+            $this->view('errors/403', [
+                'pageTitle' => 'Request Denied',
+            ]);
+
             return;
         }
 
@@ -156,7 +160,11 @@ final class AuthController extends Controller
 
         if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
             http_response_code(403);
-            echo 'Invalid request.';
+
+            $this->view('errors/403', [
+                'pageTitle' => 'Request Denied',
+            ]);
+
             return;
         }
 
@@ -224,7 +232,11 @@ final class AuthController extends Controller
 
         if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
             http_response_code(403);
-            echo 'Invalid request.';
+
+            $this->view('errors/403', [
+                'pageTitle' => 'Request Denied',
+            ]);
+
             return;
         }
 
