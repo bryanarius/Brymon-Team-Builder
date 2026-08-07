@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Core\Auth;
 use App\Core\Controller;
+use App\Core\Csrf;
 use App\Core\Validator;
 use App\Models\User;
 use Throwable;
@@ -24,6 +25,12 @@ final class AuthController extends Controller
     public function register(): void
     {
         Auth::guestOnly();
+
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+            echo 'Invalid request.';
+            return;
+        }
 
         $username = trim($_POST['username'] ?? '');
         $email = strtolower(trim($_POST['email'] ?? ''));
@@ -147,6 +154,12 @@ final class AuthController extends Controller
     {
         Auth::guestOnly();
 
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+            echo 'Invalid request.';
+            return;
+        }
+
         $email = strtolower(trim($_POST['email'] ?? ''));
         $password = $_POST['password'] ?? '';
 
@@ -192,7 +205,7 @@ final class AuthController extends Controller
         }
 
         session_regenerate_id(true);
-
+        Csrf::regenerate();
         $currentTime = time();
 
         $_SESSION['user_id'] = $user['id'];
@@ -208,6 +221,13 @@ final class AuthController extends Controller
     public function logout(): void
     {
         Auth::requireLogin();
+
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+            echo 'Invalid request.';
+            return;
+        }
+
         Auth::destroySession();
 
         header('Location: /');

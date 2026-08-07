@@ -195,6 +195,16 @@ $formatDate = static function (?string $date): string {
                                         action="/teams/<?= $teamId ?>/delete"
                                         method="POST"
                                     >
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="<?= htmlspecialchars(
+                                                \App\Core\Csrf::token(),
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>"
+                                        >
+
                                         <button
                                             type="submit"
                                             class="team-card-menu-item team-card-menu-delete"

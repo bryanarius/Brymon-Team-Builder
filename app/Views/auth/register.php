@@ -76,6 +76,17 @@ $old = $old ?? [];
                 </div>
 
                 <form method="POST" action="/register" class="auth-form">
+
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="<?= htmlspecialchars(
+                            \App\Core\Csrf::token(),
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>"
+                    >
+
                     <div class="form-group">
                         <label for="username">Username</label>
 

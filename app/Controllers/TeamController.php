@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Core\Auth;
 use App\Core\Controller;
 use App\Models\Team;
+use App\Core\Csrf;
 
 final class TeamController extends Controller 
 {
@@ -42,6 +43,16 @@ final class TeamController extends Controller
         Auth::requireLogin();
 
         header('Content-Type: application/json; charset=UTF-8');
+
+        $csrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+
+        if (!Csrf::validate($csrfToken)) {
+            $this->sendJson([
+                'message' => 'Invalid request.',
+            ], 403);
+
+            return;
+        }
 
         $rawBody = file_get_contents('php://input');
 
@@ -289,6 +300,16 @@ final class TeamController extends Controller
 
         header('Content-Type: application/json; charset=UTF-8');
 
+        $csrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+
+        if (!Csrf::validate($csrfToken)) {
+            $this->sendJson([
+                'message' => 'Invalid request.',
+            ], 403);
+
+            return;
+        }
+
         $teamId = filter_var(
             $id,
             FILTER_VALIDATE_INT,
@@ -406,6 +427,12 @@ final class TeamController extends Controller
     public function destroy(string $id): void
     {
         Auth::requireLogin();
+
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+            echo 'CSRF validation failed.';
+            return;
+        }
 
         $teamId = filter_var(
             $id,

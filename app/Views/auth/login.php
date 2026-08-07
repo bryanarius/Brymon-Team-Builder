@@ -86,6 +86,17 @@ $old = $old ?? [];
                 <?php endif; ?>
 
                 <form method="POST" action="/login" class="auth-form">
+
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="<?= htmlspecialchars(
+                            \App\Core\Csrf::token(),
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>"
+                    >
+
                     <div class="form-group">
                         <label for="email">Email address</label>
 
