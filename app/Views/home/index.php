@@ -280,12 +280,12 @@ require dirname(__DIR__) . '/layouts/header.php';
                 ></span>
 
                 <strong>
-                    Launch candidate
+                    Version 1 Ready
                 </strong>
 
                 <span>
-                    Brymon’s core team-building experience is ready
-                    for final testing.
+                    Brymon’s core team-building experience is complete
+                    and ready to use.
                 </span>
             </div>
 
@@ -294,7 +294,7 @@ require dirname(__DIR__) . '/layouts/header.php';
             </p>
 
             <h2>
-                Built and ready for final testing
+                Built, tested, and ready to launch
             </h2>
 
             <div class="status-grid">
@@ -334,6 +334,20 @@ require dirname(__DIR__) . '/layouts/header.php';
                     <p>
                         Import and export Pokémon Showdown teams
                         directly from the builder.
+                    </p>
+                </article>
+
+                <article class="status-card">
+                    <span class="status-label status-complete">
+                        Complete
+                    </span>
+
+                    <h3>Production Ready</h3>
+
+                    <p>
+                        Protected with CSRF validation, production
+                        error handling, backend validation,
+                        and automated testing.
                     </p>
                 </article>
             </div>

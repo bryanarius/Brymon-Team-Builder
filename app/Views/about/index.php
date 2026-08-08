@@ -52,9 +52,9 @@ require dirname(__DIR__) . '/layouts/header.php';
 
                     <p>
                         Search for Pokémon, configure abilities, items,
-                        moves, EVs, IVs, and natures, review team
-                        composition, and transfer teams between Brymon
-                        and Pokémon Showdown.
+                        moves, EVs, IVs, and natures, review shared
+                        weaknesses and type distribution, and transfer
+                        teams between Brymon and Pokémon Showdown.
                     </p>
 
                     <div class="about-benefit-grid">
@@ -413,9 +413,11 @@ require dirname(__DIR__) . '/layouts/header.php';
 
                     <p>
                         The project also demonstrates custom PHP
-                        architecture, authentication, relational database
-                        design, third-party API integration, responsive
-                        interface development, and asynchronous JavaScript.
+                        architecture, authentication and authorization,
+                        relational database design, third-party API
+                        integration, responsive interface development,
+                        asynchronous JavaScript, application security,
+                        automated testing, and production deployment.
                     </p>
                 </article>
 
@@ -453,6 +455,17 @@ require dirname(__DIR__) . '/layouts/header.php';
                                 <li>Pokémon Showdown import/export</li>
                             </ul>
                         </div>
+
+                        <div>
+                            <h3>Testing and Deployment</h3>
+
+                            <ul>
+                                <li>PHPUnit</li>
+                                <li>Playwright</li>
+                                <li>Render</li>
+                                <li>PostgreSQL production database</li>
+                            </ul>
+                        </div>
                     </div>
                 </article>
 
@@ -464,20 +477,32 @@ require dirname(__DIR__) . '/layouts/header.php';
                     </p>
 
                     <ul class="about-version-list">
-                        <li>Authentication</li>
-                        <li>Full team builder</li>
+                        <li>Authentication and session security</li>
+                        <li>Full Pokémon team builder</li>
                         <li>Saved team management</li>
                         <li>Team analysis</li>
                         <li>Showdown import and export</li>
+                        <li>Backend validation and CSRF protection</li>
+                        <li>Production error handling</li>
+                        <li>
+                            Automated unit, integration, and E2E testing
+                        </li>
                         <li>Responsive mobile interface</li>
                     </ul>
 
-                    <h3>Planned for Version 1.1</h3>
+                    <h3>Future Roadmap</h3>
 
                     <ul>
                         <li>Password reset</li>
                         <li>Public team sharing</li>
-                        <li>Improved form compatibility</li>
+                        <li>User profiles</li>
+                        <li>
+                            Deeper team analysis and recommendations
+                        </li>
+                        <li>
+                            Additional usability and accessibility
+                            improvements
+                        </li>
                     </ul>
                 </article>
             </div>
