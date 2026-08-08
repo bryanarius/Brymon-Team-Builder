@@ -114,49 +114,10 @@ final class TeamController extends Controller
         }
 
         if (is_array($pokemon)) {
-            foreach ($pokemon as $index => $teamPokemon) {
-                if (!is_array($teamPokemon)) {
-                    $errors["pokemon.$index"] =
-                        'Invalid Pokémon data.';
-
-                    continue;
-                }
-
-                $slotNumber = (int) (
-                    $teamPokemon['slot_number'] ?? 0
-                );
-
-                $pokemonApiId = (int) (
-                    $teamPokemon['pokemon_api_id'] ?? 0
-                );
-
-                if ($slotNumber < 1 || $slotNumber > 6) {
-                    $errors["pokemon.$index.slot_number"] =
-                        'Slot number must be between 1 and 6.';
-                }
-
-                if ($pokemonApiId < 1) {
-                    $errors["pokemon.$index.pokemon_api_id"] =
-                        'A valid Pokémon ID is required.';
-                }
-
-                $totalEvs =
-                    (int) ($teamPokemon['hp_ev'] ?? 0)
-                    + (int) ($teamPokemon['attack_ev'] ?? 0)
-                    + (int) ($teamPokemon['defense_ev'] ?? 0)
-                    + (int) (
-                        $teamPokemon['special_attack_ev'] ?? 0
-                    )
-                    + (int) (
-                        $teamPokemon['special_defense_ev'] ?? 0
-                    )
-                    + (int) ($teamPokemon['speed_ev'] ?? 0);
-
-                if ($totalEvs > 510) {
-                    $errors["pokemon.$index.evs"] =
-                        'A Pokémon cannot have more than 510 total EVs.';
-                }
-            }
+            $errors = array_merge(
+                $errors,
+                $this->validatePokemon($pokemon)
+            );
         }
 
         if ($errors !== []) {
@@ -353,6 +314,14 @@ final class TeamController extends Controller
             return;
         }
 
+        if (!is_array($data)) {
+            $this->sendJson([
+                'message' => 'Invalid request data.',
+            ], 400);
+
+            return;
+        }
+
         $name = trim((string) ($data['name'] ?? ''));
         $notes = trim((string) ($data['notes'] ?? ''));
         $pokemon = $data['pokemon'] ?? [];
@@ -377,6 +346,10 @@ final class TeamController extends Controller
         } elseif (count($pokemon) > 6) {
             $errors['pokemon'] =
                 'A team cannot contain more than six Pokémon.';
+        }
+
+        if (is_array($pokemon)) {
+            $errors = array_merge($errors, $this->validatePokemon($pokemon));
         }
 
         if ($errors !== []) {
@@ -427,12 +400,15 @@ final class TeamController extends Controller
     public function destroy(string $id): void
     {
         Auth::requireLogin();
+    if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+        http_response_code(403);
 
-        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
-            http_response_code(403);
-            echo 'CSRF validation failed.';
-            return;
-        }
+        $this->view('errors/403', [
+            'pageTitle' => 'Request Denied',
+        ]);
+
+        return;
+    }
 
         $teamId = filter_var(
             $id,
@@ -473,5 +449,153 @@ final class TeamController extends Controller
 
         header('Location: /teams');
         exit;
+    }
+
+    private function validatePokemon(array $pokemon): array
+    {
+        $errors = [];
+        $usedSlots = [];
+
+        $evFields = [
+            'hp_ev',
+            'attack_ev',
+            'defense_ev',
+            'special_attack_ev',
+            'special_defense_ev',
+            'speed_ev',
+        ];
+
+        $ivFields = [
+            'hp_iv',
+            'attack_iv',
+            'defense_iv',
+            'special_attack_iv',
+            'special_defense_iv',
+            'speed_iv',
+        ];
+
+        foreach ($pokemon as $index => $teamPokemon) {
+            if (!is_array($teamPokemon)) {
+                $errors["pokemon.$index"] = 'Invalid Pokémon data.';
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Slot
+            |--------------------------------------------------------------------------
+            */
+
+            $slotNumber = filter_var(
+                $teamPokemon['slot_number'] ?? null,
+                FILTER_VALIDATE_INT
+            );
+
+            if (
+                $slotNumber === false
+                || $slotNumber < 1
+                || $slotNumber > 6
+            ) {
+                $errors["pokemon.$index.slot_number"] =
+                    'Slot number must be between 1 and 6.';
+            } elseif (in_array($slotNumber, $usedSlots, true)) {
+                $errors["pokemon.$index.slot_number"] =
+                    'Each Pokémon must use a unique team slot.';
+            } else {
+                $usedSlots[] = $slotNumber;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Pokémon ID
+            |--------------------------------------------------------------------------
+            */
+
+            $pokemonApiId = filter_var(
+                $teamPokemon['pokemon_api_id'] ?? null,
+                FILTER_VALIDATE_INT
+            );
+
+            if ($pokemonApiId === false || $pokemonApiId < 1) {
+                $errors["pokemon.$index.pokemon_api_id"] =
+                    'A valid Pokémon ID is required.';
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | EVs
+            |--------------------------------------------------------------------------
+            */
+
+            $totalEvs = 0;
+
+            foreach ($evFields as $field) {
+                $value = filter_var(
+                    $teamPokemon[$field] ?? 0,
+                    FILTER_VALIDATE_INT
+                );
+
+                if (
+                    $value === false
+                    || $value < 0
+                    || $value > 252
+                ) {
+                    $errors["pokemon.$index.$field"] =
+                        'Each EV must be between 0 and 252.';
+
+                    continue;
+                }
+
+                $totalEvs += $value;
+            }
+
+            if ($totalEvs > 510) {
+                $errors["pokemon.$index.evs"] =
+                    'A Pokémon cannot have more than 510 total EVs.';
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | IVs
+            |--------------------------------------------------------------------------
+            */
+
+            foreach ($ivFields as $field) {
+                $value = filter_var(
+                    $teamPokemon[$field] ?? 31,
+                    FILTER_VALIDATE_INT
+                );
+
+                if (
+                    $value === false
+                    || $value < 0
+                    || $value > 31
+                ) {
+                    $errors["pokemon.$index.$field"] =
+                        'Each IV must be between 0 and 31.';
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Moves
+            |--------------------------------------------------------------------------
+            */
+
+            foreach ($teamPokemon as $field => $value) {
+                if (
+                    preg_match('/^move_(\d+)$/', (string) $field, $matches)
+                    && (int) $matches[1] > 4
+                    && trim((string) $value) !== ''
+                ) {
+                    $errors["pokemon.$index.moves"] =
+                        'A Pokémon cannot have more than four moves.';
+
+                    break;
+                }
+            }
+        }
+
+        return $errors;
     }
 }
