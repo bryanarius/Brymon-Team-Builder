@@ -44,6 +44,7 @@ final class User extends Model
                 email,
                 password_hash,
                 role,
+                email_verified_at,
                 created_at,
                 updated_at
              FROM users
@@ -114,6 +115,147 @@ final class User extends Model
             $id = $statement->fetchColumn();
 
             return $id === false ? false : (int) $id;
+        } catch (PDOException $exception) {
+            error_log((string) $exception);
+
+            return false;
+        }
+    }
+
+    public function generateEmailVerificationToken(int $userId): string|false
+    {
+        $token = bin2hex(random_bytes(32));
+        $tokenHash = hash('sha256', $token);
+
+        try {
+            $statement = $this->db->prepare(
+                'UPDATE users
+                 SET email_verification_token_hash = :token_hash,
+                     email_verification_expires_at = NOW() + INTERVAL \'24 hours\'
+                 WHERE id = :id'
+            );
+
+            $statement->execute([
+                'token_hash' => $tokenHash,
+                'id' => $userId,
+            ]);
+
+            return $token;
+        } catch (PDOException $exception) {
+            error_log((string) $exception);
+
+            return false;
+        }
+    }
+
+    public function findByEmailVerificationTokenHash(string $tokenHash): array|false
+    {
+        $statement = $this->db->prepare(
+            'SELECT
+                id,
+                username,
+                email,
+                email_verified_at,
+                email_verification_expires_at
+             FROM users
+             WHERE email_verification_token_hash = :token_hash
+             LIMIT 1'
+        );
+
+        $statement->execute([
+            'token_hash' => $tokenHash,
+        ]);
+
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function markEmailVerified(int $userId): bool
+    {
+        try {
+            $statement = $this->db->prepare(
+                'UPDATE users
+                 SET email_verified_at = NOW(),
+                     email_verification_token_hash = NULL,
+                     email_verification_expires_at = NULL
+                 WHERE id = :id'
+            );
+
+            $statement->execute([
+                'id' => $userId,
+            ]);
+
+            return true;
+        } catch (PDOException $exception) {
+            error_log((string) $exception);
+
+            return false;
+        }
+    }
+
+    public function generatePasswordResetToken(int $userId): string|false
+    {
+        $token = bin2hex(random_bytes(32));
+        $tokenHash = hash('sha256', $token);
+
+        try {
+            $statement = $this->db->prepare(
+                'UPDATE users
+                 SET password_reset_token_hash = :token_hash,
+                     password_reset_expires_at = NOW() + INTERVAL \'1 hour\'
+                 WHERE id = :id'
+            );
+
+            $statement->execute([
+                'token_hash' => $tokenHash,
+                'id' => $userId,
+            ]);
+
+            return $token;
+        } catch (PDOException $exception) {
+            error_log((string) $exception);
+
+            return false;
+        }
+    }
+
+    public function findByPasswordResetTokenHash(string $tokenHash): array|false
+    {
+        $statement = $this->db->prepare(
+            'SELECT
+                id,
+                username,
+                email,
+                password_reset_expires_at
+             FROM users
+             WHERE password_reset_token_hash = :token_hash
+             LIMIT 1'
+        );
+
+        $statement->execute([
+            'token_hash' => $tokenHash,
+        ]);
+
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function resetPassword(int $userId, string $passwordHash): bool
+    {
+        try {
+            $statement = $this->db->prepare(
+                'UPDATE users
+                 SET password_hash = :password_hash,
+                     password_reset_token_hash = NULL,
+                     password_reset_expires_at = NULL,
+                     email_verified_at = COALESCE(email_verified_at, NOW())
+                 WHERE id = :id'
+            );
+
+            $statement->execute([
+                'password_hash' => $passwordHash,
+                'id' => $userId,
+            ]);
+
+            return true;
         } catch (PDOException $exception) {
             error_log((string) $exception);
 
