@@ -411,6 +411,116 @@ final class AuthController extends Controller
         ]);
     }
 
+    public function showResetPassword(string $token): void
+    {
+        Auth::guestOnly();
+
+        $userModel = new User();
+        $tokenHash = hash('sha256', $token);
+        $user = $userModel->findByPasswordResetTokenHash($tokenHash);
+
+        if (
+            $user === false
+            || $this->isExpired($user['password_reset_expires_at'])
+        ) {
+            $this->view('auth/reset-password', [
+                'pageTitle' => 'Reset Password',
+                'invalid' => true,
+            ]);
+
+            return;
+        }
+
+        $this->view('auth/reset-password', [
+            'pageTitle' => 'Reset Password',
+            'token' => $token,
+        ]);
+    }
+
+    public function resetPassword(string $token): void
+    {
+        Auth::guestOnly();
+
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+
+            $this->view('errors/403', [
+                'pageTitle' => 'Request Denied',
+            ]);
+
+            return;
+        }
+
+        $userModel = new User();
+        $tokenHash = hash('sha256', $token);
+        $user = $userModel->findByPasswordResetTokenHash($tokenHash);
+
+        if (
+            $user === false
+            || $this->isExpired($user['password_reset_expires_at'])
+        ) {
+            $this->view('auth/reset-password', [
+                'pageTitle' => 'Reset Password',
+                'invalid' => true,
+            ]);
+
+            return;
+        }
+
+        $password = $_POST['password'] ?? '';
+        $passwordConfirmation = $_POST['password_confirmation'] ?? '';
+
+        $errors = [];
+
+        if (!Validator::required($password)) {
+            $errors['password'] = 'Password is required.';
+        } elseif (!Validator::minLength($password, 8)) {
+            $errors['password'] = 'Password must be at least 8 characters.';
+        }
+
+        if (!Validator::required($passwordConfirmation)) {
+            $errors['password_confirmation'] = 'Please confirm your password.';
+        } elseif (!Validator::matches($password, $passwordConfirmation)) {
+            $errors['password_confirmation'] = 'Passwords do not match.';
+        }
+
+        if ($errors !== []) {
+            $this->view('auth/reset-password', [
+                'pageTitle' => 'Reset Password',
+                'token' => $token,
+                'errors' => $errors,
+            ]);
+
+            return;
+        }
+
+        try {
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+            if ($hashedPassword === false) {
+                throw new \RuntimeException('Password hashing failed.');
+            }
+
+            $userModel->resetPassword((int) $user['id'], $hashedPassword);
+        } catch (Throwable $exception) {
+            error_log((string) $exception);
+
+            $this->view('auth/reset-password', [
+                'pageTitle' => 'Reset Password',
+                'token' => $token,
+                'errors' => [
+                    'reset' =>
+                        'We could not reset your password. Please try again.',
+                ],
+            ]);
+
+            return;
+        }
+
+        header('Location: /login?reset=1');
+        exit;
+    }
+
     private function isExpired(?string $expiresAt): bool
     {
         if ($expiresAt === null) {

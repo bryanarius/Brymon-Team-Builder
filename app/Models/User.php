@@ -131,7 +131,8 @@ final class User extends Model
             $statement = $this->db->prepare(
                 'UPDATE users
                  SET email_verification_token_hash = :token_hash,
-                     email_verification_expires_at = NOW() + INTERVAL \'24 hours\'
+                     email_verification_expires_at =
+                        (NOW() AT TIME ZONE \'UTC\') + INTERVAL \'24 hours\'
                  WHERE id = :id'
             );
 
@@ -201,7 +202,8 @@ final class User extends Model
             $statement = $this->db->prepare(
                 'UPDATE users
                  SET password_reset_token_hash = :token_hash,
-                     password_reset_expires_at = NOW() + INTERVAL \'1 hour\'
+                     password_reset_expires_at =
+                        (NOW() AT TIME ZONE \'UTC\') + INTERVAL \'1 hour\'
                  WHERE id = :id'
             );
 

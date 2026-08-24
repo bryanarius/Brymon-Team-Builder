@@ -163,6 +163,10 @@ $notice = $notice ?? null;
                         <?php endif; ?>
                     </div>
 
+                    <a href="/forgot-password" class="auth-home-link">
+                        Forgot your password?
+                    </a>
+
                     <button type="submit" class="auth-submit">
                         Sign In
                     </button>
