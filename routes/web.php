@@ -33,6 +33,20 @@ $router->post('/logout', [AuthController::class, 'logout']);
 
 /*
 |--------------------------------------------------------------------------
+| Password Reset / Email Verification Routes
+|--------------------------------------------------------------------------
+*/
+
+$router->get('/verify-email/{token}', [AuthController::class, 'verifyEmail']);
+
+$router->get('/forgot-password', [AuthController::class, 'showForgotPassword']);
+$router->post('/forgot-password', [AuthController::class, 'forgotPassword']);
+
+$router->get('/reset-password/{token}', [AuthController::class, 'showResetPassword']);
+$router->post('/reset-password/{token}', [AuthController::class, 'resetPassword']);
+
+/*
+|--------------------------------------------------------------------------
 | Temp Dash Route
 |--------------------------------------------------------------------------
 */

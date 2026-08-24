@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Auth;
+use App\Core\Config;
 use App\Core\Controller;
 use App\Core\Csrf;
+use App\Core\Mailer;
 use App\Core\Validator;
 use App\Models\User;
 use Throwable;
@@ -123,6 +125,32 @@ final class AuthController extends Controller
                     'User model failed to create an account.'
                 );
             }
+
+            $verificationToken = $userModel->generateEmailVerificationToken(
+                $userId
+            );
+
+            if ($verificationToken === false) {
+                throw new \RuntimeException(
+                    'Failed to generate an email verification token.'
+                );
+            }
+
+            $verificationUrl = rtrim(
+                (string) Config::get('APP_URL', ''),
+                '/'
+            ) . '/verify-email/' . $verificationToken;
+
+            $emailHtml = Mailer::render('email-verification', [
+                'username' => $username,
+                'verificationUrl' => $verificationUrl,
+            ]);
+
+            if (!Mailer::send($email, 'Verify your Brymon account', $emailHtml)) {
+                error_log(
+                    'Failed to send verification email to user id ' . $userId
+                );
+            }
         } catch (Throwable $exception) {
             error_log((string) $exception);
 
@@ -197,6 +225,10 @@ final class AuthController extends Controller
                 )
             ) {
                 $errors['login'] = 'Invalid email or password.';
+            } elseif ($user['email_verified_at'] === null) {
+                $errors['login'] =
+                    'Please verify your email address before signing in. '
+                    . 'Check your inbox for the verification link.';
             }
         }
 

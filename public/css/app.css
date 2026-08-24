@@ -3607,6 +3607,11 @@ h3 {
   font-size: 0.82rem;
   line-height: 1.5;
 }
+.auth-alert--success {
+  border-color: rgba(82, 199, 122, 0.34);
+  background: rgba(82, 199, 122, 0.1);
+  color: var(--success);
+}
 .auth-submit {
   min-height: 52px;
   margin-top: 0.25rem;
