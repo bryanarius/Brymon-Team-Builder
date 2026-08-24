@@ -587,6 +587,8 @@ Potential future improvements include:
 - Type coverage analysis
 - Shared weakness recommendations
 - Team role balance
+- Add Pokedex
+- Searching Items
 - Additional accessibility improvements
 - Additional usability improvements
 
