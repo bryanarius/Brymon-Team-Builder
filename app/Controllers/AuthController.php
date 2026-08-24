@@ -173,12 +173,55 @@ final class AuthController extends Controller
         exit;
     }
 
+    public function verifyEmail(string $token): void
+    {
+        $userModel = new User();
+
+        $tokenHash = hash('sha256', $token);
+        $user = $userModel->findByEmailVerificationTokenHash($tokenHash);
+
+        if ($user === false) {
+            $this->view('auth/verify-email', [
+                'pageTitle' => 'Verify Email',
+                'status' => 'invalid',
+            ]);
+
+            return;
+        }
+
+        if ($this->isExpired($user['email_verification_expires_at'])) {
+            $this->view('auth/verify-email', [
+                'pageTitle' => 'Verify Email',
+                'status' => 'expired',
+            ]);
+
+            return;
+        }
+
+        $userModel->markEmailVerified((int) $user['id']);
+
+        header('Location: /login?verified=1');
+        exit;
+    }
+
     public function showLogin(): void
     {
         Auth::guestOnly();
 
+        $notice = match (true) {
+            isset($_GET['registered']) =>
+                'Account created! Please check your email to verify '
+                    . 'your address before signing in.',
+            isset($_GET['verified']) =>
+                'Your email has been verified. You can now sign in.',
+            isset($_GET['reset']) =>
+                'Your password has been reset. You can now sign in.',
+            default => null,
+        };
+
         $this->view('auth/login', [
             'pageTitle' => 'Login',
+            'notice' => $notice,
         ]);
     }
 
@@ -276,5 +319,106 @@ final class AuthController extends Controller
 
         header('Location: /');
         exit;
+    }
+
+    public function showForgotPassword(): void
+    {
+        Auth::guestOnly();
+
+        $this->view('auth/forgot-password', [
+            'pageTitle' => 'Forgot Password',
+        ]);
+    }
+
+    public function forgotPassword(): void
+    {
+        Auth::guestOnly();
+
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+
+            $this->view('errors/403', [
+                'pageTitle' => 'Request Denied',
+            ]);
+
+            return;
+        }
+
+        $email = strtolower(trim($_POST['email'] ?? ''));
+
+        $errors = [];
+
+        if (!Validator::required($email)) {
+            $errors['email'] = 'Email is required.';
+        } elseif (!Validator::email($email)) {
+            $errors['email'] = 'Please enter a valid email.';
+        }
+
+        if ($errors !== []) {
+            $this->view('auth/forgot-password', [
+                'pageTitle' => 'Forgot Password',
+                'errors' => $errors,
+                'old' => [
+                    'email' => $email,
+                ],
+            ]);
+
+            return;
+        }
+
+        $userModel = new User();
+        $user = $userModel->findByEmail($email);
+
+        if ($user !== false) {
+            $resetToken = $userModel->generatePasswordResetToken(
+                (int) $user['id']
+            );
+
+            if ($resetToken !== false) {
+                $resetUrl = rtrim(
+                    (string) Config::get('APP_URL', ''),
+                    '/'
+                ) . '/reset-password/' . $resetToken;
+
+                $emailHtml = Mailer::render('password-reset', [
+                    'username' => $user['username'],
+                    'resetUrl' => $resetUrl,
+                ]);
+
+                if (
+                    !Mailer::send(
+                        $email,
+                        'Reset your Brymon password',
+                        $emailHtml
+                    )
+                ) {
+                    error_log(
+                        'Failed to send password reset email to user id '
+                            . $user['id']
+                    );
+                }
+            } else {
+                error_log(
+                    'Failed to generate password reset token for user id '
+                        . $user['id']
+                );
+            }
+        }
+
+        $this->view('auth/forgot-password', [
+            'pageTitle' => 'Forgot Password',
+            'sent' => true,
+        ]);
+    }
+
+    private function isExpired(?string $expiresAt): bool
+    {
+        if ($expiresAt === null) {
+            return true;
+        }
+
+        $expiresAtTimestamp = strtotime($expiresAt);
+
+        return $expiresAtTimestamp === false || $expiresAtTimestamp < time();
     }
 }

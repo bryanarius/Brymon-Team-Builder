@@ -8,6 +8,7 @@ require dirname(__DIR__) . '/layouts/header.php';
 
 $errors = $errors ?? [];
 $old = $old ?? [];
+$notice = $notice ?? null;
 ?>
 
 <link rel="stylesheet" href="/assets/css/auth.css">
@@ -74,6 +75,16 @@ $old = $old ?? [];
 
                     <p>Enter your account details to continue.</p>
                 </div>
+
+                <?php if ($notice !== null): ?>
+                    <div class="auth-alert auth-alert--success" role="status">
+                        <?= htmlspecialchars(
+                            $notice,
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
+                    </div>
+                <?php endif; ?>
 
                 <?php if (isset($errors['login'])): ?>
                     <div class="auth-alert" role="alert">
