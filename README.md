@@ -68,7 +68,10 @@ Brymon combines:
 ## Authentication
 
 - User registration
+- Email verification
 - User login
+- Login blocked until email is verified
+- Forgot password / password reset via email
 - Secure password hashing
 - Session authentication
 - Session regeneration after login
@@ -172,6 +175,9 @@ PostgreSQL integration tests verify team ownership and database behavior, includ
 - Owners can access their own teams
 - Other users cannot access another user's team
 - Other users cannot delete another user's team
+- Email verification tokens are generated, hashed, and expire correctly
+- Password reset tokens are generated, hashed, and expire correctly
+- Resetting a password clears the reset token and implicitly verifies the email
 
 ## End-to-End Tests
 
@@ -190,8 +196,8 @@ Playwright tests exercise real browser workflows, including:
 ```text
 PHPUnit
 
-8 tests
-11 assertions
+16 tests
+38 assertions
 100% passing
 
 
@@ -465,12 +471,15 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
 
 - Authentication
 - Authorization
+- Email verification with expiring, hashed tokens
+- Password reset with expiring, hashed tokens
 - Password hashing
 - Session management
 - Session regeneration
 - CSRF protection
 - User-scoped resource ownership
 - Production-safe error handling
+- Transactional email delivery (Resend)
 
 ## Frontend Engineering
 
@@ -578,19 +587,23 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
 
 ## Version 2
 
-Potential future improvements include:
+### ✅ Completed
 
-- Public team sharing
-- User profiles
-- Password reset
-- Deeper team analysis
-- Type coverage analysis
-- Shared weakness recommendations
-- Team role balance
-- Add Pokedex
-- Searching Items
-- Additional accessibility improvements
-- Additional usability improvements
+- [x] Email verification
+- [x] Password reset
+
+### Planned
+
+- [ ] Public team sharing
+- [ ] User profiles
+- [ ] Deeper team analysis
+  - [ ] Type coverage analysis
+  - [ ] Shared weakness recommendations
+  - [ ] Team role balance
+- [ ] Add Pokédex
+- [ ] Searching items
+- [ ] Additional accessibility improvements
+- [ ] Additional usability improvements
 
 ---
 
@@ -659,13 +672,19 @@ Configure your local PostgreSQL credentials:
 
 ```env
 APP_ENV=development
+APP_URL=http://localhost:8000
 
 DB_HOST=127.0.0.1
 DB_PORT=5432
 DB_NAME=brymon
 DB_USER=your_username
 DB_PASSWORD=your_password
+
+RESEND_API_KEY=your_resend_api_key
+MAIL_FROM=noreply@yourdomain.com
 ```
+
+`APP_URL` is used to build the absolute links sent in verification and password reset emails. `RESEND_API_KEY`/`MAIL_FROM` are used to send those emails via [Resend](https://resend.com) — `MAIL_FROM`'s domain must be a verified sending domain in your Resend account.
 
 ---
 
@@ -702,8 +721,8 @@ Run all PHPUnit unit and integration tests:
 Current test suite:
 
 ```text
-8 tests
-11 assertions
+16 tests
+38 assertions
 ```
 
 ---
