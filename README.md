@@ -69,6 +69,7 @@ Brymon combines:
 
 - User registration
 - Email verification
+- Resend verification email
 - User login
 - Login blocked until email is verified
 - Forgot password / password reset via email
