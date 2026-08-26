@@ -39,6 +39,9 @@ $router->post('/logout', [AuthController::class, 'logout']);
 
 $router->get('/verify-email/{token}', [AuthController::class, 'verifyEmail']);
 
+$router->get('/resend-verification', [AuthController::class, 'showResendVerification']);
+$router->post('/resend-verification', [AuthController::class, 'resendVerification']);
+
 $router->get('/forgot-password', [AuthController::class, 'showForgotPassword']);
 $router->post('/forgot-password', [AuthController::class, 'forgotPassword']);
 

@@ -9,6 +9,7 @@ require dirname(__DIR__) . '/layouts/header.php';
 $errors = $errors ?? [];
 $old = $old ?? [];
 $notice = $notice ?? null;
+$unverified = $unverified ?? false;
 ?>
 
 <link rel="stylesheet" href="/assets/css/auth.css">
@@ -93,6 +94,12 @@ $notice = $notice ?? null;
                             ENT_QUOTES,
                             'UTF-8'
                         ) ?>
+
+                        <?php if ($unverified === true): ?>
+                            <a href="/resend-verification">
+                                Resend verification email
+                            </a>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
 

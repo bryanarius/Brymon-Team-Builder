@@ -272,6 +272,7 @@ final class AuthController extends Controller
                 $errors['login'] =
                     'Please verify your email address before signing in. '
                     . 'Check your inbox for the verification link.';
+                $unverified = true;
             }
         }
 
@@ -279,6 +280,7 @@ final class AuthController extends Controller
             $this->view('auth/login', [
                 'pageTitle' => 'Login',
                 'errors' => $errors,
+                'unverified' => $unverified ?? false,
                 'old' => [
                     'email' => $email,
                 ],
@@ -407,6 +409,96 @@ final class AuthController extends Controller
 
         $this->view('auth/forgot-password', [
             'pageTitle' => 'Forgot Password',
+            'sent' => true,
+        ]);
+    }
+
+    public function showResendVerification(): void
+    {
+        Auth::guestOnly();
+
+        $this->view('auth/resend-verification', [
+            'pageTitle' => 'Resend Verification',
+        ]);
+    }
+
+    public function resendVerification(): void
+    {
+        Auth::guestOnly();
+
+        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
+            http_response_code(403);
+
+            $this->view('errors/403', [
+                'pageTitle' => 'Request Denied',
+            ]);
+
+            return;
+        }
+
+        $email = strtolower(trim($_POST['email'] ?? ''));
+
+        $errors = [];
+
+        if (!Validator::required($email)) {
+            $errors['email'] = 'Email is required.';
+        } elseif (!Validator::email($email)) {
+            $errors['email'] = 'Please enter a valid email.';
+        }
+
+        if ($errors !== []) {
+            $this->view('auth/resend-verification', [
+                'pageTitle' => 'Resend Verification',
+                'errors' => $errors,
+                'old' => [
+                    'email' => $email,
+                ],
+            ]);
+
+            return;
+        }
+
+        $userModel = new User();
+        $user = $userModel->findByEmail($email);
+
+        if ($user !== false && $user['email_verified_at'] === null) {
+            $verificationToken = $userModel->generateEmailVerificationToken(
+                (int) $user['id']
+            );
+
+            if ($verificationToken !== false) {
+                $verificationUrl = rtrim(
+                    (string) Config::get('APP_URL', ''),
+                    '/'
+                ) . '/verify-email/' . $verificationToken;
+
+                $emailHtml = Mailer::render('email-verification', [
+                    'username' => $user['username'],
+                    'verificationUrl' => $verificationUrl,
+                ]);
+
+                if (
+                    !Mailer::send(
+                        $email,
+                        'Verify your Brymon account',
+                        $emailHtml
+                    )
+                ) {
+                    error_log(
+                        'Failed to send verification email to user id '
+                            . $user['id']
+                    );
+                }
+            } else {
+                error_log(
+                    'Failed to generate email verification token for user id '
+                        . $user['id']
+                );
+            }
+        }
+
+        $this->view('auth/resend-verification', [
+            'pageTitle' => 'Resend Verification',
             'sent' => true,
         ]);
     }

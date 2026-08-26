@@ -58,15 +58,19 @@ $status = $status ?? 'invalid';
 
                 <div class="auth-alert" role="alert">
                     <?php if ($status === 'expired'): ?>
-                        Please register again or contact support to
-                        request a new verification link.
+                        This link has expired, but you can request a new
+                        one below.
                     <?php else: ?>
                         If you already verified your email, you can sign
-                        in below.
+                        in below. Otherwise, request a new link.
                     <?php endif; ?>
                 </div>
 
-                <a href="/login" class="auth-submit" style="display:block; text-align:center; text-decoration:none;">
+                <a href="/resend-verification" class="auth-submit" style="display:block; text-align:center; text-decoration:none;">
+                    Get a New Link
+                </a>
+
+                <a href="/login" class="auth-home-link">
                     Go to Sign In
                 </a>
 
