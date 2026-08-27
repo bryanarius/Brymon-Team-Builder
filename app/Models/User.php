@@ -265,6 +265,50 @@ final class User extends Model
         }
     }
 
+    public function updateUsername(int $userId, string $username): bool
+    {
+        try {
+            $statement = $this->db->prepare(
+                'UPDATE users
+                 SET username = :username
+                 WHERE id = :id'
+            );
+
+            $statement->execute([
+                'username' => trim($username),
+                'id' => $userId,
+            ]);
+
+            return true;
+        } catch (PDOException $exception) {
+            error_log((string) $exception);
+
+            return false;
+        }
+    }
+
+    public function updatePassword(int $userId, string $passwordHash): bool
+    {
+        try {
+            $statement = $this->db->prepare(
+                'UPDATE users
+                 SET password_hash = :password_hash
+                 WHERE id = :id'
+            );
+
+            $statement->execute([
+                'password_hash' => $passwordHash,
+                'id' => $userId,
+            ]);
+
+            return true;
+        } catch (PDOException $exception) {
+            error_log((string) $exception);
+
+            return false;
+        }
+    }
+
     public function findAllByUserId(int $userId): array
     {
         $statement = $this->db->prepare(

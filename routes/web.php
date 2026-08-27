@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Controllers\AccountController;
 use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
 use App\Controllers\PageController;
@@ -47,6 +48,16 @@ $router->post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
 $router->get('/reset-password/{token}', [AuthController::class, 'showResetPassword']);
 $router->post('/reset-password/{token}', [AuthController::class, 'resetPassword']);
+
+/*
+|--------------------------------------------------------------------------
+| Account Routes
+|--------------------------------------------------------------------------
+*/
+
+$router->get('/account', [AccountController::class, 'show']);
+$router->post('/account/username', [AccountController::class, 'updateUsername']);
+$router->post('/account/password', [AccountController::class, 'updatePassword']);
 
 /*
 |--------------------------------------------------------------------------
