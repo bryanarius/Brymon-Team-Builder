@@ -85,6 +85,11 @@ $pageTitle = $pageTitle ?? 'Brymon';
                     id="account-menu-dropdown"
                     hidden
                 >
+                    <a href="/account" class="account-menu-link">
+                        <span>⚙</span>
+                        Account Settings
+                    </a>
+
                     <form action="/logout" method="POST">
                         <input
                             type="hidden"
@@ -151,6 +156,7 @@ $pageTitle = $pageTitle ?? 'Brymon';
             <?php if (Auth::check()): ?>
                 <a href="/teambuilder">Team Builder</a>
                 <a href="/teams">Saved Teams</a>
+                <a href="/account">Account Settings</a>
                 <span class="mobile-navigation-username">
                     Signed in as
                     <strong>
