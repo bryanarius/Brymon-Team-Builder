@@ -7,6 +7,19 @@ $pageTitle = $pageTitle ?? 'View Team';
 require dirname(__DIR__) . '/layouts/header.php';
 
 $teamPokemon = $team['pokemon'] ?? [];
+
+$teamMoves = array_map(
+    static fn (array $pokemon): array => [
+        'pokemonApiId' => (int) $pokemon['pokemon_api_id'],
+        'moves' => array_values(array_filter([
+            $pokemon['move_1'] ?? null,
+            $pokemon['move_2'] ?? null,
+            $pokemon['move_3'] ?? null,
+            $pokemon['move_4'] ?? null,
+        ])),
+    ],
+    $teamPokemon
+);
 ?>
 
 <section class="team-detail-page">
@@ -142,6 +155,10 @@ $teamPokemon = $team['pokemon'] ?? [];
             <?php endforeach; ?>
         </div>
 
+        <script>
+            window.BRYMON_TEAM_MOVES = <?= json_encode($teamMoves, JSON_THROW_ON_ERROR) ?>;
+        </script>
+
         <section class="team-analysis" id="team-analysis">
             <div class="team-analysis-header">
                 <h2>Team Analysis</h2>
@@ -204,6 +221,24 @@ $teamPokemon = $team['pokemon'] ?? [];
                     <div
                         class="analysis-type-list"
                         id="analysis-team-types"
+                    ></div>
+                </article>
+
+                <article class="team-analysis-card">
+                    <h3>Type Coverage</h3>
+
+                    <div
+                        class="analysis-type-list"
+                        id="analysis-type-coverage"
+                    ></div>
+                </article>
+
+                <article class="team-analysis-card">
+                    <h3>Role Balance</h3>
+
+                    <div
+                        class="analysis-type-list"
+                        id="analysis-role-balance"
                     ></div>
                 </article>
             </div>

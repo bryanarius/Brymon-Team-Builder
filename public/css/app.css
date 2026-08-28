@@ -1945,6 +1945,13 @@ h3 {
   font-size: 0.7rem;
 }
 
+.analysis-type-badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
 .team-analysis-summary {
   padding: 1.25rem;
   border: 1px solid rgba(49, 88, 142, 0.8);

@@ -27,11 +27,17 @@ document.addEventListener("DOMContentLoaded", () => {
     "#analysis-team-types",
   );
 
+  const typeCoverageContainer = document.querySelector(
+    "#analysis-type-coverage",
+  );
+
   const summaryList = document.querySelector(
   "#team-analysis-summary-list",
   );
 
     const typeCache = new Map();
+    const moveCache = new Map();
+    const teamMoves = window.BRYMON_TEAM_MOVES || [];
 
     const ATTACKING_TYPES = [
     "normal",
@@ -60,7 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
     !summaryList ||
     !weaknessContainer ||
     !immunityContainer ||
-    !teamTypesContainer
+    !teamTypesContainer ||
+    !typeCoverageContainer
   ) {
     return;
   }
@@ -93,6 +100,9 @@ document.addEventListener("DOMContentLoaded", () => {
         renderSharedWeaknesses(defensiveAnalysis.sharedWeaknesses,);
         renderImmunities(defensiveAnalysis.immunities,);
         renderTeamTypes(pokemonDetails);
+
+        const typeCoverage = await computeTypeCoverage(teamMoves);
+        renderTypeCoverage(typeCoverage.covered, typeCoverage.gaps);
 
         // console.log(
         // "Team defense:",
@@ -174,6 +184,66 @@ document.addEventListener("DOMContentLoaded", () => {
     typeCache.set(typeName, data);
 
     return data;
+    }
+
+    async function fetchMove(moveName) {
+    if (moveCache.has(moveName)) {
+        return moveCache.get(moveName);
+    }
+
+    const response = await fetch(
+        `https://pokeapi.co/api/v2/move/${moveName}`,
+    );
+
+    if (!response.ok) {
+        throw new Error(
+        `Unable to load move ${moveName}.`,
+        );
+    }
+
+    const data = await response.json();
+
+    moveCache.set(moveName, data);
+
+    return data;
+    }
+
+    async function computeTypeCoverage(teamMoveData) {
+    const moveNames = new Set();
+
+    teamMoveData.forEach((pokemon) => {
+        pokemon.moves.forEach((moveName) => {
+        moveNames.add(moveName);
+        });
+    });
+
+    const moveTypes = new Set();
+
+    for (const moveName of moveNames) {
+        const moveData = await fetchMove(moveName);
+        moveTypes.add(moveData.type.name);
+    }
+
+    const covered = new Set();
+
+    for (const typeName of moveTypes) {
+        const typeData = await fetchType(typeName);
+
+        typeData.damage_relations.double_damage_to.forEach(
+        ({ name }) => {
+            covered.add(name);
+        },
+        );
+    }
+
+    const gaps = ATTACKING_TYPES.filter(
+        (typeName) => !covered.has(typeName),
+    );
+
+    return {
+        covered: [...covered],
+        gaps,
+    };
     }
 
     async function buildTypeMultiplierMap(
@@ -420,6 +490,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
         teamTypesContainer.appendChild(item);
       });
+    }
+
+    function renderTypeCoverage(covered, gaps) {
+      typeCoverageContainer.replaceChildren();
+
+      if (covered.length === 0) {
+        typeCoverageContainer.append(
+          createAnalysisEmptyMessage(
+            "Select moves on this team to see type coverage.",
+          ),
+        );
+
+        return;
+      }
+
+      const coveredHeading = document.createElement("p");
+      coveredHeading.className = "analysis-breakdown-heading";
+      coveredHeading.textContent = "Super-effective against:";
+
+      const coveredList = document.createElement("div");
+      coveredList.className = "analysis-type-badge-list";
+
+      covered
+        .slice()
+        .sort()
+        .forEach((typeName) => {
+          const badge = document.createElement("span");
+          badge.className =
+            `pokemon-type-badge pokemon-type-${typeName}`;
+          badge.textContent = formatTypeName(typeName);
+
+          coveredList.appendChild(badge);
+        });
+
+      typeCoverageContainer.append(coveredHeading, coveredList);
+
+      if (gaps.length > 0) {
+        const gapsHeading = document.createElement("p");
+        gapsHeading.className = "analysis-breakdown-heading";
+        gapsHeading.textContent = "No coverage against:";
+
+        const gapsList = document.createElement("div");
+        gapsList.className = "analysis-type-badge-list";
+
+        gaps
+          .slice()
+          .sort()
+          .forEach((typeName) => {
+            const badge = document.createElement("span");
+            badge.className =
+              `pokemon-type-badge pokemon-type-${typeName}`;
+            badge.textContent = formatTypeName(typeName);
+
+            gapsList.appendChild(badge);
+          });
+
+        typeCoverageContainer.append(gapsHeading, gapsList);
+      }
     }
 
     function renderTeamSummary(
