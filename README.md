@@ -592,15 +592,16 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
 
 - [x] Email verification
 - [x] Password reset
+- [x] Account settings
+- [x] Deeper team analysis
+  - [x] Type coverage analysis
+  - [x] Shared weakness recommendations
+  - [x] Team role balance
 
 ### Planned
 
 - [ ] Public team sharing
 - [ ] User profiles
-- [ ] Deeper team analysis
-  - [ ] Type coverage analysis
-  - [ ] Shared weakness recommendations
-  - [ ] Team role balance
 - [ ] Add Pokédex
 - [ ] Searching items
 - [ ] Additional accessibility improvements
