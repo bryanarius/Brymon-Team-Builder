@@ -19,11 +19,15 @@ document.addEventListener("DOMContentLoaded", () => {
     "#analysis-type-coverage",
   );
 
+  const roleBalanceContainer = document.querySelector(
+    "#analysis-role-balance",
+  );
+
   const summaryList = document.querySelector("#team-analysis-summary-list");
 
   const typeCache = new Map();
   const moveCache = new Map();
-  const teamMoves = window.BRYMON_TEAM_MOVES || [];
+  const teamPokemon = window.BRYMON_TEAM_POKEMON || [];
 
   const ATTACKING_TYPES = [
     "normal",
@@ -46,6 +50,154 @@ document.addEventListener("DOMContentLoaded", () => {
     "fairy",
   ];
 
+  const NEUTRAL_NATURES = new Set([
+    "hardy",
+    "docile",
+    "serious",
+    "bashful",
+    "quirky",
+  ]);
+
+  const NATURE_MODIFIERS = {
+    adamant: { plus: "attack", minus: "special-attack" },
+    brave: { plus: "attack", minus: "speed" },
+    lonely: { plus: "attack", minus: "defense" },
+    naughty: { plus: "attack", minus: "special-defense" },
+    bold: { plus: "defense", minus: "attack" },
+    relaxed: { plus: "defense", minus: "speed" },
+    impish: { plus: "defense", minus: "special-attack" },
+    lax: { plus: "defense", minus: "special-defense" },
+    modest: { plus: "special-attack", minus: "attack" },
+    mild: { plus: "special-attack", minus: "defense" },
+    quiet: { plus: "special-attack", minus: "speed" },
+    rash: { plus: "special-attack", minus: "special-defense" },
+    calm: { plus: "special-defense", minus: "attack" },
+    gentle: { plus: "special-defense", minus: "defense" },
+    sassy: { plus: "special-defense", minus: "speed" },
+    careful: { plus: "special-defense", minus: "special-attack" },
+    timid: { plus: "speed", minus: "attack" },
+    hasty: { plus: "speed", minus: "defense" },
+    jolly: { plus: "speed", minus: "special-attack" },
+    naive: { plus: "speed", minus: "special-defense" },
+  };
+
+  const UTILITY_MOVES = {
+    "hazard-setter": new Set([
+      "stealth-rock",
+      "spikes",
+      "toxic-spikes",
+      "sticky-web",
+      "stone-axe",
+      "ceaseless-edge",
+    ]),
+    "hazard-removal": new Set([
+      "rapid-spin",
+      "defog",
+      "tidy-up",
+      "mortal-spin",
+      "court-change",
+    ]),
+    pivot: new Set([
+      "u-turn",
+      "volt-switch",
+      "flip-turn",
+      "teleport",
+      "parting-shot",
+      "baton-pass",
+      "chilly-reception",
+      "shed-tail",
+    ]),
+    "speed-control": new Set([
+      "tailwind",
+      "trick-room",
+      "thunder-wave",
+      "icy-wind",
+      "electroweb",
+      "glare",
+      "nuzzle",
+      "bulldoze",
+      "scary-face",
+      "sticky-web",
+    ]),
+    cleric: new Set([
+      "wish",
+      "heal-bell",
+      "aromatherapy",
+      "healing-wish",
+      "lunar-dance",
+      "jungle-healing",
+      "life-dew",
+      "floral-healing",
+    ]),
+    setup: new Set([
+      "swords-dance",
+      "dragon-dance",
+      "nasty-plot",
+      "calm-mind",
+      "quiver-dance",
+      "bulk-up",
+      "coil",
+      "shift-gear",
+      "agility",
+      "rock-polish",
+      "autotomize",
+      "work-up",
+      "hone-claws",
+      "victory-dance",
+      "no-retreat",
+      "clangorous-soul",
+      "geomancy",
+      "tail-glow",
+      "shell-smash",
+      "belly-drum",
+      "fillet-away",
+      "take-heart",
+      "growth",
+      "curse",
+    ]),
+    recovery: new Set([
+      "recover",
+      "roost",
+      "slack-off",
+      "soft-boiled",
+      "synthesis",
+      "moonlight",
+      "morning-sun",
+      "milk-drink",
+      "shore-up",
+      "strength-sap",
+      "rest",
+    ]),
+  };
+
+  const ROLE_LABELS = {
+    "physical-attacker": "Physical Attacker",
+    "special-attacker": "Special Attacker",
+    wall: "Wall / Tank",
+    balanced: "Balanced Pivot",
+    setup: "Setup Sweeper",
+    pivot: "Pivot",
+    "speed-control": "Speed Control",
+    "hazard-setter": "Hazard Setter",
+    "hazard-removal": "Hazard Removal",
+    cleric: "Cleric",
+    recovery: "Reliable Recovery",
+  };
+
+  const ROLE_ORDER = [
+    "physical-attacker",
+    "special-attacker",
+    "wall",
+    "balanced",
+    "setup",
+    "pivot",
+    "speed-control",
+    "hazard-setter",
+    "hazard-removal",
+    "cleric",
+    "recovery",
+  ];
+
   if (
     !statusElement ||
     !contentElement ||
@@ -53,7 +205,8 @@ document.addEventListener("DOMContentLoaded", () => {
     !weaknessContainer ||
     !immunityContainer ||
     !teamTypesContainer ||
-    !typeCoverageContainer
+    !typeCoverageContainer ||
+    !roleBalanceContainer
   ) {
     return;
   }
@@ -80,13 +233,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const defensiveAnalysis = analyzeTeamDefense(multipliers);
       const resistanceMap = await buildResistanceMap();
-      renderTeamSummary(defensiveAnalysis, pokemonDetails);
+      const roleBalance = computeRoleBalance(pokemonDetails, teamPokemon);
+
+      renderTeamSummary(
+        defensiveAnalysis,
+        pokemonDetails,
+        roleBalance.findings,
+      );
       renderSharedWeaknesses(defensiveAnalysis.sharedWeaknesses, resistanceMap);
       renderImmunities(defensiveAnalysis.immunities);
       renderTeamTypes(pokemonDetails);
 
-      const typeCoverage = await computeTypeCoverage(teamMoves);
+      const typeCoverage = await computeTypeCoverage(teamPokemon);
       renderTypeCoverage(typeCoverage.covered, typeCoverage.gaps);
+
+      renderRoleBalance(roleBalance);
 
       // console.log(
       // "Team defense:",
@@ -518,7 +679,381 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function renderTeamSummary(defensiveAnalysis, pokemonDetails) {
+  function getBaseStats(details) {
+    const stats = {};
+
+    details.stats.forEach((entry) => {
+      stats[entry.stat.name] = entry.base_stat;
+    });
+
+    return stats;
+  }
+
+  function natureStatMultiplier(nature, statName) {
+    if (!nature || NEUTRAL_NATURES.has(nature)) {
+      return 1;
+    }
+
+    const modifier = NATURE_MODIFIERS[nature];
+
+    if (!modifier) {
+      return 1;
+    }
+
+    if (modifier.plus === statName) {
+      return 1.1;
+    }
+
+    if (modifier.minus === statName) {
+      return 0.9;
+    }
+
+    return 1;
+  }
+
+  function effectiveStat(baseStat, ev, multiplier) {
+    const base = typeof baseStat === "number" ? baseStat : 0;
+
+    return (2 * base + 31 + Math.floor((ev || 0) / 4)) * multiplier;
+  }
+
+  function classifyPokemon(details, config) {
+    const base = getBaseStats(details);
+    const nature = (config.nature || "").toLowerCase();
+    const evs = config.evs || {};
+
+    const attack = effectiveStat(
+      base.attack,
+      evs.attack,
+      natureStatMultiplier(nature, "attack"),
+    );
+
+    const specialAttack = effectiveStat(
+      base["special-attack"],
+      evs["special-attack"],
+      natureStatMultiplier(nature, "special-attack"),
+    );
+
+    const hp = effectiveStat(base.hp, evs.hp, 1);
+
+    const defense = effectiveStat(
+      base.defense,
+      evs.defense,
+      natureStatMultiplier(nature, "defense"),
+    );
+
+    const specialDefense = effectiveStat(
+      base["special-defense"],
+      evs["special-defense"],
+      natureStatMultiplier(nature, "special-defense"),
+    );
+
+    const offense = Math.max(attack, specialAttack);
+    const bulk = (hp + defense + specialDefense) / 3;
+    const ratio = bulk === 0 ? 1 : offense / bulk;
+
+    const roles = new Set();
+
+    if (ratio >= 1.08) {
+      roles.add(
+        attack >= specialAttack ? "physical-attacker" : "special-attacker",
+      );
+    } else if (ratio <= 0.92) {
+      roles.add("wall");
+    } else {
+      roles.add("balanced");
+    }
+
+    const baseSpeed = typeof base.speed === "number" ? base.speed : 0;
+    const speedInvested =
+      (evs.speed || 0) >= 200 || natureStatMultiplier(nature, "speed") > 1;
+
+    let speed = "mid";
+
+    if (baseSpeed >= 100 || (baseSpeed >= 80 && speedInvested)) {
+      speed = "fast";
+    } else if (baseSpeed <= 55 && !speedInvested) {
+      speed = "slow";
+    }
+
+    (config.moves || []).forEach((moveName) => {
+      const move = String(moveName).toLowerCase();
+
+      Object.entries(UTILITY_MOVES).forEach(([roleKey, moveSet]) => {
+        if (moveSet.has(move)) {
+          roles.add(roleKey);
+        }
+      });
+    });
+
+    return {
+      roles: [...roles],
+      speed,
+    };
+  }
+
+  function computeRoleBalance(pokemonDetails, teamConfig) {
+    const detailsById = new Map();
+
+    pokemonDetails.forEach((details) => {
+      detailsById.set(details.id, details);
+    });
+
+    const configs =
+      teamConfig.length > 0
+        ? teamConfig
+        : pokemonDetails.map((details) => ({
+            pokemonApiId: details.id,
+            name: details.name,
+            nature: null,
+            evs: {},
+            moves: [],
+          }));
+
+    const perPokemon = configs.map((config) => {
+      const details = detailsById.get(config.pokemonApiId);
+      const displayName =
+        config.name || (details && details.name) || `#${config.pokemonApiId}`;
+
+      if (!details) {
+        return {
+          name: displayName,
+          roles: [],
+          speed: "mid",
+        };
+      }
+
+      const classified = classifyPokemon(details, config);
+
+      return {
+        name: displayName,
+        roles: classified.roles,
+        speed: classified.speed,
+      };
+    });
+
+    const roleMembers = {};
+
+    ROLE_ORDER.forEach((roleKey) => {
+      roleMembers[roleKey] = [];
+    });
+
+    perPokemon.forEach((entry) => {
+      entry.roles.forEach((roleKey) => {
+        if (!roleMembers[roleKey]) {
+          roleMembers[roleKey] = [];
+        }
+
+        roleMembers[roleKey].push({
+          name: entry.name,
+        });
+      });
+    });
+
+    const speeds = perPokemon.map((entry) => entry.speed);
+
+    const findings = buildRoleFindings(roleMembers, speeds, perPokemon.length);
+
+    return {
+      roleMembers,
+      findings,
+      teamSize: perPokemon.length,
+    };
+  }
+
+  function buildRoleFindings(roleMembers, speeds, teamSize) {
+    const count = (roleKey) => (roleMembers[roleKey] || []).length;
+    const findings = [];
+
+    const physical = count("physical-attacker");
+    const special = count("special-attacker");
+    const walls = count("wall");
+
+    if (teamSize >= 4 && physical >= teamSize - 1 && special === 0) {
+      findings.push({
+        kind: "warning",
+        message:
+          `${physical} of ${teamSize} Pokémon are physical attackers ` +
+          `and none are special — a single physical wall can check ` +
+          `most of the team.`,
+      });
+    } else if (teamSize >= 4 && special >= teamSize - 1 && physical === 0) {
+      findings.push({
+        kind: "warning",
+        message:
+          `${special} of ${teamSize} Pokémon are special attackers ` +
+          `and none are physical — a single special wall can check ` +
+          `most of the team.`,
+      });
+    } else if (physical > 0 && special > 0) {
+      findings.push({
+        kind: "positive",
+        message:
+          `Offense is split across ${physical} physical and ` +
+          `${special} special ` +
+          `${special === 1 ? "attacker" : "attackers"}, ` +
+          `which is harder to wall.`,
+      });
+    }
+
+    if (teamSize >= 5 && walls === 0) {
+      findings.push({
+        kind: "warning",
+        message:
+          "No defensive walls — nothing on the team can switch into " +
+          "strong attackers repeatedly.",
+      });
+    }
+
+    if (count("hazard-removal") === 0) {
+      findings.push({
+        kind: "warning",
+        message:
+          "No hazard removal (Rapid Spin / Defog) — entry hazards will " +
+          "chip the team on every switch-in.",
+      });
+    }
+
+    if (count("hazard-setter") > 0) {
+      findings.push({
+        kind: "positive",
+        message: `${count("hazard-setter")} Pokémon can set entry hazards.`,
+      });
+    }
+
+    const fast = speeds.filter((tier) => tier === "fast").length;
+    const slow = speeds.filter((tier) => tier === "slow").length;
+
+    if (count("speed-control") === 0 && fast <= 1 && slow >= 3) {
+      findings.push({
+        kind: "warning",
+        message:
+          `${slow} Pokémon are slow and the team has no speed control ` +
+          `(Tailwind, Trick Room, paralysis) — faster teams move first.`,
+      });
+    }
+
+    if (count("pivot") === 0 && teamSize >= 5) {
+      findings.push({
+        kind: "neutral",
+        message:
+          "No pivoting moves (U-turn, Volt Switch) — it will be harder " +
+          "to bring threats in safely.",
+      });
+    }
+
+    if (findings.length === 0) {
+      findings.push({
+        kind: "positive",
+        message: "The team has a well-rounded spread of roles.",
+      });
+    }
+
+    return findings;
+  }
+
+  function renderRoleBalance({ roleMembers, findings, teamSize }) {
+    roleBalanceContainer.replaceChildren();
+
+    if (teamSize === 0) {
+      roleBalanceContainer.append(
+        createAnalysisEmptyMessage(
+          "Add Pokémon to this team to see role balance.",
+        ),
+      );
+
+      return;
+    }
+
+    const findingsList = document.createElement("ul");
+    findingsList.className =
+      "team-analysis-summary-list analysis-role-findings";
+
+    findings.forEach(({ kind, message }) => {
+      findingsList.appendChild(createSummaryItem(kind, message));
+    });
+
+    roleBalanceContainer.appendChild(findingsList);
+
+    const populatedRoles = ROLE_ORDER.filter(
+      (roleKey) => (roleMembers[roleKey] || []).length > 0,
+    );
+
+    if (populatedRoles.length === 0) {
+      roleBalanceContainer.append(
+        createAnalysisEmptyMessage(
+          "No roles detected yet — set natures, EVs, and moves on this team.",
+        ),
+      );
+
+      return;
+    }
+
+    populatedRoles.forEach((roleKey) => {
+      roleBalanceContainer.appendChild(
+        createRoleAnalysisItem({
+          label: ROLE_LABELS[roleKey],
+          pokemon: roleMembers[roleKey],
+        }),
+      );
+    });
+  }
+
+  function createRoleAnalysisItem({ label, pokemon }) {
+    const details = document.createElement("details");
+    details.className = "analysis-type-item analysis-type-details";
+
+    const summary = document.createElement("summary");
+    summary.className = "analysis-type-summary";
+
+    const roleBadge = document.createElement("span");
+    roleBadge.className = "analysis-role-badge";
+    roleBadge.textContent = label;
+
+    const summaryContent = document.createElement("div");
+    summaryContent.className = "analysis-type-item-content";
+
+    const countText = document.createElement("strong");
+    countText.textContent = `${pokemon.length} Pokémon`;
+
+    const arrow = document.createElement("span");
+    arrow.className = "analysis-expand-icon";
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.textContent = "⌄";
+
+    summaryContent.appendChild(countText);
+    summary.append(roleBadge, summaryContent, arrow);
+
+    const expandedContent = document.createElement("div");
+    expandedContent.className = "analysis-pokemon-breakdown";
+
+    const heading = document.createElement("p");
+    heading.className = "analysis-breakdown-heading";
+    heading.textContent = `${label}:`;
+
+    const list = document.createElement("ul");
+    list.className = "analysis-pokemon-list";
+
+    pokemon
+      .slice()
+      .sort((first, second) => first.name.localeCompare(second.name))
+      .forEach((entry) => {
+        const listItem = document.createElement("li");
+
+        const name = document.createElement("span");
+        name.textContent = formatPokemonName(entry.name);
+
+        listItem.appendChild(name);
+        list.appendChild(listItem);
+      });
+
+    expandedContent.append(heading, list);
+    details.append(summary, expandedContent);
+
+    return details;
+  }
+
+  function renderTeamSummary(defensiveAnalysis, pokemonDetails, roleFindings = []) {
     const findings = [];
 
     const weaknessEntries = Object.entries(defensiveAnalysis.sharedWeaknesses)
@@ -582,6 +1117,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    roleFindings
+      .filter((finding) => finding.kind === "warning")
+      .slice(0, 2)
+      .forEach((finding) => {
+        findings.push({
+          kind: "warning",
+          message: finding.message,
+        });
+      });
 
     summaryList.replaceChildren();
 

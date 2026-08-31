@@ -217,6 +217,25 @@
   margin-bottom: 1rem;
 }
 
+/* Role balance */
+
+.analysis-role-findings {
+  grid-column: 1 / -1;
+  margin-bottom: 0.25rem;
+}
+
+.analysis-role-badge {
+  align-self: center;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid rgba(49, 88, 142, 0.75);
+  border-radius: 999px;
+  background: rgba(20, 132, 245, 0.14);
+  color: #8dc5ff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
 .team-analysis-summary {
   padding: 1.25rem;
   border: 1px solid rgba(49, 88, 142, 0.8);
@@ -310,6 +329,10 @@
 }
 @media (max-width: 620px) {
   .analysis-type-list {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-role-findings {
     grid-template-columns: 1fr;
   }
 }

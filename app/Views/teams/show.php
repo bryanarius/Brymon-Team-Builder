@@ -8,15 +8,27 @@ require dirname(__DIR__) . '/layouts/header.php';
 
 $teamPokemon = $team['pokemon'] ?? [];
 
-$teamMoves = array_map(
+$teamPokemonData = array_map(
     static fn (array $pokemon): array => [
         'pokemonApiId' => (int) $pokemon['pokemon_api_id'],
+        'name' => $pokemon['pokemon_name'] ?? null,
+        'slot' => (int) $pokemon['slot_number'],
+        'nature' => $pokemon['nature'] ?? null,
+        'item' => $pokemon['item'] ?? null,
         'moves' => array_values(array_filter([
             $pokemon['move_1'] ?? null,
             $pokemon['move_2'] ?? null,
             $pokemon['move_3'] ?? null,
             $pokemon['move_4'] ?? null,
         ])),
+        'evs' => [
+            'hp' => (int) ($pokemon['hp_ev'] ?? 0),
+            'attack' => (int) ($pokemon['attack_ev'] ?? 0),
+            'defense' => (int) ($pokemon['defense_ev'] ?? 0),
+            'special-attack' => (int) ($pokemon['special_attack_ev'] ?? 0),
+            'special-defense' => (int) ($pokemon['special_defense_ev'] ?? 0),
+            'speed' => (int) ($pokemon['speed_ev'] ?? 0),
+        ],
     ],
     $teamPokemon
 );
@@ -156,7 +168,7 @@ $teamMoves = array_map(
         </div>
 
         <script>
-            window.BRYMON_TEAM_MOVES = <?= json_encode($teamMoves, JSON_THROW_ON_ERROR) ?>;
+            window.BRYMON_TEAM_POKEMON = <?= json_encode($teamPokemonData, JSON_THROW_ON_ERROR) ?>;
         </script>
 
         <section class="team-analysis" id="team-analysis">
@@ -165,7 +177,7 @@ $teamMoves = array_map(
 
                 <p>
                     Review your team’s shared weaknesses,
-                    immunities, and type distribution.
+                    immunities, type distribution, and role balance.
                 </p>
             </div>
 
