@@ -23,7 +23,20 @@ $pageTitle = $pageTitle ?? 'Brymon';
 
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
 
-    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/navigation.css">
+    <link rel="stylesheet" href="/css/buttons.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/about.css">
+    <link rel="stylesheet" href="/css/saved-teams.css">
+    <link rel="stylesheet" href="/css/team-show.css">
+    <link rel="stylesheet" href="/css/team-analysis.css">
+    <link rel="stylesheet" href="/css/team-builder.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/errors.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/account-settings.css">
     <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
     <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
