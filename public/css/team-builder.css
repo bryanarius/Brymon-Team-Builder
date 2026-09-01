@@ -118,6 +118,52 @@
   font-weight: 600;
 }
 
+/* Combobox */
+.team-builder-page .combobox {
+  position: relative;
+}
+
+.team-builder-page .combobox-list {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  max-height: 260px;
+  margin: 0;
+  padding: 0.3rem;
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 8px;
+  background-color: var(--app-header);
+  box-shadow: 0 12px 30px rgba(3, 10, 24, 0.45);
+}
+
+.team-builder-page .combobox-list[hidden] {
+  display: none;
+}
+
+.team-builder-page .combobox-option {
+  padding: 0.55rem 0.6rem;
+  border-radius: 6px;
+  color: #dce7f6;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.team-builder-page .combobox-option:hover,
+.team-builder-page .combobox-option.is-active {
+  background: rgba(20, 132, 245, 0.18);
+  color: #f8fafc;
+}
+
+.team-builder-page .combobox-empty {
+  padding: 0.55rem 0.6rem;
+  color: var(--app-muted);
+  font-size: 0.88rem;
+}
+
 /* Search */
 .pokemon-search-results {
   display: flex;
@@ -829,7 +875,7 @@
   width: 100%;
 }
 
-.move-grid select {
+.move-grid .combobox {
   width: 100%;
 }
 

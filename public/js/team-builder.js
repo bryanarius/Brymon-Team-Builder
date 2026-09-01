@@ -53,15 +53,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const nicknameInput = document.querySelector("#pokemon-nickname");
   const abilitySelect = document.querySelector("#pokemon-ability");
-  const itemSelect = document.querySelector("#pokemon-item");
   const natureSelect = document.querySelector("#pokemon-nature");
 
-  const moveSelects = [
-    document.querySelector("#pokemon-move-1"),
-    document.querySelector("#pokemon-move-2"),
-    document.querySelector("#pokemon-move-3"),
-    document.querySelector("#pokemon-move-4"),
-  ];
+  const itemCombobox = createCombobox(
+    document.querySelector("#pokemon-item").closest(".combobox"),
+    {
+      formatLabel: formatPokemonName,
+      onChange: (value) => {
+        const pokemon = getSelectedPokemon();
+
+        if (pokemon) {
+          pokemon.item = value;
+        }
+      },
+    },
+  );
+
+  const moveComboboxes = [1, 2, 3, 4].map((moveNumber) => {
+    const moveIndex = moveNumber - 1;
+
+    return createCombobox(
+      document
+        .querySelector(`#pokemon-move-${moveNumber}`)
+        .closest(".combobox"),
+      {
+        formatLabel: formatPokemonName,
+        onChange: (value) => {
+          const pokemon = getSelectedPokemon();
+
+          if (pokemon) {
+            pokemon.moves[moveIndex] = value;
+          }
+        },
+      },
+    );
+  });
 
   const evInputs = {
     hp: document.querySelector("#pokemon-hp-ev"),
@@ -209,6 +235,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       state.natureList = natureData.results.map((nature) => nature.name);
 
+      itemCombobox?.setOptions(state.itemList);
+
+      populateNatureSelect(state.natureList);
       populateGenerationFilter(generationData.results);
       populateTypeFilter(typeData.results);
 
@@ -273,6 +302,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
     typeSelect.appendChild(fragment);
   }
+
+  function populateNatureSelect(natures) {
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Select nature";
+
+    const fragment = document.createDocumentFragment();
+    fragment.appendChild(placeholder);
+
+    [...natures]
+      .sort((first, second) => first.localeCompare(second))
+      .forEach((nature) => {
+        const option = document.createElement("option");
+        option.value = nature;
+
+        const effect = NATURE_STAT_EFFECTS[nature];
+
+        option.textContent = effect
+          ? `${formatPokemonName(nature)} ` +
+            `(+${STAT_ABBREVIATIONS[effect[0]]} / ` +
+            `−${STAT_ABBREVIATIONS[effect[1]]})`
+          : formatPokemonName(nature);
+
+        fragment.appendChild(option);
+      });
+
+    natureSelect.replaceChildren(fragment);
+  }
+
   async function applyFilters() {
     const query = normalizeSearchQuery(searchInput.value);
     const selectedGeneration = generationSelect.value;
@@ -834,22 +892,13 @@ document.addEventListener("DOMContentLoaded", () => {
       pokemon.ability,
     );
 
-    populateSelect(itemSelect, state.itemList, "Select item", pokemon.item);
+    itemCombobox?.setValue(pokemon.item);
 
-    populateSelect(
-      natureSelect,
-      state.natureList,
-      "Select nature",
-      pokemon.nature,
-    );
+    natureSelect.value = pokemon.nature;
 
-    moveSelects.forEach((select, moveIndex) => {
-      populateSelect(
-        select,
-        pokemon.availableMoves,
-        `Move ${moveIndex + 1}`,
-        pokemon.moves[moveIndex],
-      );
+    moveComboboxes.forEach((combobox, moveIndex) => {
+      combobox?.setOptions(pokemon.availableMoves);
+      combobox?.setValue(pokemon.moves[moveIndex]);
     });
 
     Object.entries(ivInputs).forEach(([statName, input]) => {
@@ -898,16 +947,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#stat-speed").textContent = stats.speed ?? "—";
   }
 
-  itemSelect.addEventListener("change", () => {
-    const pokemon = getSelectedPokemon();
-
-    if (!pokemon) {
-      return;
-    }
-
-    pokemon.item = itemSelect.value;
-  });
-
   natureSelect.addEventListener("change", () => {
     const pokemon = getSelectedPokemon();
 
@@ -936,18 +975,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     pokemon.ability = abilitySelect.value;
-  });
-
-  moveSelects.forEach((select, moveIndex) => {
-    select?.addEventListener("change", () => {
-      const pokemon = getSelectedPokemon();
-
-      if (!pokemon) {
-        return;
-      }
-
-      pokemon.moves[moveIndex] = select.value;
-    });
   });
 
   deletePokemonButton.addEventListener("click", () => {
@@ -985,11 +1012,13 @@ document.addEventListener("DOMContentLoaded", () => {
     nicknameInput.value = "";
 
     populateSelect(abilitySelect, [], "Select ability", "");
-    populateSelect(itemSelect, [], "Select item", "");
-    populateSelect(natureSelect, [], "Select nature", "");
+    natureSelect.value = "";
 
-    moveSelects.forEach((select, index) => {
-      populateSelect(select, [], `Move ${index + 1}`, "");
+    itemCombobox?.setValue("");
+
+    moveComboboxes.forEach((combobox) => {
+      combobox?.setOptions([]);
+      combobox?.setValue("");
     });
 
     Object.values(evInputs).forEach((input) => {
@@ -1647,6 +1676,38 @@ function formatShowdownName(value) {
     })
     .join(" ");
 }
+
+const STAT_ABBREVIATIONS = {
+  attack: "Atk",
+  defense: "Def",
+  "special-attack": "SpA",
+  "special-defense": "SpD",
+  speed: "Spe",
+};
+
+// Each entry is [raised stat, lowered stat]. Neutral natures are omitted.
+const NATURE_STAT_EFFECTS = {
+  lonely: ["attack", "defense"],
+  brave: ["attack", "speed"],
+  adamant: ["attack", "special-attack"],
+  naughty: ["attack", "special-defense"],
+  bold: ["defense", "attack"],
+  relaxed: ["defense", "speed"],
+  impish: ["defense", "special-attack"],
+  lax: ["defense", "special-defense"],
+  timid: ["speed", "attack"],
+  hasty: ["speed", "defense"],
+  jolly: ["speed", "special-attack"],
+  naive: ["speed", "special-defense"],
+  modest: ["special-attack", "attack"],
+  mild: ["special-attack", "defense"],
+  quiet: ["special-attack", "speed"],
+  rash: ["special-attack", "special-defense"],
+  calm: ["special-defense", "attack"],
+  gentle: ["special-defense", "defense"],
+  sassy: ["special-defense", "speed"],
+  careful: ["special-defense", "special-attack"],
+};
 
 function populateSelect(select, values, placeholder, selectedValue) {
   if (!select) {

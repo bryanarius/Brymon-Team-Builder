@@ -411,14 +411,20 @@ require dirname(__DIR__) . '/layouts/header.php';
                                             Held Item
                                         </label>
 
-                                        <select
-                                            id="pokemon-item"
-                                            name="pokemon_item"
-                                        >
-                                            <option value="">
-                                                Select item
-                                            </option>
-                                        </select>
+                                        <div class="combobox">
+                                            <input
+                                                type="text"
+                                                id="pokemon-item"
+                                                name="pokemon_item"
+                                                placeholder="Search items"
+                                            >
+                                            <ul
+                                                class="combobox-list"
+                                                role="listbox"
+                                                aria-label="Held item options"
+                                                hidden
+                                            ></ul>
+                                        </div>
 
                                     </div>
 
@@ -458,14 +464,20 @@ require dirname(__DIR__) . '/layouts/header.php';
                                                     Move <?= $move ?>
                                                 </label>
 
-                                                <select
-                                                    id="pokemon-move-<?= $move ?>"
-                                                    name="pokemon_moves[]"
-                                                >
-                                                    <option value="">
-                                                        Move <?= $move ?>
-                                                    </option>
-                                                </select>
+                                                <div class="combobox">
+                                                    <input
+                                                        type="text"
+                                                        id="pokemon-move-<?= $move ?>"
+                                                        name="pokemon_moves[]"
+                                                        placeholder="Move <?= $move ?>"
+                                                    >
+                                                    <ul
+                                                        class="combobox-list"
+                                                        role="listbox"
+                                                        aria-label="Move <?= $move ?> options"
+                                                        hidden
+                                                    ></ul>
+                                                </div>
 
                                             </div>
 
