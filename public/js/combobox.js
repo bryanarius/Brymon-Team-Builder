@@ -13,6 +13,10 @@
 */
 
 function createCombobox(root, { onChange, formatLabel, maxResults = 60 } = {}) {
+  if (!root) {
+    return null;
+  }
+
   const input = root.querySelector("input");
   const listbox = root.querySelector('[role="listbox"]');
 

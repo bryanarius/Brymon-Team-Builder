@@ -55,40 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const abilitySelect = document.querySelector("#pokemon-ability");
   const natureSelect = document.querySelector("#pokemon-nature");
 
-  const itemCombobox = createCombobox(
-    document.querySelector("#pokemon-item").closest(".combobox"),
-    {
-      formatLabel: formatPokemonName,
-      onChange: (value) => {
-        const pokemon = getSelectedPokemon();
-
-        if (pokemon) {
-          pokemon.item = value;
-        }
-      },
-    },
-  );
-
-  const moveComboboxes = [1, 2, 3, 4].map((moveNumber) => {
-    const moveIndex = moveNumber - 1;
-
-    return createCombobox(
-      document
-        .querySelector(`#pokemon-move-${moveNumber}`)
-        .closest(".combobox"),
-      {
-        formatLabel: formatPokemonName,
-        onChange: (value) => {
-          const pokemon = getSelectedPokemon();
-
-          if (pokemon) {
-            pokemon.moves[moveIndex] = value;
-          }
-        },
-      },
-    );
-  });
-
   const evInputs = {
     hp: document.querySelector("#pokemon-hp-ev"),
     attack: document.querySelector("#pokemon-attack-ev"),
@@ -128,9 +94,42 @@ document.addEventListener("DOMContentLoaded", () => {
     !typeSelect ||
     !sortSelect
   ) {
-    console.error("Team Builder search elements were not found.");
+    // team-builder.js is loaded on every page; bail unless we are on the
+    // team builder itself.
     return;
   }
+
+  const itemCombobox = createCombobox(
+    document.querySelector("#pokemon-item")?.closest(".combobox"),
+    {
+      formatLabel: formatPokemonName,
+      onChange: (value) => {
+        const pokemon = getSelectedPokemon();
+
+        if (pokemon) {
+          pokemon.item = value;
+        }
+      },
+    },
+  );
+
+  const moveComboboxes = [1, 2, 3, 4].map((moveNumber) => {
+    const moveIndex = moveNumber - 1;
+
+    return createCombobox(
+      document.querySelector(`#pokemon-move-${moveNumber}`)?.closest(".combobox"),
+      {
+        formatLabel: formatPokemonName,
+        onChange: (value) => {
+          const pokemon = getSelectedPokemon();
+
+          if (pokemon) {
+            pokemon.moves[moveIndex] = value;
+          }
+        },
+      },
+    );
+  });
 
   const state = {
     pokemonList: [],
