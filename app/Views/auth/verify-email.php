@@ -9,7 +9,6 @@ require dirname(__DIR__) . '/layouts/header.php';
 $status = $status ?? 'invalid';
 ?>
 
-<link rel="stylesheet" href="/assets/css/auth.css">
 
 <main class="auth-page">
     <div class="auth-background-glow auth-background-glow--left"></div>

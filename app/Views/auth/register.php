@@ -10,7 +10,6 @@ $errors = $errors ?? [];
 $old = $old ?? [];
 ?>
 
-<link rel="stylesheet" href="/assets/css/auth.css">
 
 <main class="auth-page">
     <div class="auth-background-glow auth-background-glow--left"></div>

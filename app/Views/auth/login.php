@@ -12,7 +12,6 @@ $notice = $notice ?? null;
 $unverified = $unverified ?? false;
 ?>
 
-<link rel="stylesheet" href="/assets/css/auth.css">
 
 <main class="auth-page">
     <div class="auth-background-glow auth-background-glow--left"></div>
