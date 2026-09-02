@@ -117,6 +117,50 @@
   display: none;
 }
 
+/* Card */
+
+.pokedex-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.9rem 0.75rem 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-panel);
+  text-align: center;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 220px;
+}
+
+.pokedex-card-number {
+  align-self: flex-start;
+  color: var(--app-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pokedex-card-sprite {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+.pokedex-card-name {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.pokedex-card-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+}
+
 @media (max-width: 620px) {
   .pokedex-controls {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
