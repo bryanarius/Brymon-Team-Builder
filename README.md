@@ -597,13 +597,13 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
   - [x] Type coverage analysis
   - [x] Shared weakness recommendations
   - [x] Team role balance
+- [x] Searchable item and move selectors
 
 ### Planned
 
 - [ ] Public team sharing
 - [ ] User profiles
 - [ ] Add Pokédex
-- [ ] Searching items
 - [ ] Additional accessibility improvements
 - [ ] Additional usability improvements
 
