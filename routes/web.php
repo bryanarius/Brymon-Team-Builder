@@ -18,6 +18,8 @@ $router->get('/', [PageController::class, 'home']);
 
 $router->get('/about', [PageController::class, 'about']);
 
+$router->get('/pokedex', [PageController::class, 'pokedex']);
+
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes

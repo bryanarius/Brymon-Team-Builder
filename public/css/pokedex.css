@@ -1,0 +1,128 @@
+/* Pokédex Page */
+
+.pokedex-page {
+  padding: 2.5rem 0 4rem;
+  background:
+    radial-gradient(
+      circle at 20% 25%,
+      rgba(40, 105, 223, 0.1),
+      transparent 32%
+    ),
+    var(--app-background);
+}
+
+.pokedex-header {
+  margin-bottom: 1.75rem;
+}
+
+.pokedex-header h1 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  line-height: 1.05;
+}
+
+.pokedex-intro {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Controls */
+
+.pokedex-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 1.1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-panel);
+}
+
+.pokedex-controls .form-group {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pokedex-controls label {
+  color: #f8fafc;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.pokedex-controls input,
+.pokedex-controls select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 8px;
+  background-color: var(--app-input);
+  color: #f8fafc;
+  font: inherit;
+}
+
+.pokedex-controls input:focus,
+.pokedex-controls select:focus {
+  border-color: var(--app-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(20, 132, 245, 0.16);
+}
+
+.pokedex-clear-button {
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+/* Status + count */
+
+.pokedex-count {
+  margin: 0 0 0.75rem;
+  color: var(--app-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.pokedex-count:empty {
+  display: none;
+}
+
+.pokedex-status {
+  padding: 2.5rem 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-panel);
+  color: var(--app-muted);
+  text-align: center;
+}
+
+.pokedex-status[hidden] {
+  display: none;
+}
+
+/* Grid */
+
+.pokedex-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.85rem;
+}
+
+.pokedex-grid:empty {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .pokedex-controls {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .pokedex-clear-button {
+    grid-column: 1 / -1;
+  }
+}

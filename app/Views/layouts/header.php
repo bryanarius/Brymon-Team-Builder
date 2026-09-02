@@ -32,6 +32,7 @@ $pageTitle = $pageTitle ?? 'Brymon';
     <link rel="stylesheet" href="/css/team-show.css">
     <link rel="stylesheet" href="/css/team-analysis.css">
     <link rel="stylesheet" href="/css/team-builder.css">
+    <link rel="stylesheet" href="/css/pokedex.css">
     <link rel="stylesheet" href="/css/auth.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="/css/errors.css">
@@ -61,6 +62,8 @@ $pageTitle = $pageTitle ?? 'Brymon';
                 <a href="/teambuilder">Team Builder</a>
                 <a href="/teams">Saved Teams</a>
             <?php endif; ?>
+
+            <a href="/pokedex">Pokédex</a>
 
             <a href="/about">About</a>
         </nav>

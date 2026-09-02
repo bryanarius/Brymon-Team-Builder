@@ -21,4 +21,11 @@ final class PageController extends Controller
             'pageTitle' => 'About Brymon',
         ]);
     }
+
+    public function pokedex(): void
+    {
+        $this->view('pokedex/index', [
+            'pageTitle' => 'Pokédex',
+        ]);
+    }
 }
