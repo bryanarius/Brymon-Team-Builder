@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const generationSelect = document.querySelector("#pokedex-generation");
   const regionSelect = document.querySelector("#pokedex-region");
   const archetypeSelect = document.querySelector("#pokedex-archetype");
+  const hasMegaCheckbox = document.querySelector("#pokedex-has-mega");
   const sortSelect = document.querySelector("#pokedex-sort");
   const clearButton = document.querySelector("#pokedex-clear");
 
@@ -57,12 +58,33 @@ document.addEventListener("DOMContentLoaded", () => {
     !generationSelect ||
     !regionSelect ||
     !archetypeSelect ||
+    !hasMegaCheckbox ||
     !sortSelect
   ) {
     return;
   }
 
   const NATIONAL_DEX_TOTAL = 1025;
+
+  // Generous upper bound covering every Pokémon resource (base species
+  // plus all forms/megas), used only to derive the Mega Evolution list.
+  const ALL_POKEMON_RESOURCES_LIMIT = 3000;
+
+  // A Mega form's species is normally its name with the "-mega"/"-mega-x"/
+  // "-mega-y"/"-mega-z" suffix removed. That doesn't work for species whose
+  // *default* national-dex entry isn't the bare species name (e.g. Meowstic's
+  // default variety is "meowstic-male", not "meowstic") - map those forms
+  // explicitly to whatever name actually appears in the national dex list.
+  const MEGA_SPECIES_OVERRIDES = {
+    "meowstic-female-mega": "meowstic-male",
+    "meowstic-male-mega": "meowstic-male",
+    "magearna-original-mega": "magearna",
+    "tatsugiri-curly-mega": "tatsugiri-curly",
+    "tatsugiri-droopy-mega": "tatsugiri-curly",
+    "tatsugiri-stretchy-mega": "tatsugiri-curly",
+    "pyroar-mega": "pyroar-male",
+    "zygarde-mega": "zygarde-50",
+  };
 
   const OFFICIAL_ARTWORK_BASE =
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/" +
@@ -167,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
     pokedexCache: new Map(),
     regionCache: new Map(),
     statsLoaded: false,
+    megaSpecies: null,
     detailRequestId: 0,
     lastFocused: null,
   };
@@ -263,6 +286,20 @@ document.addEventListener("DOMContentLoaded", () => {
       applyFilters();
     });
 
+    hasMegaCheckbox.addEventListener("change", async () => {
+      if (hasMegaCheckbox.checked) {
+        hasMegaCheckbox.disabled = true;
+
+        try {
+          await ensureMegaSpeciesLoaded();
+        } finally {
+          hasMegaCheckbox.disabled = false;
+        }
+      }
+
+      applyFilters();
+    });
+
     clearButton?.addEventListener("click", () => {
       window.clearTimeout(state.searchTimeout);
 
@@ -272,6 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
       regionSelect.value = "";
       archetypeSelect.value = "";
       sortSelect.value = "id-asc";
+      hasMegaCheckbox.checked = false;
 
       applyFilters();
       searchInput.focus();
@@ -315,6 +353,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (
         selectedArchetype &&
         !(pokemon.archetypes ?? []).includes(selectedArchetype)
+      ) {
+        return false;
+      }
+
+      if (
+        hasMegaCheckbox.checked &&
+        state.megaSpecies &&
+        !state.megaSpecies.has(pokemon.name)
       ) {
         return false;
       }
@@ -1040,6 +1086,41 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     archetypeSelect.appendChild(fragment);
+  }
+
+  async function ensureMegaSpeciesLoaded() {
+    if (state.megaSpecies) {
+      return;
+    }
+
+    try {
+      // The full resource list (not just the national dex) is the only
+      // reliable source for this: PokéAPI's GraphQL mirror lags behind
+      // its REST API and is missing newer Mega Evolutions.
+      const response = await fetch(
+        `https://pokeapi.co/api/v2/pokemon/?limit=${ALL_POKEMON_RESOURCES_LIMIT}`,
+      );
+
+      if (!response.ok) {
+        throw new Error(`Mega evolution request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      state.megaSpecies = new Set(
+        data.results
+          .map((entry) => entry.name)
+          .filter((name) => name.includes("-mega"))
+          .map(
+            (name) =>
+              MEGA_SPECIES_OVERRIDES[name] ?? name.split("-mega")[0],
+          ),
+      );
+    } catch (error) {
+      // Leave megaSpecies null so applyFilters skips the checkbox
+      // filter instead of showing zero results.
+      console.error("Pokédex mega evolution load error:", error);
+    }
   }
 
   async function ensureArchetypeStatsLoaded() {

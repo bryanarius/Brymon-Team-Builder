@@ -87,6 +87,13 @@ require dirname(__DIR__) . '/layouts/header.php';
 
         </section>
 
+        <div class="pokedex-toggle-row">
+            <label class="pokedex-checkbox">
+                <input type="checkbox" id="pokedex-has-mega">
+                Has Mega Evolution
+            </label>
+        </div>
+
         <p
             class="pokedex-count"
             id="pokedex-count"
