@@ -33,10 +33,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const detailArtwork = document.querySelector("#pokedex-detail-artwork");
   const detailName = document.querySelector("#pokedex-detail-name");
   const detailTypes = document.querySelector("#pokedex-detail-types");
+  const detailFlavor = document.querySelector("#pokedex-detail-flavor");
   const detailMeasurements = document.querySelector(
     "#pokedex-detail-measurements",
   );
   const detailStats = document.querySelector("#pokedex-detail-stats");
+  const detailAbilities = document.querySelector("#pokedex-detail-abilities");
 
   if (
     !grid ||
@@ -104,6 +106,8 @@ document.addEventListener("DOMContentLoaded", () => {
     ready: false,
     searchTimeout: null,
     detailCache: new Map(),
+    speciesCache: new Map(),
+    abilityCache: new Map(),
     detailRequestId: 0,
     lastFocused: null,
   };
@@ -357,7 +361,18 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      renderDetail(data);
+      const [species, abilities] = await Promise.all([
+        getSpecies(data.species.name),
+        Promise.all(
+          data.abilities.map((entry) => getAbility(entry.ability.name)),
+        ),
+      ]);
+
+      if (requestId !== state.detailRequestId) {
+        return;
+      }
+
+      renderDetail(data, species, abilities);
       detailStatus.hidden = true;
       detailBody.hidden = false;
     } catch (error) {
@@ -404,7 +419,47 @@ document.addEventListener("DOMContentLoaded", () => {
     return data;
   }
 
-  function renderDetail(data) {
+  async function getSpecies(name) {
+    if (state.speciesCache.has(name)) {
+      return state.speciesCache.get(name);
+    }
+
+    const response = await fetch(
+      `https://pokeapi.co/api/v2/pokemon-species/${encodeURIComponent(name)}`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Species request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    state.speciesCache.set(name, data);
+
+    return data;
+  }
+
+  async function getAbility(name) {
+    if (state.abilityCache.has(name)) {
+      return state.abilityCache.get(name);
+    }
+
+    const response = await fetch(
+      `https://pokeapi.co/api/v2/ability/${encodeURIComponent(name)}`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Ability request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    state.abilityCache.set(name, data);
+
+    return data;
+  }
+
+  function renderDetail(data, species, abilities) {
     detailNumber.textContent = `#${String(data.id).padStart(4, "0")}`;
     detailArtwork.src = `${OFFICIAL_ARTWORK_BASE}/${data.id}.png`;
     detailArtwork.alt = formatName(data.name);
@@ -422,8 +477,68 @@ document.addEventListener("DOMContentLoaded", () => {
         }),
     );
 
+    detailFlavor.textContent = getFlavorText(species);
+
     renderMeasurements(data);
     renderStats(data);
+    renderAbilities(data.abilities, abilities);
+  }
+
+  function getFlavorText(species) {
+    const entry = species.flavor_text_entries.find(
+      (candidate) => candidate.language.name === "en",
+    );
+
+    if (!entry) {
+      return "";
+    }
+
+    return entry.flavor_text
+      .replace(/[\n\f\r]+/g, " ")
+      .replace(/­/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function renderAbilities(abilitySlots, abilityData) {
+    detailAbilities.replaceChildren();
+
+    abilitySlots.forEach((slot, index) => {
+      const ability = abilityData[index];
+
+      const item = document.createElement("div");
+      item.className = "pokedex-ability";
+
+      const heading = document.createElement("p");
+      heading.className = "pokedex-ability-name";
+      heading.textContent = slot.is_hidden
+        ? `${formatName(slot.ability.name)} (Hidden)`
+        : formatName(slot.ability.name);
+
+      const description = document.createElement("p");
+      description.className = "pokedex-ability-description";
+      description.textContent = getAbilityDescription(ability);
+
+      item.append(heading, description);
+      detailAbilities.appendChild(item);
+    });
+  }
+
+  function getAbilityDescription(ability) {
+    const entry = ability.effect_entries.find(
+      (candidate) => candidate.language.name === "en",
+    );
+
+    if (!entry) {
+      return "No description available.";
+    }
+
+    const text = entry.short_effect || entry.effect || "";
+
+    return text.replace(
+      "$effect_chance",
+      String(ability.effect_chance ?? ""),
+    );
   }
 
   function renderMeasurements(data) {

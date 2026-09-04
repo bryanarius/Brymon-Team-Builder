@@ -147,6 +147,11 @@ require dirname(__DIR__) . '/layouts/header.php';
                 id="pokedex-detail-types"
             ></div>
 
+            <p
+                class="pokedex-detail-flavor"
+                id="pokedex-detail-flavor"
+            ></p>
+
             <dl
                 class="pokedex-detail-measurements"
                 id="pokedex-detail-measurements"
@@ -158,6 +163,15 @@ require dirname(__DIR__) . '/layouts/header.php';
                 <div
                     class="pokedex-stat-list"
                     id="pokedex-detail-stats"
+                ></div>
+            </section>
+
+            <section class="pokedex-detail-section">
+                <h3>Abilities</h3>
+
+                <div
+                    class="pokedex-ability-list"
+                    id="pokedex-detail-abilities"
                 ></div>
             </section>
         </div>
