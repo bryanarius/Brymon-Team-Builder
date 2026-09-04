@@ -79,10 +79,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const state = {
     pokemon: [],
     ready: false,
+    searchTimeout: null,
   };
 
   populateTypeFilter();
   populateGenerationFilter();
+  registerFilterEvents();
   initialize();
 
   async function initialize() {
@@ -126,12 +128,116 @@ document.addEventListener("DOMContentLoaded", () => {
 
       state.ready = true;
 
-      statusElement.hidden = true;
-      renderGrid(state.pokemon);
+      applyFilters();
     } catch (error) {
       console.error("Pokédex load error:", error);
       setStatus("Unable to load the Pokédex. Please refresh the page.");
     }
+  }
+
+  function registerFilterEvents() {
+    searchInput.addEventListener("input", () => {
+      window.clearTimeout(state.searchTimeout);
+      state.searchTimeout = window.setTimeout(applyFilters, 200);
+    });
+
+    typeSelect.addEventListener("change", applyFilters);
+    generationSelect.addEventListener("change", applyFilters);
+    sortSelect.addEventListener("change", applyFilters);
+
+    clearButton?.addEventListener("click", () => {
+      window.clearTimeout(state.searchTimeout);
+
+      searchInput.value = "";
+      typeSelect.value = "";
+      generationSelect.value = "";
+      sortSelect.value = "id-asc";
+
+      applyFilters();
+      searchInput.focus();
+    });
+  }
+
+  function applyFilters() {
+    if (!state.ready) {
+      return;
+    }
+
+    const query = normalizeQuery(searchInput.value);
+    const selectedType = typeSelect.value;
+    const range = GENERATIONS.find(
+      (generation) => generation.value === generationSelect.value,
+    );
+
+    const matches = state.pokemon.filter((pokemon) => {
+      if (!matchesSearch(pokemon, query)) {
+        return false;
+      }
+
+      if (selectedType && !pokemon.types.includes(selectedType)) {
+        return false;
+      }
+
+      if (range && (pokemon.id < range.min || pokemon.id > range.max)) {
+        return false;
+      }
+
+      return true;
+    });
+
+    sortPokemon(matches, sortSelect.value);
+    updateCount(matches.length);
+
+    if (matches.length === 0) {
+      grid.replaceChildren();
+      setStatus("No Pokémon match those filters.");
+      return;
+    }
+
+    statusElement.hidden = true;
+    renderGrid(matches);
+  }
+
+  function matchesSearch(pokemon, query) {
+    if (query === "") {
+      return true;
+    }
+
+    if (pokemon.name.includes(query)) {
+      return true;
+    }
+
+    const digits = query.replace(/\D/g, "");
+
+    return digits !== "" && pokemon.id === Number(digits);
+  }
+
+  function sortPokemon(list, sortValue) {
+    list.sort((first, second) => {
+      switch (sortValue) {
+        case "id-desc":
+          return second.id - first.id;
+
+        case "name-asc":
+          return first.name.localeCompare(second.name);
+
+        case "name-desc":
+          return second.name.localeCompare(first.name);
+
+        case "id-asc":
+        default:
+          return first.id - second.id;
+      }
+    });
+  }
+
+  function updateCount(total) {
+    countElement.textContent =
+      total === 1 ? "1 Pokémon" : `${total} Pokémon`;
+  }
+
+  function normalizeQuery(value) {
+    return value.trim().toLowerCase().replace(/[.\s_]+/g, "-");
   }
 
   function buildTypeMap(typeData) {
