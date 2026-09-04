@@ -129,8 +129,22 @@
   border-radius: 12px;
   background: var(--app-panel);
   text-align: center;
+  cursor: pointer;
   content-visibility: auto;
   contain-intrinsic-size: auto 220px;
+  transition:
+    border-color 120ms ease,
+    transform 120ms ease;
+}
+
+.pokedex-card:hover {
+  border-color: var(--app-blue);
+  transform: translateY(-2px);
+}
+
+.pokedex-card:focus-visible {
+  outline: 2px solid var(--app-blue);
+  outline-offset: 2px;
 }
 
 .pokedex-card-number {
@@ -161,6 +175,203 @@
   justify-content: center;
 }
 
+/* Detail panel */
+
+body.pokedex-detail-open {
+  overflow: hidden;
+}
+
+.pokedex-detail-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(3, 8, 20, 0.6);
+}
+
+.pokedex-detail-backdrop[hidden] {
+  display: none;
+}
+
+.pokedex-detail {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 61;
+  display: flex;
+  flex-direction: column;
+  width: min(440px, 100%);
+  height: 100%;
+  padding: 1.25rem;
+  overflow-y: auto;
+  border-left: 1px solid var(--app-border);
+  background: var(--app-panel);
+  box-shadow: -12px 0 40px rgba(3, 8, 20, 0.45);
+}
+
+.pokedex-detail[hidden] {
+  display: none;
+}
+
+.pokedex-detail-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pokedex-detail-close {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 8px;
+  background: var(--app-input);
+  color: #f8fafc;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pokedex-detail-close:hover {
+  border-color: var(--app-blue);
+}
+
+.pokedex-detail-status {
+  padding: 2rem 0;
+  color: var(--app-muted);
+  text-align: center;
+}
+
+.pokedex-detail-status[hidden] {
+  display: none;
+}
+
+.pokedex-detail-body {
+  text-align: center;
+}
+
+.pokedex-detail-body[hidden] {
+  display: none;
+}
+
+.pokedex-detail-number {
+  margin: 0;
+  color: var(--app-muted);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pokedex-detail-artwork {
+  width: 220px;
+  height: 220px;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.pokedex-detail-name {
+  margin: 0.25rem 0 0.75rem;
+  font-size: 1.5rem;
+}
+
+.pokedex-detail-types {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.pokedex-detail-measurements {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 1rem;
+  margin: 0 0 1.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-panel-dark);
+  text-align: left;
+}
+
+.pokedex-detail-measurements dt {
+  color: var(--app-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pokedex-detail-measurements dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.pokedex-detail-section {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.pokedex-detail-section h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.pokedex-stat-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.pokedex-stat-row {
+  display: grid;
+  grid-template-columns: 42px 40px 1fr;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+}
+
+.pokedex-stat-label {
+  color: var(--app-muted);
+  font-weight: 700;
+}
+
+.pokedex-stat-value {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.pokedex-stat-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--app-input);
+}
+
+.pokedex-stat-bar {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--app-blue);
+}
+
+.pokedex-stat-bar.is-low {
+  background: #e0794b;
+}
+
+.pokedex-stat-bar.is-mid {
+  background: #e0b74b;
+}
+
+.pokedex-stat-bar.is-high {
+  background: #52c77a;
+}
+
+.pokedex-stat-total {
+  margin-top: 0.35rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--app-border);
+  font-weight: 800;
+}
+
+.pokedex-stat-total .pokedex-stat-label,
+.pokedex-stat-total .pokedex-stat-value {
+  color: #f8fafc;
+}
+
 @media (max-width: 620px) {
   .pokedex-controls {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -168,5 +379,9 @@
 
   .pokedex-clear-button {
     grid-column: 1 / -1;
+  }
+
+  .pokedex-detail {
+    width: 100%;
   }
 }

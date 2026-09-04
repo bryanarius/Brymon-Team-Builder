@@ -93,6 +93,75 @@ require dirname(__DIR__) . '/layouts/header.php';
         ></div>
 
     </div>
+
+    <div
+        class="pokedex-detail-backdrop"
+        id="pokedex-detail-backdrop"
+        hidden
+    ></div>
+
+    <aside
+        class="pokedex-detail"
+        id="pokedex-detail"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pokedex-detail-name"
+        hidden
+    >
+        <div class="pokedex-detail-header">
+            <button
+                type="button"
+                class="pokedex-detail-close"
+                id="pokedex-detail-close"
+                aria-label="Close details"
+            >&times;</button>
+        </div>
+
+        <div
+            class="pokedex-detail-status"
+            id="pokedex-detail-status"
+            role="status"
+        >
+            Loading…
+        </div>
+
+        <div
+            class="pokedex-detail-body"
+            id="pokedex-detail-body"
+            hidden
+        >
+            <p class="pokedex-detail-number" id="pokedex-detail-number"></p>
+
+            <img
+                class="pokedex-detail-artwork"
+                id="pokedex-detail-artwork"
+                alt=""
+                width="220"
+                height="220"
+            >
+
+            <h2 class="pokedex-detail-name" id="pokedex-detail-name"></h2>
+
+            <div
+                class="pokedex-detail-types"
+                id="pokedex-detail-types"
+            ></div>
+
+            <dl
+                class="pokedex-detail-measurements"
+                id="pokedex-detail-measurements"
+            ></dl>
+
+            <section class="pokedex-detail-section">
+                <h3>Base stats</h3>
+
+                <div
+                    class="pokedex-stat-list"
+                    id="pokedex-detail-stats"
+                ></div>
+            </section>
+        </div>
+    </aside>
 </main>
 
 <?php require dirname(__DIR__) . '/layouts/footer.php'; ?>
