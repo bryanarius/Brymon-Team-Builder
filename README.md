@@ -598,12 +598,12 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
   - [x] Shared weakness recommendations
   - [x] Team role balance
 - [x] Searchable item and move selectors
+- [x] Add Pokédex
 
 ### Planned
 
 - [ ] Public team sharing
 - [ ] User profiles
-- [ ] Add Pokédex
 - [ ] Additional accessibility improvements
 - [ ] Additional usability improvements
 
