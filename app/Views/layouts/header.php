@@ -204,6 +204,8 @@ $pageTitle = $pageTitle ?? 'Brymon';
                 <a href="/register">Sign Up</a>
             <?php endif; ?>
 
+            <a href="/pokedex">Pokédex</a>
+
             <a href="/about">About</a>
         </div>
     </nav>
