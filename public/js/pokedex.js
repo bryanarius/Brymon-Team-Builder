@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const typeSelect = document.querySelector("#pokedex-type");
   const generationSelect = document.querySelector("#pokedex-generation");
   const regionSelect = document.querySelector("#pokedex-region");
+  const archetypeSelect = document.querySelector("#pokedex-archetype");
   const sortSelect = document.querySelector("#pokedex-sort");
   const clearButton = document.querySelector("#pokedex-clear");
 
@@ -34,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const detailArtwork = document.querySelector("#pokedex-detail-artwork");
   const detailName = document.querySelector("#pokedex-detail-name");
   const detailTypes = document.querySelector("#pokedex-detail-types");
+  const detailRoles = document.querySelector("#pokedex-detail-roles");
   const detailFlavor = document.querySelector("#pokedex-detail-flavor");
   const detailMeasurements = document.querySelector(
     "#pokedex-detail-measurements",
@@ -54,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     !typeSelect ||
     !generationSelect ||
     !regionSelect ||
+    !archetypeSelect ||
     !sortSelect
   ) {
     return;
@@ -134,6 +137,16 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   ];
 
+  // Order controls how the "Role" filter options are listed.
+  const ARCHETYPES = [
+    { value: "physical-attacker", label: "Physical Attacker" },
+    { value: "special-attacker", label: "Special Attacker" },
+    { value: "wall", label: "Wall" },
+    { value: "balanced", label: "Balanced" },
+    { value: "fast", label: "Fast" },
+    { value: "powerhouse", label: "Powerhouse" },
+  ];
+
   const STAT_LABELS = {
     hp: "HP",
     attack: "Atk",
@@ -153,6 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
     evolutionCache: new Map(),
     pokedexCache: new Map(),
     regionCache: new Map(),
+    statsLoaded: false,
     detailRequestId: 0,
     lastFocused: null,
   };
@@ -160,6 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
   populateTypeFilter();
   populateGenerationFilter();
   populateRegionFilter();
+  populateArchetypeFilter();
   registerFilterEvents();
   registerDetailEvents();
   initialize();
@@ -236,6 +251,18 @@ document.addEventListener("DOMContentLoaded", () => {
       applyFilters();
     });
 
+    archetypeSelect.addEventListener("change", async () => {
+      archetypeSelect.disabled = true;
+
+      try {
+        await ensureArchetypeStatsLoaded();
+      } finally {
+        archetypeSelect.disabled = false;
+      }
+
+      applyFilters();
+    });
+
     clearButton?.addEventListener("click", () => {
       window.clearTimeout(state.searchTimeout);
 
@@ -243,6 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
       typeSelect.value = "";
       generationSelect.value = "";
       regionSelect.value = "";
+      archetypeSelect.value = "";
       sortSelect.value = "id-asc";
 
       applyFilters();
@@ -263,6 +291,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Only applied once the region's species set has finished loading;
     // otherwise the region filter is skipped for this render.
     const regionSpecies = state.regionCache.get(regionSelect.value);
+    // Same idea for role: only applied once base stats have loaded.
+    const selectedArchetype =
+      state.statsLoaded && archetypeSelect.value ? archetypeSelect.value : "";
 
     const matches = state.pokemon.filter((pokemon) => {
       if (!matchesSearch(pokemon, query)) {
@@ -278,6 +309,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (regionSpecies && !regionSpecies.has(pokemon.name)) {
+        return false;
+      }
+
+      if (
+        selectedArchetype &&
+        !(pokemon.archetypes ?? []).includes(selectedArchetype)
+      ) {
         return false;
       }
 
@@ -666,6 +704,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }),
     );
 
+    renderRoles(data.stats);
     detailFlavor.textContent = getFlavorText(species);
 
     renderMeasurements(data);
@@ -673,6 +712,30 @@ document.addEventListener("DOMContentLoaded", () => {
     renderAbilities(data.abilities, abilities);
     renderEvolution(flattenEvolutionChain(evolutionChain.chain), data.id);
     renderMegaEvolutions(megaForms, data.id);
+  }
+
+  function renderRoles(statEntries) {
+    const stats = {};
+
+    statEntries.forEach((entry) => {
+      stats[entry.stat.name] = entry.base_stat;
+    });
+
+    detailRoles.replaceChildren(
+      ...classifyArchetypes(stats).map((archetype) => {
+        const badge = document.createElement("span");
+        badge.className = "pokedex-role-badge";
+        badge.textContent = getArchetypeLabel(archetype);
+
+        return badge;
+      }),
+    );
+  }
+
+  function getArchetypeLabel(value) {
+    const match = ARCHETYPES.find((archetype) => archetype.value === value);
+
+    return match ? match.label : formatName(value);
   }
 
   function getMegaVarieties(species) {
@@ -963,6 +1026,118 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     regionSelect.appendChild(fragment);
+  }
+
+  function populateArchetypeFilter() {
+    const fragment = document.createDocumentFragment();
+
+    ARCHETYPES.forEach((archetype) => {
+      const option = document.createElement("option");
+      option.value = archetype.value;
+      option.textContent = archetype.label;
+
+      fragment.appendChild(option);
+    });
+
+    archetypeSelect.appendChild(fragment);
+  }
+
+  async function ensureArchetypeStatsLoaded() {
+    if (state.statsLoaded) {
+      return;
+    }
+
+    try {
+      const query = `query {
+        pokemon: pokemon_v2_pokemon(
+          limit: ${NATIONAL_DEX_TOTAL}
+          where: { id: { _lte: ${NATIONAL_DEX_TOTAL} } }
+        ) {
+          id
+          pokemon_v2_pokemonstats {
+            base_stat
+            pokemon_v2_stat {
+              name
+            }
+          }
+        }
+      }`;
+
+      const response = await fetch("https://beta.pokeapi.co/graphql/v1beta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Stats request failed: ${response.status}`);
+      }
+
+      const payload = await response.json();
+      const statsById = new Map();
+
+      payload.data.pokemon.forEach((entry) => {
+        const stats = {};
+
+        entry.pokemon_v2_pokemonstats.forEach((stat) => {
+          stats[stat.pokemon_v2_stat.name] = stat.base_stat;
+        });
+
+        statsById.set(entry.id, stats);
+      });
+
+      state.pokemon.forEach((pokemon) => {
+        const stats = statsById.get(pokemon.id);
+
+        if (stats) {
+          pokemon.archetypes = classifyArchetypes(stats);
+        }
+      });
+
+      state.statsLoaded = true;
+    } catch (error) {
+      // Leave statsLoaded false so applyFilters skips the role filter
+      // instead of showing zero results; the user can retry by
+      // reselecting a role.
+      console.error("Pokédex stats load error:", error);
+    }
+  }
+
+  function classifyArchetypes(stats) {
+    const attack = stats.attack ?? 0;
+    const specialAttack = stats["special-attack"] ?? 0;
+    const defense = stats.defense ?? 0;
+    const specialDefense = stats["special-defense"] ?? 0;
+    const hp = stats.hp ?? 0;
+    const speed = stats.speed ?? 0;
+
+    const offense = Math.max(attack, specialAttack);
+    const bulk = (hp + defense + specialDefense) / 3;
+    const ratio = bulk === 0 ? 1 : offense / bulk;
+
+    const archetypes = [];
+
+    if (ratio >= 1.15) {
+      archetypes.push(
+        attack >= specialAttack ? "physical-attacker" : "special-attacker",
+      );
+    } else if (ratio <= 0.87) {
+      archetypes.push("wall");
+    } else {
+      archetypes.push("balanced");
+    }
+
+    if (speed >= 100) {
+      archetypes.push("fast");
+    }
+
+    const total = hp + attack + defense + specialAttack + specialDefense + speed;
+
+    if (total >= 580) {
+      archetypes.push("powerhouse");
+    }
+
+    return archetypes;
   }
 
   async function ensureRegionLoaded(value) {

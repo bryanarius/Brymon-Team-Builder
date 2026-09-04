@@ -32,7 +32,7 @@
 
 .pokedex-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) repeat(4, minmax(0, 1fr)) auto;
+  grid-template-columns: minmax(0, 1.2fr) repeat(5, minmax(0, 1fr)) auto;
   align-items: end;
   gap: 1rem;
   margin-bottom: 1.25rem;
@@ -274,7 +274,26 @@ body.pokedex-detail-open {
   display: flex;
   gap: 0.4rem;
   justify-content: center;
+  margin-bottom: 0.6rem;
+}
+
+.pokedex-detail-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
   margin-bottom: 1.25rem;
+}
+
+.pokedex-role-badge {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid rgba(49, 88, 142, 0.75);
+  border-radius: 999px;
+  background: rgba(20, 132, 245, 0.14);
+  color: #8dc5ff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.25;
 }
 
 .pokedex-detail-flavor {

@@ -59,6 +59,14 @@ require dirname(__DIR__) . '/layouts/header.php';
             </div>
 
             <div class="form-group">
+                <label for="pokedex-archetype">Role</label>
+
+                <select id="pokedex-archetype">
+                    <option value="">Any role</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label for="pokedex-sort">Sort</label>
 
                 <select id="pokedex-sort">
@@ -153,6 +161,11 @@ require dirname(__DIR__) . '/layouts/header.php';
             <div
                 class="pokedex-detail-types"
                 id="pokedex-detail-types"
+            ></div>
+
+            <div
+                class="pokedex-detail-roles"
+                id="pokedex-detail-roles"
             ></div>
 
             <p
