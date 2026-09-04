@@ -410,6 +410,72 @@ body.pokedex-detail-open {
   line-height: 1.45;
 }
 
+/* Evolution */
+
+.pokedex-evolution-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.pokedex-evolution-empty {
+  margin: 0;
+  color: var(--app-muted);
+  font-size: 0.85rem;
+}
+
+.pokedex-evolution-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pokedex-evolution-arrow {
+  color: var(--app-muted);
+  font-size: 1.1rem;
+}
+
+.pokedex-evolution-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  width: 88px;
+  padding: 0.5rem 0.35rem;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-panel-dark);
+  color: #f8fafc;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+
+.pokedex-evolution-node:hover {
+  border-color: var(--app-blue);
+}
+
+.pokedex-evolution-node:focus-visible {
+  outline: 2px solid var(--app-blue);
+  outline-offset: 2px;
+}
+
+.pokedex-evolution-node img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.pokedex-evolution-node.is-current {
+  border-color: var(--app-blue);
+  background: rgba(20, 132, 245, 0.14);
+  cursor: default;
+}
+
 @media (max-width: 620px) {
   .pokedex-controls {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

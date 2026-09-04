@@ -174,6 +174,28 @@ require dirname(__DIR__) . '/layouts/header.php';
                     id="pokedex-detail-abilities"
                 ></div>
             </section>
+
+            <section class="pokedex-detail-section">
+                <h3>Evolution</h3>
+
+                <div
+                    class="pokedex-evolution-chain"
+                    id="pokedex-detail-evolution"
+                ></div>
+            </section>
+
+            <section
+                class="pokedex-detail-section"
+                id="pokedex-detail-mega-section"
+                hidden
+            >
+                <h3>Mega Evolution</h3>
+
+                <div
+                    class="pokedex-evolution-chain"
+                    id="pokedex-detail-mega"
+                ></div>
+            </section>
         </div>
     </aside>
 </main>

@@ -39,6 +39,11 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   const detailStats = document.querySelector("#pokedex-detail-stats");
   const detailAbilities = document.querySelector("#pokedex-detail-abilities");
+  const detailEvolution = document.querySelector("#pokedex-detail-evolution");
+  const detailMegaSection = document.querySelector(
+    "#pokedex-detail-mega-section",
+  );
+  const detailMega = document.querySelector("#pokedex-detail-mega");
 
   if (
     !grid ||
@@ -108,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     detailCache: new Map(),
     speciesCache: new Map(),
     abilityCache: new Map(),
+    evolutionCache: new Map(),
     detailRequestId: 0,
     lastFocused: null,
   };
@@ -319,7 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const focusable = [
         ...detailPanel.querySelectorAll(
-          'button, a[href], [tabindex]:not([tabindex="-1"])',
+          'button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])',
         ),
       ].filter((element) => !element.hidden && element.offsetParent !== null);
 
@@ -340,8 +346,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  async function openDetail(key, triggerElement) {
-    state.lastFocused = triggerElement || document.activeElement;
+  async function openDetail(key, triggerElement, options = {}) {
+    const { updateFocusOrigin = true } = options;
+
+    if (updateFocusOrigin) {
+      state.lastFocused = triggerElement || document.activeElement;
+    }
 
     detailBackdrop.hidden = false;
     detailPanel.hidden = false;
@@ -361,10 +371,23 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const [species, abilities] = await Promise.all([
-        getSpecies(data.species.name),
+      const abilitiesPromise = Promise.all(
+        data.abilities.map((entry) => getAbility(entry.ability.name)),
+      );
+
+      const species = await getSpecies(data.species.name);
+
+      if (requestId !== state.detailRequestId) {
+        return;
+      }
+
+      const [abilities, evolutionChain, megaForms] = await Promise.all([
+        abilitiesPromise,
+        getEvolutionChain(species.evolution_chain.url),
         Promise.all(
-          data.abilities.map((entry) => getAbility(entry.ability.name)),
+          getMegaVarieties(species).map((variety) =>
+            getPokemonDetails(variety.pokemon.name),
+          ),
         ),
       ]);
 
@@ -372,7 +395,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      renderDetail(data, species, abilities);
+      renderDetail(data, species, abilities, evolutionChain, megaForms);
       detailStatus.hidden = true;
       detailBody.hidden = false;
     } catch (error) {
@@ -459,7 +482,111 @@ document.addEventListener("DOMContentLoaded", () => {
     return data;
   }
 
-  function renderDetail(data, species, abilities) {
+  async function getEvolutionChain(url) {
+    if (state.evolutionCache.has(url)) {
+      return state.evolutionCache.get(url);
+    }
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Evolution chain request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    state.evolutionCache.set(url, data);
+
+    return data;
+  }
+
+  function flattenEvolutionChain(chainRoot) {
+    const stages = [];
+    let currentLevel = [chainRoot];
+
+    while (currentLevel.length > 0) {
+      stages.push(
+        currentLevel.map((node) => ({
+          name: node.species.name,
+          id: idFromUrl(node.species.url),
+        })),
+      );
+
+      currentLevel = currentLevel.flatMap((node) => node.evolves_to);
+    }
+
+    return stages;
+  }
+
+  function renderEvolution(stages, currentId) {
+    detailEvolution.replaceChildren();
+
+    if (stages.length <= 1) {
+      const note = document.createElement("p");
+      note.className = "pokedex-evolution-empty";
+      note.textContent = "This Pokémon does not evolve.";
+
+      detailEvolution.appendChild(note);
+      return;
+    }
+
+    stages.forEach((stageGroup, index) => {
+      if (index > 0) {
+        const arrow = document.createElement("span");
+        arrow.className = "pokedex-evolution-arrow";
+        arrow.setAttribute("aria-hidden", "true");
+        arrow.textContent = "→";
+
+        detailEvolution.appendChild(arrow);
+      }
+
+      const group = document.createElement("div");
+      group.className = "pokedex-evolution-group";
+
+      stageGroup.forEach((entry) => {
+        group.appendChild(createEvolutionNode(entry, currentId));
+      });
+
+      detailEvolution.appendChild(group);
+    });
+  }
+
+  function createEvolutionNode(entry, currentId, labelOverride) {
+    const isCurrent = entry.id === currentId;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "pokedex-evolution-node";
+    button.dataset.id = String(entry.id);
+
+    if (isCurrent) {
+      button.classList.add("is-current");
+      button.setAttribute("aria-current", "true");
+      button.disabled = true;
+    }
+
+    const image = document.createElement("img");
+    image.src = `${OFFICIAL_ARTWORK_BASE}/${entry.id}.png`;
+    image.alt = "";
+    image.loading = "lazy";
+    image.width = 64;
+    image.height = 64;
+
+    const name = document.createElement("span");
+    name.textContent = labelOverride || formatName(entry.name);
+
+    button.append(image, name);
+
+    if (!isCurrent) {
+      button.addEventListener("click", () => {
+        openDetail(entry.id, button, { updateFocusOrigin: false });
+      });
+    }
+
+    return button;
+  }
+
+  function renderDetail(data, species, abilities, evolutionChain, megaForms) {
     detailNumber.textContent = `#${String(data.id).padStart(4, "0")}`;
     detailArtwork.src = `${OFFICIAL_ARTWORK_BASE}/${data.id}.png`;
     detailArtwork.alt = formatName(data.name);
@@ -482,6 +609,41 @@ document.addEventListener("DOMContentLoaded", () => {
     renderMeasurements(data);
     renderStats(data);
     renderAbilities(data.abilities, abilities);
+    renderEvolution(flattenEvolutionChain(evolutionChain.chain), data.id);
+    renderMegaEvolutions(megaForms, data.id);
+  }
+
+  function getMegaVarieties(species) {
+    return species.varieties.filter((variety) =>
+      variety.pokemon.name.includes("-mega"),
+    );
+  }
+
+  function renderMegaEvolutions(megaForms, currentId) {
+    if (megaForms.length === 0) {
+      detailMegaSection.hidden = true;
+      detailMega.replaceChildren();
+      return;
+    }
+
+    detailMegaSection.hidden = false;
+    detailMega.replaceChildren();
+
+    megaForms.forEach((formData) => {
+      detailMega.appendChild(
+        createEvolutionNode(
+          { id: formData.id, name: formData.name },
+          currentId,
+          formatMegaLabel(formData.name),
+        ),
+      );
+    });
+  }
+
+  function formatMegaLabel(name) {
+    const suffix = name.split("-mega")[1] ?? "";
+
+    return suffix ? `Mega ${suffix.slice(1).toUpperCase()}` : "Mega";
   }
 
   function getFlavorText(species) {
