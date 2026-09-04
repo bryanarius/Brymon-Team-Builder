@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.querySelector("#pokedex-search");
   const typeSelect = document.querySelector("#pokedex-type");
   const generationSelect = document.querySelector("#pokedex-generation");
+  const regionSelect = document.querySelector("#pokedex-region");
   const sortSelect = document.querySelector("#pokedex-sort");
   const clearButton = document.querySelector("#pokedex-clear");
 
@@ -52,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     !searchInput ||
     !typeSelect ||
     !generationSelect ||
+    !regionSelect ||
     !sortSelect
   ) {
     return;
@@ -97,6 +99,41 @@ document.addEventListener("DOMContentLoaded", () => {
     { value: "9", label: "Generation IX", min: 906, max: 1025 },
   ];
 
+  // Each region maps to the PokéAPI regional pokedex(es) that together
+  // cover it (some regions, like Kalos, are split across several).
+  const REGIONS = [
+    { value: "kanto", label: "Kanto", pokedexes: ["kanto"] },
+    { value: "johto", label: "Johto", pokedexes: ["original-johto"] },
+    { value: "hoenn", label: "Hoenn", pokedexes: ["hoenn"] },
+    {
+      value: "sinnoh",
+      label: "Sinnoh",
+      pokedexes: ["original-sinnoh", "extended-sinnoh"],
+    },
+    {
+      value: "unova",
+      label: "Unova",
+      pokedexes: ["original-unova", "updated-unova"],
+    },
+    {
+      value: "kalos",
+      label: "Kalos",
+      pokedexes: ["kalos-central", "kalos-coastal", "kalos-mountain"],
+    },
+    { value: "alola", label: "Alola", pokedexes: ["updated-alola"] },
+    {
+      value: "galar",
+      label: "Galar",
+      pokedexes: ["galar", "isle-of-armor", "crown-tundra"],
+    },
+    { value: "hisui", label: "Hisui", pokedexes: ["hisui"] },
+    {
+      value: "paldea",
+      label: "Paldea",
+      pokedexes: ["paldea", "kitakami", "blueberry"],
+    },
+  ];
+
   const STAT_LABELS = {
     hp: "HP",
     attack: "Atk",
@@ -114,12 +151,15 @@ document.addEventListener("DOMContentLoaded", () => {
     speciesCache: new Map(),
     abilityCache: new Map(),
     evolutionCache: new Map(),
+    pokedexCache: new Map(),
+    regionCache: new Map(),
     detailRequestId: 0,
     lastFocused: null,
   };
 
   populateTypeFilter();
   populateGenerationFilter();
+  populateRegionFilter();
   registerFilterEvents();
   registerDetailEvents();
   initialize();
@@ -182,12 +222,27 @@ document.addEventListener("DOMContentLoaded", () => {
     generationSelect.addEventListener("change", applyFilters);
     sortSelect.addEventListener("change", applyFilters);
 
+    regionSelect.addEventListener("change", async () => {
+      const value = regionSelect.value;
+
+      regionSelect.disabled = true;
+
+      try {
+        await ensureRegionLoaded(value);
+      } finally {
+        regionSelect.disabled = false;
+      }
+
+      applyFilters();
+    });
+
     clearButton?.addEventListener("click", () => {
       window.clearTimeout(state.searchTimeout);
 
       searchInput.value = "";
       typeSelect.value = "";
       generationSelect.value = "";
+      regionSelect.value = "";
       sortSelect.value = "id-asc";
 
       applyFilters();
@@ -205,6 +260,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const range = GENERATIONS.find(
       (generation) => generation.value === generationSelect.value,
     );
+    // Only applied once the region's species set has finished loading;
+    // otherwise the region filter is skipped for this render.
+    const regionSpecies = state.regionCache.get(regionSelect.value);
 
     const matches = state.pokemon.filter((pokemon) => {
       if (!matchesSearch(pokemon, query)) {
@@ -216,6 +274,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (range && (pokemon.id < range.min || pokemon.id > range.max)) {
+        return false;
+      }
+
+      if (regionSpecies && !regionSpecies.has(pokemon.name)) {
         return false;
       }
 
@@ -887,6 +949,74 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     generationSelect.appendChild(fragment);
+  }
+
+  function populateRegionFilter() {
+    const fragment = document.createDocumentFragment();
+
+    REGIONS.forEach((region) => {
+      const option = document.createElement("option");
+      option.value = region.value;
+      option.textContent = region.label;
+
+      fragment.appendChild(option);
+    });
+
+    regionSelect.appendChild(fragment);
+  }
+
+  async function ensureRegionLoaded(value) {
+    if (!value || state.regionCache.has(value)) {
+      return;
+    }
+
+    const region = REGIONS.find((candidate) => candidate.value === value);
+
+    if (!region) {
+      return;
+    }
+
+    try {
+      const speciesSets = await Promise.all(
+        region.pokedexes.map((slug) => getPokedexSpecies(slug)),
+      );
+
+      const union = new Set();
+      speciesSets.forEach((set) => {
+        set.forEach((name) => union.add(name));
+      });
+
+      state.regionCache.set(value, union);
+    } catch (error) {
+      // Leave uncached on failure so applyFilters skips the region
+      // filter instead of showing zero results; the user can retry by
+      // reselecting the region.
+      console.error("Pokédex region load error:", error);
+    }
+  }
+
+  async function getPokedexSpecies(slug) {
+    if (state.pokedexCache.has(slug)) {
+      return state.pokedexCache.get(slug);
+    }
+
+    const response = await fetch(
+      `https://pokeapi.co/api/v2/pokedex/${encodeURIComponent(slug)}`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Pokedex request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const names = new Set(
+      data.pokemon_entries.map((entry) => entry.pokemon_species.name),
+    );
+
+    state.pokedexCache.set(slug, names);
+
+    return names;
   }
 
   function setStatus(message) {

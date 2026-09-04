@@ -51,6 +51,14 @@ require dirname(__DIR__) . '/layouts/header.php';
             </div>
 
             <div class="form-group">
+                <label for="pokedex-region">Region</label>
+
+                <select id="pokedex-region">
+                    <option value="">All regions</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label for="pokedex-sort">Sort</label>
 
                 <select id="pokedex-sort">

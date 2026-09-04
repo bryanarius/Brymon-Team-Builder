@@ -32,7 +32,7 @@
 
 .pokedex-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)) auto;
+  grid-template-columns: minmax(0, 1.2fr) repeat(4, minmax(0, 1fr)) auto;
   align-items: end;
   gap: 1rem;
   margin-bottom: 1.25rem;
@@ -474,6 +474,16 @@ body.pokedex-detail-open {
   border-color: var(--app-blue);
   background: rgba(20, 132, 245, 0.14);
   cursor: default;
+}
+
+@media (max-width: 980px) {
+  .pokedex-controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pokedex-clear-button {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 620px) {
