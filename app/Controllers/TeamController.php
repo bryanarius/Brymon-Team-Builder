@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Auth;
+use App\Core\Config;
 use App\Core\Controller;
 use App\Models\Team;
 use App\Core\Validator;
@@ -203,6 +204,40 @@ final class TeamController extends Controller
         $this->view('teams/show', [
             'pageTitle' => $team['name'],
             'team' => $team,
+            'isOwner' => true,
+        ]);
+    }
+
+    public function showPublic(string $id): void
+    {
+        $teamId = filter_var(
+            $id,
+            FILTER_VALIDATE_INT,
+            [
+                'options' => [
+                    'min_range' => 1,
+                ],
+            ]
+        );
+
+        if ($teamId === false) {
+            $this->notFound();
+            return;
+        }
+
+        $teamModel = new Team();
+
+        $team = $teamModel->findPublicById((int) $teamId);
+
+        if ($team === null) {
+            $this->notFound();
+            return;
+        }
+
+        $this->view('teams/show', [
+            'pageTitle' => $team['name'],
+            'team' => $team,
+            'isOwner' => false,
         ]);
     }
 
@@ -396,6 +431,112 @@ final class TeamController extends Controller
                     'Unable to update the team. Please try again.',
             ], 500);
         }
+    }
+
+    public function setVisibility(string $id): void
+    {
+        Auth::requireLogin();
+
+        header('Content-Type: application/json; charset=UTF-8');
+
+        $csrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+
+        if (!Csrf::validate($csrfToken)) {
+            $this->sendJson([
+                'message' => 'Invalid request.',
+            ], 403);
+
+            return;
+        }
+
+        $teamId = filter_var(
+            $id,
+            FILTER_VALIDATE_INT,
+            [
+                'options' => [
+                    'min_range' => 1,
+                ],
+            ]
+        );
+
+        if ($teamId === false) {
+            $this->sendJson([
+                'message' => 'Invalid team ID.',
+            ], 404);
+
+            return;
+        }
+
+        $rawBody = file_get_contents('php://input');
+
+        try {
+            $data = json_decode(
+                (string) $rawBody,
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+        } catch (\JsonException) {
+            $this->sendJson([
+                'message' => 'Invalid JSON request.',
+            ], 400);
+
+            return;
+        }
+
+        if (!is_array($data) || !array_key_exists('is_public', $data)) {
+            $this->sendJson([
+                'message' => 'Missing visibility flag.',
+            ], 400);
+
+            return;
+        }
+
+        $isPublic = filter_var(
+            $data['is_public'],
+            FILTER_VALIDATE_BOOL,
+            FILTER_NULL_ON_FAILURE
+        );
+
+        if ($isPublic === null) {
+            $this->sendJson([
+                'message' => 'Invalid visibility flag.',
+            ], 400);
+
+            return;
+        }
+
+        $teamModel = new Team();
+
+        $updated = $teamModel->setVisibility(
+            (int) $teamId,
+            (int) $_SESSION['user_id'],
+            $isPublic
+        );
+
+        if (!$updated) {
+            $this->sendJson([
+                'message' => 'Team not found.',
+            ], 404);
+
+            return;
+        }
+
+        $response = [
+            'message' => $isPublic
+                ? 'Team is now public.'
+                : 'Team is now private.',
+            'is_public' => $isPublic,
+        ];
+
+        if ($isPublic) {
+            $response['public_url'] = rtrim(
+                (string) Config::get('APP_URL', ''),
+                '/'
+            ) . '/p/' . (int) $teamId;
+        }
+
+        $this->sendJson($response, 200);
     }
 
     public function destroy(string $id): void

@@ -82,3 +82,12 @@ $router->get('/teams/{id}', [TeamController::class,'show',]);
 $router->get('/teams/{id}/edit', [TeamController::class,'edit',]);
 $router->post('/teams/{id}', [TeamController::class,'update',]);
 $router->post('/teams/{id}/delete', [TeamController::class,'destroy',]);
+$router->post('/teams/{id}/visibility', [TeamController::class, 'setVisibility']);
+
+/*
+|--------------------------------------------------------------------------
+| Public Team Route (no authentication)
+|--------------------------------------------------------------------------
+*/
+
+$router->get('/p/{id}', [TeamController::class, 'showPublic']);
