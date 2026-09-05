@@ -326,6 +326,7 @@ final class Team
                 user_id,
                 name,
                 notes,
+                is_public,
                 created_at,
                 updated_at
             FROM teams
@@ -346,7 +347,77 @@ final class Team
             return null;
         }
 
-        $pokemonStatement = $this->database->prepare(
+        $team['pokemon'] = $this->fetchTeamPokemonDetail($teamId);
+
+        return $team;
+    }
+
+    public function findPublicById(int $teamId): ?array
+    {
+        $statement = $this->database->prepare(
+            '
+            SELECT
+                teams.id,
+                teams.user_id,
+                teams.name,
+                teams.notes,
+                teams.is_public,
+                teams.created_at,
+                teams.updated_at,
+                users.username
+            FROM teams
+            JOIN users
+                ON users.id = teams.user_id
+            WHERE teams.id = :team_id
+            AND teams.is_public = TRUE
+            LIMIT 1
+            '
+        );
+
+        $statement->execute([
+            'team_id' => $teamId,
+        ]);
+
+        $team = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($team === false) {
+            return null;
+        }
+
+        $team['pokemon'] = $this->fetchTeamPokemonDetail($teamId);
+
+        return $team;
+    }
+
+    public function setVisibility(
+        int $teamId,
+        int $userId,
+        bool $isPublic
+    ): bool {
+        $statement = $this->database->prepare(
+            '
+            UPDATE teams
+            SET is_public = :is_public
+            WHERE id = :team_id
+            AND user_id = :user_id
+            '
+        );
+
+        $statement->execute([
+            'team_id' => $teamId,
+            'user_id' => $userId,
+            // PDO binds a PHP `false` as an empty string by default, which
+            // Postgres' boolean type rejects; casting to int (0/1) is the
+            // standard workaround.
+            'is_public' => (int) $isPublic,
+        ]);
+
+        return $statement->rowCount() === 1;
+    }
+
+    private function fetchTeamPokemonDetail(int $teamId): array
+    {
+        $statement = $this->database->prepare(
             '
             SELECT
                 id,
@@ -380,15 +451,11 @@ final class Team
             '
         );
 
-        $pokemonStatement->execute([
+        $statement->execute([
             'team_id' => $teamId,
         ]);
 
-        $team['pokemon'] = $pokemonStatement->fetchAll(
-            PDO::FETCH_ASSOC
-        );
-
-        return $team;
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function updateWithPokemon(
