@@ -51,7 +51,8 @@
 }
 
 .team-detail-edit-button,
-.delete-team-button {
+.delete-team-button,
+.team-share-toggle {
   display: inline-flex;
   min-width: 150px;
   min-height: 48px;
@@ -87,6 +88,108 @@
 
 .delete-team-button:hover {
   background: rgba(214, 69, 80, 0.14);
+}
+
+/* Public visitor banner */
+
+.team-public-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-panel);
+}
+
+.team-public-banner p {
+  margin: 0;
+  color: var(--app-muted);
+}
+
+.team-public-banner strong {
+  color: #f8fafc;
+}
+
+.team-public-cta {
+  color: var(--app-blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.team-public-cta:hover {
+  text-decoration: underline;
+}
+
+/* Sharing controls (owner only) */
+
+.team-share-toggle {
+  border: 2px solid var(--app-border-strong);
+  background: transparent;
+  color: #f8fafc;
+}
+
+.team-share-toggle:hover {
+  border-color: var(--app-blue);
+}
+
+.team-share-toggle:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.team-share-details {
+  max-width: 560px;
+  margin-top: 0.85rem;
+}
+
+.team-share-details[hidden] {
+  display: none;
+}
+
+.team-share-note {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--app-muted);
+  font-size: 0.85rem;
+}
+
+.team-share-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+#team-share-url {
+  flex: 1 1 220px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 8px;
+  background: var(--app-input);
+  color: #f8fafc;
+  font: inherit;
+}
+
+.team-share-copy {
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 8px;
+  background: var(--app-input);
+  color: #f8fafc;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.team-share-copy:hover {
+  border-color: var(--app-blue);
 }
 
 .team-detail-pokemon-grid {

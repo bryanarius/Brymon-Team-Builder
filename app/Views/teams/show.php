@@ -6,6 +6,15 @@ $pageTitle = $pageTitle ?? 'View Team';
 
 require dirname(__DIR__) . '/layouts/header.php';
 
+$isOwner = $isOwner ?? true;
+
+$isPublic = !empty($team['is_public']);
+
+$publicUrl = rtrim(
+    (string) \App\Core\Config::get('APP_URL', ''),
+    '/'
+) . '/p/' . (int) $team['id'];
+
 $teamPokemon = $team['pokemon'] ?? [];
 
 $teamPokemonData = array_map(
@@ -37,9 +46,26 @@ $teamPokemonData = array_map(
 <section class="team-detail-page">
     <div class="team-detail-container">
 
-        <a class="team-detail-back-link" href="/teams">
-            ← Back to Saved Teams
-        </a>
+        <?php if ($isOwner): ?>
+            <a class="team-detail-back-link" href="/teams">
+                ← Back to Saved Teams
+            </a>
+        <?php else: ?>
+            <div class="team-public-banner">
+                <p>
+                    Shared by
+                    <strong><?= htmlspecialchars(
+                        (string) ($team['username'] ?? 'a trainer'),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?></strong>
+                </p>
+
+                <a href="/" class="team-public-cta">
+                    Build your own on Brymon
+                </a>
+            </div>
+        <?php endif; ?>
 
         <header class="team-detail-header">
             <h1>
@@ -62,37 +88,80 @@ $teamPokemonData = array_map(
                 </p>
             <?php endif; ?>
 
-            <div class="team-detail-actions">
-                <a
-                    href="/teams/<?= (int) $team['id'] ?>/edit"
-                    class="team-detail-edit-button"
-                >
-                    Edit Team
-                </a>
-
-                <form
-                    action="/teams/<?= (int) $team['id'] ?>/delete"
-                    method="POST"
-                    class="delete-team-form"
-                >
-                    <input
-                        type="hidden"
-                        name="csrf_token"
-                        value="<?= htmlspecialchars(
-                            \App\Core\Csrf::token(),
-                            ENT_QUOTES,
-                            'UTF-8'
-                        ) ?>"
+            <?php if ($isOwner): ?>
+                <div class="team-detail-actions">
+                    <a
+                        href="/teams/<?= (int) $team['id'] ?>/edit"
+                        class="team-detail-edit-button"
                     >
+                        Edit Team
+                    </a>
+
+                    <form
+                        action="/teams/<?= (int) $team['id'] ?>/delete"
+                        method="POST"
+                        class="delete-team-form"
+                    >
+                        <input
+                            type="hidden"
+                            name="csrf_token"
+                            value="<?= htmlspecialchars(
+                                \App\Core\Csrf::token(),
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>"
+                        >
+
+                        <button
+                            type="submit"
+                            class="delete-team-button"
+                        >
+                            Delete Team
+                        </button>
+                    </form>
 
                     <button
-                        type="submit"
-                        class="delete-team-button"
+                        type="button"
+                        class="team-share-toggle"
+                        id="team-share-toggle"
                     >
-                        Delete Team
+                        <?= $isPublic ? 'Make Private' : 'Make Public' ?>
                     </button>
-                </form>
-            </div>
+                </div>
+
+                <div
+                    class="team-share-details"
+                    id="team-share-details"
+                    data-team-id="<?= (int) $team['id'] ?>"
+                    data-is-public="<?= $isPublic ? 'true' : 'false' ?>"
+                    <?= $isPublic ? '' : 'hidden' ?>
+                >
+                    <span class="team-share-note">
+                        Anyone with this link can view the team.
+                    </span>
+
+                    <div class="team-share-link-row">
+                        <input
+                            type="text"
+                            readonly
+                            id="team-share-url"
+                            value="<?= htmlspecialchars(
+                                $publicUrl,
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>"
+                        >
+
+                        <button
+                            type="button"
+                            class="team-share-copy"
+                            id="team-share-copy"
+                        >
+                            Copy Link
+                        </button>
+                    </div>
+                </div>
+            <?php endif; ?>
         </header>
 
         <div class="team-detail-pokemon-grid">
@@ -169,6 +238,12 @@ $teamPokemonData = array_map(
 
         <script>
             window.BRYMON_TEAM_POKEMON = <?= json_encode($teamPokemonData, JSON_THROW_ON_ERROR) ?>;
+            <?php if ($isOwner): ?>
+            window.BRYMON_CSRF_TOKEN = <?= json_encode(
+                \App\Core\Csrf::token(),
+                JSON_THROW_ON_ERROR
+            ) ?>;
+            <?php endif; ?>
         </script>
 
         <section class="team-analysis" id="team-analysis">
