@@ -217,6 +217,20 @@
   margin-bottom: 1rem;
 }
 
+/*
+ * Type Coverage holds stacked heading + badge-row sections rather than
+ * the expandable cards the other analysis lists use, so it flows as
+ * plain blocks: each "…against:" heading sits on its own row with its
+ * badges directly beneath it.
+ */
+#analysis-type-coverage {
+  display: block;
+}
+
+#analysis-type-coverage .analysis-type-badge-list:last-child {
+  margin-bottom: 0;
+}
+
 /* Role balance */
 
 .analysis-role-findings {
