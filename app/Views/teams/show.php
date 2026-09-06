@@ -8,6 +8,12 @@ require dirname(__DIR__) . '/layouts/header.php';
 
 $isOwner = $isOwner ?? true;
 
+$viewerLoggedIn = $viewerLoggedIn ?? \App\Core\Auth::check();
+
+$likeCount = (int) ($likeCount ?? 0);
+
+$likedByViewer = !empty($likedByViewer);
+
 $isPublic = !empty($team['is_public']);
 
 $publicUrl = rtrim(
@@ -87,6 +93,47 @@ $teamPokemonData = array_map(
                     ) ?>
                 </p>
             <?php endif; ?>
+
+            <div class="team-like" data-team-id="<?= (int) $team['id'] ?>">
+                <?php if ($viewerLoggedIn): ?>
+                    <button
+                        type="button"
+                        class="team-like-button<?= $likedByViewer
+                            ? ' is-liked'
+                            : '' ?>"
+                        id="team-like-button"
+                        aria-pressed="<?= $likedByViewer ? 'true' : 'false' ?>"
+                    >
+                        <span class="team-like-icon" aria-hidden="true">
+                            &hearts;
+                        </span>
+
+                        <span
+                            class="team-like-count"
+                            id="team-like-count"
+                        ><?= $likeCount ?></span>
+
+                        <span class="visually-hidden">likes</span>
+                    </button>
+                <?php else: ?>
+                    <span class="team-like-button is-static">
+                        <span class="team-like-icon" aria-hidden="true">
+                            &hearts;
+                        </span>
+
+                        <span
+                            class="team-like-count"
+                            id="team-like-count"
+                        ><?= $likeCount ?></span>
+
+                        <span class="visually-hidden">likes</span>
+                    </span>
+
+                    <a href="/login" class="team-like-signin">
+                        Sign in to like
+                    </a>
+                <?php endif; ?>
+            </div>
 
             <?php if ($isOwner): ?>
                 <div class="team-detail-actions">
@@ -238,7 +285,7 @@ $teamPokemonData = array_map(
 
         <script>
             window.BRYMON_TEAM_POKEMON = <?= json_encode($teamPokemonData, JSON_THROW_ON_ERROR) ?>;
-            <?php if ($isOwner): ?>
+            <?php if ($isOwner || $viewerLoggedIn): ?>
             window.BRYMON_CSRF_TOKEN = <?= json_encode(
                 \App\Core\Csrf::token(),
                 JSON_THROW_ON_ERROR

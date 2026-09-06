@@ -86,3 +86,48 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleButton.textContent = isPublic ? "Make Private" : "Make Public";
   }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const button = document.querySelector("#team-like-button");
+
+  if (!button) {
+    return;
+  }
+
+  const container = button.closest(".team-like");
+  const countElement = document.querySelector("#team-like-count");
+  const teamId = container.dataset.teamId;
+
+  button.addEventListener("click", async () => {
+    const currentlyLiked = button.getAttribute("aria-pressed") === "true";
+    const action = currentlyLiked ? "unlike" : "like";
+
+    button.disabled = true;
+
+    try {
+      const response = await fetch(`/teams/${teamId}/${action}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": window.BRYMON_CSRF_TOKEN,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to update like.");
+      }
+
+      button.setAttribute("aria-pressed", data.liked ? "true" : "false");
+      button.classList.toggle("is-liked", Boolean(data.liked));
+      countElement.textContent = String(data.like_count);
+    } catch (error) {
+      if (typeof window.showToast === "function") {
+        window.showToast(error.message, { type: "error" });
+      }
+    } finally {
+      button.disabled = false;
+    }
+  });
+});

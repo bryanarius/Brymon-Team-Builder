@@ -90,6 +90,68 @@
   background: rgba(214, 69, 80, 0.14);
 }
 
+/* Likes */
+
+.team-like {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.team-like-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 40px;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 999px;
+  background: var(--app-panel);
+  color: #f8fafc;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.team-like-button.is-static {
+  cursor: default;
+}
+
+.team-like-button:not(.is-static):hover {
+  border-color: #ff737c;
+}
+
+.team-like-button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.team-like-icon {
+  color: #6b7a90;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.team-like-button.is-liked .team-like-icon {
+  color: #ff5a63;
+}
+
+.team-like-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.team-like-signin {
+  color: var(--app-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.team-like-signin:hover {
+  color: var(--app-blue);
+  text-decoration: underline;
+}
+
 /* Public visitor banner */
 
 .team-public-banner {

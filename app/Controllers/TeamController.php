@@ -202,10 +202,16 @@ final class TeamController extends Controller
             return;
         }
 
+        $userId = (int) $_SESSION['user_id'];
+        $likeModel = new TeamLike();
+
         $this->view('teams/show', [
             'pageTitle' => $team['name'],
             'team' => $team,
             'isOwner' => true,
+            'viewerLoggedIn' => true,
+            'likeCount' => $likeModel->countForTeam((int) $teamId),
+            'likedByViewer' => $likeModel->isLikedBy($userId, (int) $teamId),
         ]);
     }
 
@@ -235,10 +241,20 @@ final class TeamController extends Controller
             return;
         }
 
+        $viewerLoggedIn = Auth::check();
+        $likeModel = new TeamLike();
+
         $this->view('teams/show', [
             'pageTitle' => $team['name'],
             'team' => $team,
             'isOwner' => false,
+            'viewerLoggedIn' => $viewerLoggedIn,
+            'likeCount' => $likeModel->countForTeam((int) $teamId),
+            'likedByViewer' => $viewerLoggedIn
+                && $likeModel->isLikedBy(
+                    (int) $_SESSION['user_id'],
+                    (int) $teamId
+                ),
         ]);
     }
 
