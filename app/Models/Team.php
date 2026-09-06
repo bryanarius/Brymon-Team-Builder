@@ -415,6 +415,26 @@ final class Team
         return $statement->rowCount() === 1;
     }
 
+    public function isVisibleTo(int $teamId, int $userId): bool
+    {
+        $statement = $this->database->prepare(
+            '
+            SELECT 1
+            FROM teams
+            WHERE id = :team_id
+            AND (is_public = TRUE OR user_id = :user_id)
+            LIMIT 1
+            '
+        );
+
+        $statement->execute([
+            'team_id' => $teamId,
+            'user_id' => $userId,
+        ]);
+
+        return $statement->fetchColumn() !== false;
+    }
+
     private function fetchTeamPokemonDetail(int $teamId): array
     {
         $statement = $this->database->prepare(

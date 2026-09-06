@@ -83,6 +83,8 @@ $router->get('/teams/{id}/edit', [TeamController::class,'edit',]);
 $router->post('/teams/{id}', [TeamController::class,'update',]);
 $router->post('/teams/{id}/delete', [TeamController::class,'destroy',]);
 $router->post('/teams/{id}/visibility', [TeamController::class, 'setVisibility']);
+$router->post('/teams/{id}/like', [TeamController::class, 'like']);
+$router->post('/teams/{id}/unlike', [TeamController::class, 'unlike']);
 
 /*
 |--------------------------------------------------------------------------

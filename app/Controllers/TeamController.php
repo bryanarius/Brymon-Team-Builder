@@ -8,6 +8,7 @@ use App\Core\Auth;
 use App\Core\Config;
 use App\Core\Controller;
 use App\Models\Team;
+use App\Models\TeamLike;
 use App\Core\Validator;
 use App\Core\Csrf;
 
@@ -537,6 +538,76 @@ final class TeamController extends Controller
         }
 
         $this->sendJson($response, 200);
+    }
+
+    public function like(string $id): void
+    {
+        $this->toggleLike($id, true);
+    }
+
+    public function unlike(string $id): void
+    {
+        $this->toggleLike($id, false);
+    }
+
+    private function toggleLike(string $id, bool $liked): void
+    {
+        Auth::requireLogin();
+
+        header('Content-Type: application/json; charset=UTF-8');
+
+        $csrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+
+        if (!Csrf::validate($csrfToken)) {
+            $this->sendJson([
+                'message' => 'Invalid request.',
+            ], 403);
+
+            return;
+        }
+
+        $teamId = filter_var(
+            $id,
+            FILTER_VALIDATE_INT,
+            [
+                'options' => [
+                    'min_range' => 1,
+                ],
+            ]
+        );
+
+        if ($teamId === false) {
+            $this->sendJson([
+                'message' => 'Invalid team ID.',
+            ], 404);
+
+            return;
+        }
+
+        $userId = (int) $_SESSION['user_id'];
+
+        $teamModel = new Team();
+
+        if (!$teamModel->isVisibleTo((int) $teamId, $userId)) {
+            $this->sendJson([
+                'message' => 'Team not found.',
+            ], 404);
+
+            return;
+        }
+
+        $likeModel = new TeamLike();
+
+        if ($liked) {
+            $likeModel->like($userId, (int) $teamId);
+        } else {
+            $likeModel->unlike($userId, (int) $teamId);
+        }
+
+        $this->sendJson([
+            'liked' => $liked,
+            'like_count' => $likeModel->countForTeam((int) $teamId),
+        ], 200);
     }
 
     public function destroy(string $id): void
