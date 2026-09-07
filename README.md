@@ -2,7 +2,7 @@
 
 A full-stack Pokémon team builder built from scratch using a custom **PHP MVC architecture**, **PostgreSQL**, **Vanilla JavaScript**, and the **PokéAPI**.
 
-> ✅ **Status:** Version 1.0 — Launch Ready
+> ✅ **Status:** Version 1.0 live at [brymonteambuilder.com](https://brymonteambuilder.com) — Version 2 in active development
 
 ---
 
@@ -14,7 +14,7 @@ https://brymonteambuilder.com
 
 # Overview
 
-Brymon is a full-stack Pokémon team-building application designed to let users create, configure, analyze, save, edit, and manage complete Pokémon teams.
+Brymon is a full-stack Pokémon team-building application designed to let users create, configure, analyze, save, edit, manage, and share complete Pokémon teams — and discover teams built by other trainers.
 
 The project was built as a portfolio application to demonstrate practical full-stack engineering using a custom backend architecture rather than relying on a full-stack framework.
 
@@ -24,8 +24,11 @@ Brymon combines:
 - PostgreSQL relational data modeling
 - Authentication and authorization
 - Interactive JavaScript state management
-- PokéAPI integration
+- PokéAPI integration (REST and GraphQL)
 - Pokémon Showdown import/export
+- A browsable Pokédex reference
+- Public team sharing, likes, and following
+- Trainer profiles and a personalized dashboard feed
 - Backend validation
 - CSRF protection
 - Automated testing
@@ -63,6 +66,32 @@ Brymon combines:
 
 ---
 
+## Pokédex
+
+![Brymon Pokédex](docs/screenshots/pokedex.png)
+
+![Brymon Pokédex detail panel](docs/screenshots/pokedex-detail.png)
+
+---
+
+## Dashboard Feed
+
+![Brymon Dashboard](docs/screenshots/dashboard.png)
+
+---
+
+## Trainer Profile
+
+![Brymon Trainer Profile](docs/screenshots/profile.png)
+
+---
+
+## Shared Team
+
+![Brymon Shared Team](docs/screenshots/shared-team.png)
+
+---
+
 # Core Features
 
 ## Authentication
@@ -73,9 +102,11 @@ Brymon combines:
 - User login
 - Login blocked until email is verified
 - Forgot password / password reset via email
+- Account settings — change username and password
 - Secure password hashing
 - Session authentication
 - Session regeneration after login
+- Idle and absolute session timeouts
 - Route protection
 - CSRF protection
 - Secure logout
@@ -90,14 +121,24 @@ Brymon combines:
 - Responsive search results
 - PokéAPI-powered Pokémon data
 
+## Pokédex
+
+- Browsable index of every Pokémon
+- Name / number search
+- Type, generation, and region (regional Pokédex) filters
+- Role filter (physical / special attacker, wall, balanced, fast, powerhouse)
+- "Has a Mega Evolution" filter
+- Detail panel: official artwork, base stats, abilities, flavor text
+- Evolution chain and Mega Evolution navigation
+
 ## Team Builder
 
 - Teams of up to six Pokémon
 - Team names and notes
 - Pokémon nicknames
 - Ability selection
-- Held item selection
-- Nature selection
+- Searchable held item and move selectors
+- Nature selection with stat-effect hints
 - Four move slots
 - EV configuration
 - IV configuration
@@ -119,6 +160,9 @@ Brymon combines:
 - Shared weakness analysis
 - Immunity analysis
 - Team type distribution
+- Type coverage analysis (from the team's moves)
+- Resistance recommendations for shared weaknesses
+- Team role balance analysis
 - Team analysis summary
 
 ## Pokémon Showdown Integration
@@ -126,6 +170,15 @@ Brymon combines:
 - Import Pokémon Showdown teams
 - Export Pokémon Showdown teams
 - Parse moves, abilities, items, natures, EVs, and IVs
+
+## Public Teams & Social
+
+- Public / private visibility toggle per team
+- Shareable read-only team pages (`/p/{id}`) with full analysis
+- Team likes
+- Following other trainers
+- Trainer profiles (`/u/{username}`) listing a trainer's public teams
+- Personalized dashboard feed: teams from trainers you follow, popular teams, and recently shared teams
 
 ---
 
@@ -146,6 +199,9 @@ Examples include:
 - Malformed JSON rejection
 - CSRF validation for state-changing requests
 - User-scoped authorization for saved teams
+- Public / private team visibility enforced at the query level
+- User-scoped authorization for likes and follows
+- Follow relationships prevented from referencing the same user
 
 Production errors are logged internally while users receive custom error pages for:
 
@@ -171,14 +227,18 @@ PHPUnit tests cover core validation rules, including:
 
 ## Integration Tests
 
-PostgreSQL integration tests verify team ownership and database behavior, including:
+PostgreSQL integration tests verify data-access behavior against a real database, including:
 
 - Owners can access their own teams
-- Other users cannot access another user's team
-- Other users cannot delete another user's team
+- Other users cannot access or delete another user's team
 - Email verification tokens are generated, hashed, and expire correctly
 - Password reset tokens are generated, hashed, and expire correctly
 - Resetting a password clears the reset token and implicitly verifies the email
+- Account settings updates (username, password) persist and are scoped to the user
+- Team visibility toggling is owner-scoped; private teams are unreachable publicly
+- Team likes are idempotent and cascade on team or user deletion
+- Follow relationships are idempotent, reject self-follows, and cascade on user deletion
+- Dashboard feed queries order by likes / recency and stay scoped to public teams and followed trainers
 
 ## End-to-End Tests
 
@@ -197,8 +257,8 @@ Playwright tests exercise real browser workflows, including:
 ```text
 PHPUnit
 
-16 tests
-38 assertions
+44 tests
+87 assertions
 100% passing
 
 
@@ -366,11 +426,13 @@ This process allowed Brymon to evolve from an initial product concept into a tes
 | Layer              | Technology                      |
 | ------------------ | ------------------------------- |
 | Frontend           | HTML5, CSS3, Vanilla JavaScript |
+| Icons              | Font Awesome                    |
 | Backend            | PHP 8                           |
 | Architecture       | Custom MVC                      |
 | Database           | PostgreSQL                      |
 | Database Access    | PDO                             |
-| External API       | PokéAPI                         |
+| External API       | PokéAPI (REST + GraphQL)        |
+| Email              | Resend                          |
 | Testing            | PHPUnit, Playwright             |
 | Package Management | Composer, npm                   |
 | Deployment         | Docker, Render                  |
@@ -413,30 +475,32 @@ PokéAPI
 Brymon/
 │
 ├── app/
-│   ├── Controllers/
-│   ├── Core/
-│   ├── Models/
-│   └── Views/
+│   ├── Controllers/     # Page, Auth, Account, Team, Profile, Dashboard
+│   ├── Core/            # Router, Auth, Csrf, Validator, Database, Mailer, Config
+│   ├── Models/          # Team, User, Follow, TeamLike
+│   └── Views/           # feature-grouped templates, shared layouts and partials
 │
 ├── database/
-│   ├── migrations/
 │   ├── schema.sql
 │   └── seeds.sql
 │
 ├── docs/
 │   ├── architecture/
+│   ├── database/
+│   │   └── migrations/  # incremental, hand-applied SQL migrations
 │   ├── high-fi/
 │   ├── low-fi/
 │   └── screenshots/
 │
 ├── public/
-│   ├── css/
+│   ├── css/             # feature-scoped stylesheets + design tokens
 │   ├── favicon/
 │   ├── images/
-│   ├── js/
-│   └── index.php
+│   ├── js/              # one file per feature area, no build step
+│   └── index.php        # front controller
 │
 ├── routes/
+│   └── web.php
 │
 ├── tests/
 │   ├── Unit/
@@ -463,6 +527,9 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
 - Controller design
 - Model abstraction
 - PostgreSQL database design
+- Incremental SQL migrations
+- Many-to-many relationships (team likes, trainer follows)
+- Aggregate queries and ranked / filtered feeds
 - PDO database access
 - Prepared SQL statements
 - Transactional database operations
@@ -485,18 +552,21 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
 ## Frontend Engineering
 
 - Semantic HTML
-- Responsive CSS
-- Vanilla JavaScript
+- Responsive CSS with a shared design-token layer
+- Vanilla JavaScript, no build step
+- Reusable components (searchable combobox, shared team card partial)
 - Asynchronous API requests
 - Client-side state management
 - Dynamic UI rendering
+- Accessible dialog / focus management (Pokédex detail panel)
 - Form validation
 - Responsive navigation
 
 ## API Integration
 
-- PokéAPI integration
-- Pokémon data retrieval
+- PokéAPI integration (REST and GraphQL)
+- Pokémon data retrieval and bulk stat queries
+- Client-side caching of API responses
 - Pokémon Showdown parsing
 - Pokémon Showdown import/export
 
@@ -599,11 +669,17 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
   - [x] Team role balance
 - [x] Searchable item and move selectors
 - [x] Add Pokédex
+- [x] Public teams and sharing
+  - [x] Public / private team visibility
+  - [x] Shareable read-only team pages
+  - [x] Team likes
+  - [x] Following trainers
+  - [x] Trainer profiles (`/u/{username}`)
+  - [x] Dashboard feed (popular, recent, following)
 
 ### Planned
 
-- [ ] Public team sharing
-- [ ] User profiles
+- [ ] Profile customization (display name, bio, Pokémon avatar)
 - [ ] Additional accessibility improvements
 - [ ] Additional usability improvements
 
@@ -616,6 +692,7 @@ Possible modernization and architecture experiments include:
 - REST API
 - React or Vue frontend
 - Laravel backend
+- Custom uploaded profile pictures
 - Advanced analytics
 - Performance optimization
 - Expanded automated testing
@@ -723,8 +800,8 @@ Run all PHPUnit unit and integration tests:
 Current test suite:
 
 ```text
-16 tests
-38 assertions
+44 tests
+87 assertions
 ```
 
 ---
@@ -774,13 +851,16 @@ Building Brymon provided hands-on experience with the full software development 
 Key lessons included:
 
 - Designing normalized relational database schemas
+- Evolving a schema safely with incremental migrations
+- Modeling a social graph (likes and follows) with join tables and unique constraints
+- Building ranked and filtered feed queries with SQL aggregates
 - Building a custom MVC architecture
 - Understanding routing beneath full-stack frameworks
 - Implementing authentication and authorization
 - Managing secure PHP sessions
 - Protecting state-changing requests with CSRF tokens
 - Designing validation at both client and server levels
-- Integrating third-party APIs
+- Integrating third-party APIs over REST and GraphQL
 - Managing complex browser-side state
 - Building transactional PostgreSQL operations
 - Handling resource ownership and authorization
