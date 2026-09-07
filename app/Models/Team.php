@@ -95,8 +95,129 @@ final class Team
             'user_id' => $userId,
         ]);
 
-        $teams = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $this->attachPokemon(
+            $statement->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
 
+    public function findPopularPublic(int $limit): array
+    {
+        $statement = $this->database->prepare(
+            '
+            SELECT
+                teams.id,
+                teams.user_id,
+                teams.name,
+                teams.notes,
+                teams.created_at,
+                teams.updated_at,
+                users.username,
+                COUNT(DISTINCT team_pokemon.id)::int AS pokemon_count,
+                COUNT(DISTINCT team_likes.id)::int AS like_count
+            FROM teams
+            JOIN users
+                ON users.id = teams.user_id
+            LEFT JOIN team_pokemon
+                ON team_pokemon.team_id = teams.id
+            LEFT JOIN team_likes
+                ON team_likes.team_id = teams.id
+            WHERE teams.is_public = TRUE
+            GROUP BY teams.id, users.username
+            ORDER BY like_count DESC, teams.updated_at DESC
+            LIMIT ' . (int) $limit . '
+            '
+        );
+
+        $statement->execute();
+
+        return $this->attachPokemon(
+            $statement->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+
+    public function findRecentPublic(int $limit): array
+    {
+        $statement = $this->database->prepare(
+            '
+            SELECT
+                teams.id,
+                teams.user_id,
+                teams.name,
+                teams.notes,
+                teams.created_at,
+                teams.updated_at,
+                users.username,
+                COUNT(DISTINCT team_pokemon.id)::int AS pokemon_count,
+                COUNT(DISTINCT team_likes.id)::int AS like_count
+            FROM teams
+            JOIN users
+                ON users.id = teams.user_id
+            LEFT JOIN team_pokemon
+                ON team_pokemon.team_id = teams.id
+            LEFT JOIN team_likes
+                ON team_likes.team_id = teams.id
+            WHERE teams.is_public = TRUE
+            GROUP BY teams.id, users.username
+            ORDER BY teams.created_at DESC, teams.id DESC
+            LIMIT ' . (int) $limit . '
+            '
+        );
+
+        $statement->execute();
+
+        return $this->attachPokemon(
+            $statement->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+
+    public function findPublicFromFollowedBy(int $userId, int $limit): array
+    {
+        $statement = $this->database->prepare(
+            '
+            SELECT
+                teams.id,
+                teams.user_id,
+                teams.name,
+                teams.notes,
+                teams.created_at,
+                teams.updated_at,
+                users.username,
+                COUNT(DISTINCT team_pokemon.id)::int AS pokemon_count,
+                COUNT(DISTINCT team_likes.id)::int AS like_count
+            FROM teams
+            JOIN users
+                ON users.id = teams.user_id
+            LEFT JOIN team_pokemon
+                ON team_pokemon.team_id = teams.id
+            LEFT JOIN team_likes
+                ON team_likes.team_id = teams.id
+            WHERE teams.is_public = TRUE
+            AND teams.user_id IN (
+                SELECT followed_id
+                FROM follows
+                WHERE follower_id = :user_id
+            )
+            GROUP BY teams.id, users.username
+            ORDER BY teams.created_at DESC, teams.id DESC
+            LIMIT ' . (int) $limit . '
+            '
+        );
+
+        $statement->execute([
+            'user_id' => $userId,
+        ]);
+
+        return $this->attachPokemon(
+            $statement->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $teams
+     * @return array<int, array<string, mixed>>
+     */
+    private function attachPokemon(array $teams): array
+    {
         if ($teams === []) {
             return [];
         }
