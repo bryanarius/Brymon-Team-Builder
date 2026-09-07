@@ -66,6 +66,57 @@ final class Team
         return $teams;
     }
 
+    public function findPublicByUserId(int $userId): array
+    {
+        $statement = $this->database->prepare(
+            '
+            SELECT
+                teams.id,
+                teams.user_id,
+                teams.name,
+                teams.notes,
+                teams.created_at,
+                teams.updated_at,
+                COUNT(DISTINCT team_pokemon.id)::int AS pokemon_count,
+                COUNT(DISTINCT team_likes.id)::int AS like_count
+            FROM teams
+            LEFT JOIN team_pokemon
+                ON team_pokemon.team_id = teams.id
+            LEFT JOIN team_likes
+                ON team_likes.team_id = teams.id
+            WHERE teams.user_id = :user_id
+            AND teams.is_public = TRUE
+            GROUP BY teams.id
+            ORDER BY teams.updated_at DESC
+            '
+        );
+
+        $statement->execute([
+            'user_id' => $userId,
+        ]);
+
+        $teams = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($teams === []) {
+            return [];
+        }
+
+        $teamIds = array_map(
+            static fn (array $team): int => (int) $team['id'],
+            $teams
+        );
+
+        $pokemonByTeam = $this->findPokemonByTeamIds($teamIds);
+
+        foreach ($teams as &$team) {
+            $team['pokemon'] = $pokemonByTeam[(int) $team['id']] ?? [];
+        }
+
+        unset($team);
+
+        return $teams;
+    }
+
     public function createWithPokemon(
         int $userId,
         string $name,

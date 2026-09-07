@@ -6,6 +6,7 @@ use App\Controllers\AccountController;
 use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
 use App\Controllers\PageController;
+use App\Controllers\ProfileController;
 use App\Controllers\TeamController;
 
 /*
@@ -93,3 +94,13 @@ $router->post('/teams/{id}/unlike', [TeamController::class, 'unlike']);
 */
 
 $router->get('/p/{id}', [TeamController::class, 'showPublic']);
+
+/*
+|--------------------------------------------------------------------------
+| Profile Routes
+|--------------------------------------------------------------------------
+*/
+
+$router->get('/u/{username}', [ProfileController::class, 'show']);
+$router->post('/u/{username}/follow', [ProfileController::class, 'follow']);
+$router->post('/u/{username}/unfollow', [ProfileController::class, 'unfollow']);

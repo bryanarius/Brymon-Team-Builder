@@ -160,17 +160,6 @@ final class TeamController extends Controller
         ], 201);
     }
 
-    private function sendJson(array $data, int $statusCode): void
-    {
-        http_response_code($statusCode);
-
-        echo json_encode(
-            $data,
-            JSON_UNESCAPED_SLASHES
-            | JSON_UNESCAPED_UNICODE
-        );
-    }
-
     public function show(string $id): void
     {
         Auth::requireLogin();
