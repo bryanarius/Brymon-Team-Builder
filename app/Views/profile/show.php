@@ -70,48 +70,10 @@ $teams = $teams ?? [];
                     : 'This trainer has no public teams yet.' ?>
             </p>
         <?php else: ?>
-            <ul class="profile-team-list">
+            <ul class="team-card-list">
+                <?php $showOwner = false; ?>
                 <?php foreach ($teams as $team): ?>
-                    <li class="profile-team-card">
-                        <a
-                            class="profile-team-link"
-                            href="/p/<?= (int) $team['id'] ?>"
-                        >
-                            <div class="profile-team-sprites">
-                                <?php foreach ($team['pokemon'] as $mon): ?>
-                                    <img
-                                        class="profile-team-sprite"
-                                        loading="lazy"
-                                        width="48"
-                                        height="48"
-                                        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/<?=
-                                            (int) $mon['pokemon_api_id']
-                                        ?>.png"
-                                        alt="<?= htmlspecialchars(
-                                            ucwords(str_replace(
-                                                '-',
-                                                ' ',
-                                                (string) ($mon['pokemon_name'] ?? '')
-                                            )),
-                                            ENT_QUOTES,
-                                            'UTF-8'
-                                        ) ?>"
-                                    >
-                                <?php endforeach; ?>
-                            </div>
-
-                            <h2><?= htmlspecialchars(
-                                (string) $team['name'],
-                                ENT_QUOTES,
-                                'UTF-8'
-                            ) ?></h2>
-                        </a>
-
-                        <p class="profile-team-meta">
-                            <?= (int) $team['pokemon_count'] ?> Pokémon
-                            &middot; <?= (int) $team['like_count'] ?> likes
-                        </p>
-                    </li>
+                    <?php require dirname(__DIR__) . '/teams/_card.php'; ?>
                 <?php endforeach; ?>
             </ul>
         <?php endif; ?>

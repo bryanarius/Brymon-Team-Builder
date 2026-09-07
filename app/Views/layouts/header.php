@@ -65,7 +65,7 @@ $pageTitle = $pageTitle ?? 'Brymon';
         </a>
 
         <nav class="primary-navigation" aria-label="Primary navigation">
-            <a href="/">Home</a>
+            <a href="<?= Auth::check() ? '/dashboard' : '/' ?>">Home</a>
 
             <?php if (Auth::check()): ?>
                 <a href="/teambuilder">Team Builder</a>
@@ -195,7 +195,7 @@ $pageTitle = $pageTitle ?? 'Brymon';
         hidden
     >
         <div class="container mobile-navigation-inner">
-            <a href="/">Home</a>
+            <a href="<?= Auth::check() ? '/dashboard' : '/' ?>">Home</a>
 
             <?php if (Auth::check()): ?>
                 <a href="/teambuilder">Team Builder</a>

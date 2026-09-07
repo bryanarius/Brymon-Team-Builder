@@ -1,15 +1,113 @@
 /* Dashboard */
+
 .dashboard {
-  padding: 4rem 0 6rem;
+  min-height: calc(100vh - 90px);
+  padding: 2.5rem 1.5rem 4rem;
+  background: var(--app-background);
+  color: #f8fafc;
 }
+
+.dashboard .container {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
 .dashboard-header {
   margin-bottom: 2.5rem;
 }
+
 .dashboard-header h1 {
-  margin-bottom: 1rem;
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  margin: 0 0 0.5rem;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  line-height: 1.1;
 }
+
 .dashboard-header p {
-  max-width: 650px;
+  margin: 0;
   color: var(--text-muted);
+}
+
+.dashboard-section {
+  margin-bottom: 2.5rem;
+}
+
+.dashboard-section h2 {
+  margin: 0 0 1rem;
+  font-size: 1.35rem;
+}
+
+.dashboard-empty {
+  margin: 0;
+  padding: 1.75rem 1.25rem;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-panel);
+  color: var(--app-muted);
+  text-align: center;
+}
+
+/* Shared public-team card (dashboard + trainer profile) */
+
+.team-card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.team-card {
+  padding: 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-panel);
+}
+
+.team-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.team-card-sprites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  margin-bottom: 0.5rem;
+  min-height: 48px;
+}
+
+.team-card-sprite {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.team-card-name {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+.team-card-link:hover .team-card-name {
+  color: var(--app-blue);
+}
+
+.team-card-meta {
+  margin: 0.4rem 0 0;
+  color: var(--app-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.team-card-author {
+  color: #dce7f6;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.team-card-author:hover {
+  color: var(--app-blue);
+  text-decoration: underline;
 }

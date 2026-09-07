@@ -64,7 +64,7 @@ $router->post('/account/password', [AccountController::class, 'updatePassword'])
 
 /*
 |--------------------------------------------------------------------------
-| Temp Dash Route
+| Dashboard Route
 |--------------------------------------------------------------------------
 */
 
