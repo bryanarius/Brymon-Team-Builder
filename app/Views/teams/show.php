@@ -60,11 +60,20 @@ $teamPokemonData = array_map(
             <div class="team-public-banner">
                 <p>
                     Shared by
-                    <strong><?= htmlspecialchars(
-                        (string) ($team['username'] ?? 'a trainer'),
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?></strong>
+                    <?php if (!empty($team['username'])): ?>
+                        <a
+                            class="team-public-author"
+                            href="/u/<?= rawurlencode(
+                                (string) $team['username']
+                            ) ?>"
+                        ><?= htmlspecialchars(
+                            (string) $team['username'],
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?></a>
+                    <?php else: ?>
+                        <strong>a trainer</strong>
+                    <?php endif; ?>
                 </p>
 
                 <a href="/" class="team-public-cta">

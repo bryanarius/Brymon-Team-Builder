@@ -176,6 +176,17 @@
   color: #f8fafc;
 }
 
+.team-public-author {
+  color: #f8fafc;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.team-public-author:hover {
+  color: var(--app-blue);
+  text-decoration: underline;
+}
+
 .team-public-cta {
   color: var(--app-blue);
   font-weight: 700;

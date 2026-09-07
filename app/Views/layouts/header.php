@@ -38,6 +38,15 @@ $pageTitle = $pageTitle ?? 'Brymon';
     <link rel="stylesheet" href="/css/errors.css">
     <link rel="stylesheet" href="/css/footer.css">
     <link rel="stylesheet" href="/css/account-settings.css">
+    <link rel="stylesheet" href="/css/profile.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    >
+
     <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
     <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
@@ -101,8 +110,24 @@ $pageTitle = $pageTitle ?? 'Brymon';
                     id="account-menu-dropdown"
                     hidden
                 >
+                    <a
+                        href="/u/<?= rawurlencode(
+                            Auth::username() ?? ''
+                        ) ?>"
+                        class="account-menu-link"
+                    >
+                        <i
+                            class="fa-solid fa-user fa-fw account-menu-icon"
+                            aria-hidden="true"
+                        ></i>
+                        My Profile
+                    </a>
+
                     <a href="/account" class="account-menu-link">
-                        <span>⚙</span>
+                        <i
+                            class="fa-solid fa-gear fa-fw account-menu-icon"
+                            aria-hidden="true"
+                        ></i>
                         Account Settings
                     </a>
 
@@ -121,7 +146,10 @@ $pageTitle = $pageTitle ?? 'Brymon';
                             type="submit"
                             class="account-menu-link account-menu-logout"
                         >
-                            <span>↩</span>
+                            <i
+                                class="fa-solid fa-arrow-right-from-bracket fa-fw account-menu-icon"
+                                aria-hidden="true"
+                            ></i>
                             Logout
                         </button>
                     </form>
@@ -172,6 +200,9 @@ $pageTitle = $pageTitle ?? 'Brymon';
             <?php if (Auth::check()): ?>
                 <a href="/teambuilder">Team Builder</a>
                 <a href="/teams">Saved Teams</a>
+                <a href="/u/<?= rawurlencode(Auth::username() ?? '') ?>">
+                    My Profile
+                </a>
                 <a href="/account">Account Settings</a>
                 <span class="mobile-navigation-username">
                     Signed in as

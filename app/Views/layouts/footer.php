@@ -22,5 +22,6 @@
 <script src="/js/team-show.js" defer></script>
 <script src="/js/saved-teams.js" defer></script>
 <script src="/js/pokedex.js" defer></script>
+<script src="/js/profile.js" defer></script>
 </body>
 </html>

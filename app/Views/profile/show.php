@@ -27,7 +27,9 @@ $teams = $teams ?? [];
 
             <p class="profile-stats">
                 <span>
-                    <strong><?= (int) $followerCount ?></strong> followers
+                    <strong id="profile-follower-count"><?=
+                        (int) $followerCount
+                    ?></strong> followers
                 </span>
                 <span>
                     <strong><?= (int) $followingCount ?></strong> following
@@ -75,6 +77,29 @@ $teams = $teams ?? [];
                             class="profile-team-link"
                             href="/p/<?= (int) $team['id'] ?>"
                         >
+                            <div class="profile-team-sprites">
+                                <?php foreach ($team['pokemon'] as $mon): ?>
+                                    <img
+                                        class="profile-team-sprite"
+                                        loading="lazy"
+                                        width="48"
+                                        height="48"
+                                        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/<?=
+                                            (int) $mon['pokemon_api_id']
+                                        ?>.png"
+                                        alt="<?= htmlspecialchars(
+                                            ucwords(str_replace(
+                                                '-',
+                                                ' ',
+                                                (string) ($mon['pokemon_name'] ?? '')
+                                            )),
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>"
+                                    >
+                                <?php endforeach; ?>
+                            </div>
+
                             <h2><?= htmlspecialchars(
                                 (string) $team['name'],
                                 ENT_QUOTES,

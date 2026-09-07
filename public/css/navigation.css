@@ -151,6 +151,7 @@
 .account-menu-link {
     display: flex;
     align-items: center;
+    gap: .7rem;
 
     width: 100%;
     padding: .9rem 1rem;
@@ -166,6 +167,11 @@
 
 .account-menu-link:hover {
     background: rgba(255,255,255,.06);
+}
+
+.account-menu-icon {
+    font-size: .95rem;
+    opacity: .85;
 }
 
 .account-menu-logout {
