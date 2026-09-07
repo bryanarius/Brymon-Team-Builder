@@ -29,13 +29,15 @@ $teams = $teams ?? [];
                 <span>
                     <strong id="profile-follower-count"><?=
                         (int) $followerCount
-                    ?></strong> followers
+                    ?></strong>
+                    <?= (int) $followerCount === 1 ? 'follower' : 'followers' ?>
                 </span>
                 <span>
                     <strong><?= (int) $followingCount ?></strong> following
                 </span>
                 <span>
-                    <strong><?= count($teams) ?></strong> public teams
+                    <strong><?= count($teams) ?></strong>
+                    <?= count($teams) === 1 ? 'public team' : 'public teams' ?>
                 </span>
             </p>
 

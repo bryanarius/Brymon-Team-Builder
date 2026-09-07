@@ -59,6 +59,7 @@ $showOwner = $showOwner ?? true;
             &middot;
         <?php endif; ?>
         <?= (int) $team['pokemon_count'] ?> Pokémon
-        &middot; <?= (int) $team['like_count'] ?> likes
+        &middot; <?= (int) $team['like_count'] ?>
+        <?= (int) $team['like_count'] === 1 ? 'like' : 'likes' ?>
     </p>
 </li>
