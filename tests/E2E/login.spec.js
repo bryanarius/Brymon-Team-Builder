@@ -9,8 +9,8 @@ test("user can login and logout", async ({ page }) => {
 
   await page.getByRole("button", { name: "Sign In" }).click();
 
-  // Login succeeded and redirected home.
-  await expect(page).toHaveURL("/");
+  // Login succeeded and redirected to the dashboard.
+  await expect(page).toHaveURL("/dashboard");
 
   // Account menu should now exist because Auth::check() is true.
   const accountMenuButton = page.locator("#account-menu-button");

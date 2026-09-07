@@ -299,7 +299,7 @@ final class AuthController extends Controller
         $_SESSION['login_time'] = $currentTime;
         $_SESSION['last_activity'] = $currentTime;
 
-        header('Location: /');
+        header('Location: /dashboard');
         exit;
     }
 

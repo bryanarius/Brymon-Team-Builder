@@ -18,7 +18,7 @@ test("user can create, edit, delete a team, and logout", async ({ page }) => {
 
   await page.getByRole("button", { name: "Sign In" }).click();
 
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/dashboard");
 
   /*
   |--------------------------------------------------------------------------
