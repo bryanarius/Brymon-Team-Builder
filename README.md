@@ -178,6 +178,7 @@ Brymon combines:
 - Team likes
 - Following other trainers
 - Trainer profiles (`/u/{username}`) listing a trainer's public teams
+- Profile customization: display name, bio, and a Pokémon sprite avatar shown across the nav, feed, and profile pages
 - Personalized dashboard feed: teams from trainers you follow, popular teams, and recently shared teams
 
 ---
@@ -239,6 +240,7 @@ PostgreSQL integration tests verify data-access behavior against a real database
 - Team likes are idempotent and cascade on team or user deletion
 - Follow relationships are idempotent, reject self-follows, and cascade on user deletion
 - Dashboard feed queries order by likes / recency and stay scoped to public teams and followed trainers
+- Profile fields persist and clear, username uniqueness is case-insensitive at the database level, and feed queries carry owner display names and avatars
 
 ## End-to-End Tests
 
@@ -257,8 +259,8 @@ Playwright tests exercise real browser workflows, including:
 ```text
 PHPUnit
 
-44 tests
-87 assertions
+50 tests
+105 assertions
 100% passing
 
 
@@ -676,10 +678,13 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
   - [x] Following trainers
   - [x] Trainer profiles (`/u/{username}`)
   - [x] Dashboard feed (popular, recent, following)
+- [x] Profile customization
+  - [x] Display name
+  - [x] Bio
+  - [x] Pokémon avatar
 
 ### Planned
 
-- [ ] Profile customization (display name, bio, Pokémon avatar)
 - [ ] Additional accessibility improvements
 - [ ] Additional usability improvements
 
@@ -800,8 +805,8 @@ Run all PHPUnit unit and integration tests:
 Current test suite:
 
 ```text
-44 tests
-87 assertions
+50 tests
+105 assertions
 ```
 
 ---
