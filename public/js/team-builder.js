@@ -180,6 +180,10 @@ document.addEventListener("DOMContentLoaded", () => {
       addPokemonToTeam(pokemon);
     } catch (error) {
       console.error(error);
+
+      showToast("Couldn't load that Pokémon. Please try again.", {
+        type: "error",
+      });
     } finally {
       addButton.disabled = false;
     }

@@ -35,7 +35,7 @@ final class TeamController extends Controller
         Auth::requireLogin();
 
         $this->view('teams/teambuilder', [
-            'pageTitle' => 'Build Team',
+            'pageTitle' => 'Team Builder',
             'errors' => [],
             'old' => [],
         ]);
