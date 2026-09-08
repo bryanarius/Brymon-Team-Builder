@@ -59,6 +59,7 @@ $router->post('/reset-password/{token}', [AuthController::class, 'resetPassword'
 */
 
 $router->get('/account', [AccountController::class, 'show']);
+$router->post('/account/profile', [AccountController::class, 'updateProfile']);
 $router->post('/account/username', [AccountController::class, 'updateUsername']);
 $router->post('/account/password', [AccountController::class, 'updatePassword']);
 

@@ -16,32 +16,77 @@ final class AccountController extends Controller
     {
         Auth::requireLogin();
 
-        $userModel = new User();
-        $user = $userModel->findById(Auth::id());
+        $this->accountView();
+    }
 
-        $this->view('account/show', [
-            'pageTitle' => 'Account Settings',
-            'username' => $user['username'],
-            'email' => $user['email'],
-        ]);
+    public function updateProfile(): void
+    {
+        Auth::requireLogin();
+
+        if (!$this->csrfValid()) {
+            return;
+        }
+
+        $displayName = trim($_POST['display_name'] ?? '');
+        $bio = trim($_POST['bio'] ?? '');
+        $avatarRaw = trim($_POST['avatar_pokemon_id'] ?? '');
+
+        $profileErrors = [];
+
+        if ($displayName !== '' && !Validator::maxLength($displayName, 50)) {
+            $profileErrors['display_name'] =
+                'Display name must be 50 characters or less.';
+        }
+
+        if ($bio !== '' && mb_strlen($bio) > 300) {
+            $profileErrors['bio'] = 'Bio must be 300 characters or less.';
+        }
+
+        $avatarPokemonId = null;
+
+        if ($avatarRaw !== '') {
+            $parsed = filter_var(
+                $avatarRaw,
+                FILTER_VALIDATE_INT,
+                ['options' => ['min_range' => 1, 'max_range' => 1025]]
+            );
+
+            if ($parsed === false) {
+                $profileErrors['avatar_pokemon_id'] =
+                    'Choose a valid Pokémon for your avatar.';
+            } else {
+                $avatarPokemonId = $parsed;
+            }
+        }
+
+        if ($profileErrors !== []) {
+            $this->accountView([
+                'displayName' => $displayName === '' ? null : $displayName,
+                'bio' => $bio === '' ? null : $bio,
+                'avatarPokemonId' => $avatarPokemonId,
+                'profileErrors' => $profileErrors,
+            ]);
+
+            return;
+        }
+
+        (new User())->updateProfile(
+            Auth::id(),
+            $displayName === '' ? null : $displayName,
+            $bio === '' ? null : $bio,
+            $avatarPokemonId
+        );
+
+        $this->accountView(['profileSuccess' => true]);
     }
 
     public function updateUsername(): void
     {
         Auth::requireLogin();
 
-        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
-            http_response_code(403);
-
-            $this->view('errors/403', [
-                'pageTitle' => 'Request Denied',
-            ]);
-
+        if (!$this->csrfValid()) {
             return;
         }
-
-        $userModel = new User();
-        $user = $userModel->findById(Auth::id());
 
         $username = trim($_POST['username'] ?? '');
 
@@ -50,13 +95,15 @@ final class AccountController extends Controller
         if (!Validator::required($username)) {
             $usernameErrors['username'] = 'Username is required.';
         } elseif (!Validator::minLength($username, 3)) {
-            $usernameErrors['username'] = 'Username must be at least 3 characters.';
+            $usernameErrors['username'] =
+                'Username must be at least 3 characters.';
         } elseif (!Validator::maxLength($username, 50)) {
-            $usernameErrors['username'] = 'Username must be 50 characters or less.';
+            $usernameErrors['username'] =
+                'Username must be 50 characters or less.';
         }
 
         if (!isset($usernameErrors['username'])) {
-            $existingUser = $userModel->findByUsername($username);
+            $existingUser = (new User())->findByUsername($username);
 
             if (
                 $existingUser !== false
@@ -67,43 +114,29 @@ final class AccountController extends Controller
         }
 
         if ($usernameErrors !== []) {
-            $this->view('account/show', [
-                'pageTitle' => 'Account Settings',
+            $this->accountView([
                 'username' => $username,
-                'email' => $user['email'],
                 'usernameErrors' => $usernameErrors,
             ]);
 
             return;
         }
 
-        $userModel->updateUsername(Auth::id(), $username);
+        (new User())->updateUsername(Auth::id(), $username);
         $_SESSION['username'] = $username;
 
-        $this->view('account/show', [
-            'pageTitle' => 'Account Settings',
-            'username' => $username,
-            'email' => $user['email'],
-            'usernameSuccess' => true,
-        ]);
+        $this->accountView(['usernameSuccess' => true]);
     }
 
     public function updatePassword(): void
     {
         Auth::requireLogin();
 
-        if (!Csrf::validate($_POST['csrf_token'] ?? null)) {
-            http_response_code(403);
-
-            $this->view('errors/403', [
-                'pageTitle' => 'Request Denied',
-            ]);
-
+        if (!$this->csrfValid()) {
             return;
         }
 
-        $userModel = new User();
-        $user = $userModel->findById(Auth::id());
+        $user = (new User())->findById(Auth::id());
 
         $currentPassword = $_POST['current_password'] ?? '';
         $newPassword = $_POST['new_password'] ?? '';
@@ -112,43 +145,75 @@ final class AccountController extends Controller
         $passwordErrors = [];
 
         if (!Validator::required($currentPassword)) {
-            $passwordErrors['current_password'] = 'Current password is required.';
-        } elseif (!password_verify($currentPassword, $user['password_hash'])) {
-            $passwordErrors['current_password'] = 'Current password is incorrect.';
+            $passwordErrors['current_password'] =
+                'Current password is required.';
+        } elseif (
+            !password_verify($currentPassword, $user['password_hash'])
+        ) {
+            $passwordErrors['current_password'] =
+                'Current password is incorrect.';
         }
 
         if (!Validator::required($newPassword)) {
             $passwordErrors['new_password'] = 'New password is required.';
         } elseif (!Validator::minLength($newPassword, 8)) {
-            $passwordErrors['new_password'] = 'Password must be at least 8 characters.';
+            $passwordErrors['new_password'] =
+                'Password must be at least 8 characters.';
         }
 
         if (!Validator::required($newPasswordConfirmation)) {
-            $passwordErrors['new_password_confirmation'] = 'Please confirm your new password.';
-        } elseif (!Validator::matches($newPassword, $newPasswordConfirmation)) {
-            $passwordErrors['new_password_confirmation'] = 'Passwords do not match.';
+            $passwordErrors['new_password_confirmation'] =
+                'Please confirm your new password.';
+        } elseif (
+            !Validator::matches($newPassword, $newPasswordConfirmation)
+        ) {
+            $passwordErrors['new_password_confirmation'] =
+                'Passwords do not match.';
         }
 
         if ($passwordErrors !== []) {
-            $this->view('account/show', [
-                'pageTitle' => 'Account Settings',
-                'username' => $user['username'],
-                'email' => $user['email'],
-                'passwordErrors' => $passwordErrors,
-            ]);
+            $this->accountView(['passwordErrors' => $passwordErrors]);
 
             return;
         }
 
-        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        (new User())->updatePassword(
+            Auth::id(),
+            password_hash($newPassword, PASSWORD_DEFAULT)
+        );
 
-        $userModel->updatePassword(Auth::id(), $hashedPassword);
+        $this->accountView(['passwordSuccess' => true]);
+    }
 
-        $this->view('account/show', [
+    private function csrfValid(): bool
+    {
+        if (Csrf::validate($_POST['csrf_token'] ?? null)) {
+            return true;
+        }
+
+        http_response_code(403);
+
+        $this->view('errors/403', [
+            'pageTitle' => 'Request Denied',
+        ]);
+
+        return false;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function accountView(array $data = []): void
+    {
+        $user = (new User())->findById(Auth::id());
+
+        $this->view('account/show', array_merge([
             'pageTitle' => 'Account Settings',
             'username' => $user['username'],
             'email' => $user['email'],
-            'passwordSuccess' => true,
-        ]);
+            'displayName' => $user['display_name'],
+            'bio' => $user['bio'],
+            'avatarPokemonId' => $user['avatar_pokemon_id'],
+        ], $data));
     }
 }
