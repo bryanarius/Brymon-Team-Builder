@@ -77,6 +77,8 @@ final class AccountController extends Controller
             $avatarPokemonId
         );
 
+        $_SESSION['avatar_pokemon_id'] = $avatarPokemonId;
+
         $this->accountView(['profileSuccess' => true]);
     }
 

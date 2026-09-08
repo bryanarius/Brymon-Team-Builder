@@ -58,23 +58,35 @@ $teamPokemonData = array_map(
             </a>
         <?php else: ?>
             <div class="team-public-banner">
-                <p>
-                    Shared by
-                    <?php if (!empty($team['username'])): ?>
+                <?php if (!empty($team['username'])): ?>
+                    <?php
+                    $ownerName = trim((string) ($team['display_name'] ?? ''));
+                    $ownerName = $ownerName !== ''
+                        ? $ownerName
+                        : (string) $team['username'];
+                    ?>
+                    <p class="team-public-by">
+                        <?php
+                        $avatarId = $team['avatar_pokemon_id'] ?? null;
+                        $avatarName = $ownerName;
+                        $avatarModifier = 'banner';
+                        require dirname(__DIR__) . '/partials/avatar.php';
+                        ?>
+                        Shared by
                         <a
                             class="team-public-author"
                             href="/u/<?= rawurlencode(
                                 (string) $team['username']
                             ) ?>"
                         ><?= htmlspecialchars(
-                            (string) $team['username'],
+                            $ownerName,
                             ENT_QUOTES,
                             'UTF-8'
                         ) ?></a>
-                    <?php else: ?>
-                        <strong>a trainer</strong>
-                    <?php endif; ?>
-                </p>
+                    </p>
+                <?php else: ?>
+                    <p>Shared by <strong>a trainer</strong></p>
+                <?php endif; ?>
 
                 <a href="/" class="team-public-cta">
                     Build your own on Brymon

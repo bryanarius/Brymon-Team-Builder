@@ -37,6 +37,14 @@ final class Auth
             : null;
     }
 
+    public static function avatarPokemonId(): ?int
+    {
+        return isset($_SESSION['avatar_pokemon_id'])
+            && $_SESSION['avatar_pokemon_id'] !== null
+            ? (int) $_SESSION['avatar_pokemon_id']
+            : null;
+    }
+
     public static function requireLogin(): void
     {
         if (!self::check()) {

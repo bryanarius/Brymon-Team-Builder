@@ -46,18 +46,31 @@ $showOwner = $showOwner ?? true;
         ) ?></h3>
     </a>
 
-    <p class="team-card-meta">
-        <?php if ($showOwner && !empty($team['username'])): ?>
-            by <a
+    <?php if ($showOwner && !empty($team['username'])): ?>
+        <?php
+        $ownerLabel = trim((string) ($team['display_name'] ?? ''));
+        $ownerLabel = $ownerLabel !== ''
+            ? $ownerLabel
+            : (string) $team['username'];
+        ?>
+        <p class="team-card-owner">
+            <span>by</span>
+
+            <?php
+            $avatarId = $team['avatar_pokemon_id'] ?? null;
+            $avatarName = $ownerLabel;
+            $avatarModifier = 'card';
+            require dirname(__DIR__) . '/partials/avatar.php';
+            ?>
+
+            <a
                 class="team-card-author"
                 href="/u/<?= rawurlencode((string) $team['username']) ?>"
-            ><?= htmlspecialchars(
-                (string) $team['username'],
-                ENT_QUOTES,
-                'UTF-8'
-            ) ?></a>
-            &middot;
-        <?php endif; ?>
+            ><?= htmlspecialchars($ownerLabel, ENT_QUOTES, 'UTF-8') ?></a>
+        </p>
+    <?php endif; ?>
+
+    <p class="team-card-meta">
         <?= (int) $team['pokemon_count'] ?> Pokémon
         &middot; <?= (int) $team['like_count'] ?>
         <?= (int) $team['like_count'] === 1 ? 'like' : 'likes' ?>

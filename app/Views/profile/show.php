@@ -13,17 +13,54 @@ $viewerLoggedIn = $viewerLoggedIn ?? false;
 $isFollowedByViewer = !empty($isFollowedByViewer);
 
 $teams = $teams ?? [];
+
+$profileUsername = (string) $profileUser['username'];
+
+$profileDisplayName = trim((string) ($profileUser['display_name'] ?? ''));
+
+$profileHeading = $profileDisplayName !== ''
+    ? $profileDisplayName
+    : $profileUsername;
+
+$profileBio = trim((string) ($profileUser['bio'] ?? ''));
 ?>
 
 <section class="profile-page">
     <div class="container">
 
         <header class="profile-header">
-            <h1><?= htmlspecialchars(
-                (string) $profileUser['username'],
-                ENT_QUOTES,
-                'UTF-8'
-            ) ?></h1>
+            <div class="profile-identity">
+                <?php
+                $avatarId = $profileUser['avatar_pokemon_id'] ?? null;
+                $avatarName = $profileHeading;
+                $avatarModifier = 'profile';
+                require dirname(__DIR__) . '/partials/avatar.php';
+                ?>
+
+                <div>
+                    <h1><?= htmlspecialchars(
+                        $profileHeading,
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?></h1>
+
+                    <?php if ($profileDisplayName !== ''): ?>
+                        <p class="profile-username">@<?= htmlspecialchars(
+                            $profileUsername,
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?></p>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <?php if ($profileBio !== ''): ?>
+                <p class="profile-bio"><?= nl2br(htmlspecialchars(
+                    $profileBio,
+                    ENT_QUOTES,
+                    'UTF-8'
+                )) ?></p>
+            <?php endif; ?>
 
             <p class="profile-stats">
                 <span>

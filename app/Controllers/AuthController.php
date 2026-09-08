@@ -296,6 +296,9 @@ final class AuthController extends Controller
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['email'] = $user['email'];
+        $_SESSION['avatar_pokemon_id'] = $user['avatar_pokemon_id'] !== null
+            ? (int) $user['avatar_pokemon_id']
+            : null;
         $_SESSION['login_time'] = $currentTime;
         $_SESSION['last_activity'] = $currentTime;
 

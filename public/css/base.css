@@ -101,6 +101,45 @@ h3 {
   width: min(calc(100% - 2rem), var(--max-width));
   margin-inline: auto;
 }
+/* Trainer avatar (shared: nav, cards, banners, profile header) */
+.avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  object-fit: contain;
+  vertical-align: middle;
+}
+.avatar--placeholder {
+  background: var(--blue);
+  color: #ffffff;
+  font-weight: 800;
+  line-height: 1;
+}
+.avatar--nav {
+  width: 26px;
+  height: 26px;
+  font-size: 0.78rem;
+}
+.avatar--card {
+  width: 30px;
+  height: 30px;
+  font-size: 0.85rem;
+}
+.avatar--banner {
+  width: 30px;
+  height: 30px;
+  font-size: 0.85rem;
+}
+.avatar--profile {
+  width: 76px;
+  height: 76px;
+  font-size: 2rem;
+}
+
 /* Accessibility Helpers */
 .visually-hidden,
 .sr-only {

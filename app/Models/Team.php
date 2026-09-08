@@ -112,6 +112,8 @@ final class Team
                 teams.created_at,
                 teams.updated_at,
                 users.username,
+                users.display_name,
+                users.avatar_pokemon_id,
                 COUNT(DISTINCT team_pokemon.id)::int AS pokemon_count,
                 COUNT(DISTINCT team_likes.id)::int AS like_count
             FROM teams
@@ -122,7 +124,8 @@ final class Team
             LEFT JOIN team_likes
                 ON team_likes.team_id = teams.id
             WHERE teams.is_public = TRUE
-            GROUP BY teams.id, users.username
+            GROUP BY teams.id, users.username, users.display_name,
+                users.avatar_pokemon_id
             ORDER BY like_count DESC, teams.updated_at DESC
             LIMIT ' . (int) $limit . '
             '
@@ -147,6 +150,8 @@ final class Team
                 teams.created_at,
                 teams.updated_at,
                 users.username,
+                users.display_name,
+                users.avatar_pokemon_id,
                 COUNT(DISTINCT team_pokemon.id)::int AS pokemon_count,
                 COUNT(DISTINCT team_likes.id)::int AS like_count
             FROM teams
@@ -157,7 +162,8 @@ final class Team
             LEFT JOIN team_likes
                 ON team_likes.team_id = teams.id
             WHERE teams.is_public = TRUE
-            GROUP BY teams.id, users.username
+            GROUP BY teams.id, users.username, users.display_name,
+                users.avatar_pokemon_id
             ORDER BY teams.created_at DESC, teams.id DESC
             LIMIT ' . (int) $limit . '
             '
@@ -182,6 +188,8 @@ final class Team
                 teams.created_at,
                 teams.updated_at,
                 users.username,
+                users.display_name,
+                users.avatar_pokemon_id,
                 COUNT(DISTINCT team_pokemon.id)::int AS pokemon_count,
                 COUNT(DISTINCT team_likes.id)::int AS like_count
             FROM teams
@@ -197,7 +205,8 @@ final class Team
                 FROM follows
                 WHERE follower_id = :user_id
             )
-            GROUP BY teams.id, users.username
+            GROUP BY teams.id, users.username, users.display_name,
+                users.avatar_pokemon_id
             ORDER BY teams.created_at DESC, teams.id DESC
             LIMIT ' . (int) $limit . '
             '
@@ -536,7 +545,9 @@ final class Team
                 teams.is_public,
                 teams.created_at,
                 teams.updated_at,
-                users.username
+                users.username,
+                users.display_name,
+                users.avatar_pokemon_id
             FROM teams
             JOIN users
                 ON users.id = teams.user_id

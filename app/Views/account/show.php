@@ -32,15 +32,6 @@ $spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/'
         <section class="account-card">
             <h2>Profile</h2>
 
-            <p class="account-card-hint">
-                Shown on your trainer profile at
-                <code>/u/<?= htmlspecialchars(
-                    $username,
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?></code>.
-            </p>
-
             <?php if ($profileSuccess === true): ?>
                 <div
                     class="account-alert account-alert--success"

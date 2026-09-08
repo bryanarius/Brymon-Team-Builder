@@ -16,10 +16,29 @@
   margin-bottom: 2rem;
 }
 
+.profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .profile-header h1 {
   margin: 0;
-  font-size: clamp(2.25rem, 5vw, 3.25rem);
+  font-size: clamp(2rem, 5vw, 3rem);
   line-height: 1.1;
+}
+
+.profile-username {
+  margin: 0.15rem 0 0;
+  color: var(--app-muted);
+  font-size: 0.95rem;
+}
+
+.profile-bio {
+  max-width: 60ch;
+  margin: 0.9rem 0 0;
+  color: #dce7f6;
+  line-height: 1.55;
 }
 
 .profile-stats {

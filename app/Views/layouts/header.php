@@ -89,6 +89,13 @@ $pageTitle = $pageTitle ?? 'Brymon';
                     aria-controls="account-menu-dropdown"
                     aria-haspopup="true"
                 >
+                    <?php
+                    $avatarId = Auth::avatarPokemonId();
+                    $avatarName = Auth::username() ?? 'Account';
+                    $avatarModifier = 'nav';
+                    require __DIR__ . '/../partials/avatar.php';
+                    ?>
+
                     <span>
                         <?= htmlspecialchars(
                             Auth::username() ?? 'Account',

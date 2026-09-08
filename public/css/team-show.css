@@ -172,6 +172,12 @@
   color: var(--app-muted);
 }
 
+.team-public-by {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .team-public-banner strong {
   color: #f8fafc;
 }
