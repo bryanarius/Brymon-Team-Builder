@@ -13,7 +13,7 @@ require dirname(__DIR__) . '/layouts/header.php';
         <div class="container home-hero-container">
             <div class="home-hero-content">
                 <p class="home-hero-eyebrow">
-                    Build • Strategize • Battle
+                    Build • Analyze • Share
                 </p>
 
                 <h1>
@@ -22,8 +22,9 @@ require dirname(__DIR__) . '/layouts/header.php';
                 </h1>
 
                 <p class="home-hero-description">
-                    Create powerful teams, analyze your strategy,
-                    and organize your favorite Pokémon—all in one place.
+                    Assemble a competitive six-Pokémon team, break down its
+                    weaknesses and coverage, explore a full Pokédex, and
+                    share what you build with other trainers.
                 </p>
 
                 <div class="home-hero-actions">
@@ -36,9 +37,9 @@ require dirname(__DIR__) . '/layouts/header.php';
 
                     <a
                         class="button button-secondary"
-                        href="/teams"
+                        href="/pokedex"
                     >
-                        View Saved Teams
+                        Browse the Pokédex
                     </a>
                 </div>
             </div>
@@ -88,8 +89,9 @@ require dirname(__DIR__) . '/layouts/header.php';
                         <h3>Team Builder</h3>
 
                         <p>
-                            Search, configure, and build your ideal
-                            six-Pokémon team.
+                            Search any Pokémon and configure full sets:
+                            ability, held item, four moves, EVs, IVs,
+                            and nature.
                         </p>
                     </div>
                 </article>
@@ -111,8 +113,9 @@ require dirname(__DIR__) . '/layouts/header.php';
                         <h3>Team Analysis</h3>
 
                         <p>
-                            Review weaknesses, immunities, types,
-                            abilities, moves, and team balance.
+                            Shared weaknesses with resistance suggestions,
+                            full type-coverage, and offensive and defensive
+                            role balance.
                         </p>
                     </div>
                 </article>
@@ -124,18 +127,21 @@ require dirname(__DIR__) . '/layouts/header.php';
                     >
                         <svg viewBox="0 0 24 24">
                             <path
-                                d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"
+                                d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"
                             />
-                            <path d="M9 12l2 2 4-4" />
+                            <path
+                                d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+                            />
                         </svg>
                     </span>
 
                     <div>
-                        <h3>Save and Organize</h3>
+                        <h3>Pokédex</h3>
 
                         <p>
-                            Save multiple teams and keep your ideas
-                            organized in one account.
+                            Browse 1,000+ Pokémon with type, generation,
+                            and region filters, evolution lines, and a full
+                            Mega Evolution gallery.
                         </p>
                     </div>
                 </article>
@@ -146,21 +152,69 @@ require dirname(__DIR__) . '/layouts/header.php';
                         aria-hidden="true"
                     >
                         <svg viewBox="0 0 24 24">
-                            <path d="M14.5 17.5 3 6V3h3l11.5 11.5" />
-                            <path d="m13 19 6-6" />
-                            <path d="m16 16 4 4" />
-                            <path d="m19 21 2-2" />
-                            <path d="m14.5 6.5 3-3H21v3l-3 3" />
-                            <path d="m5 14-2 2 5 5 2-2" />
+                            <path d="M8 3 4 7l4 4" />
+                            <path d="M4 7h16" />
+                            <path d="m16 21 4-4-4-4" />
+                            <path d="M20 17H4" />
                         </svg>
                     </span>
 
                     <div>
-                        <h3>Battle Ready</h3>
+                        <h3>Showdown Import &amp; Export</h3>
 
                         <p>
-                            Import and export Pokémon Showdown teams
-                            and prepare for your next battle.
+                            Move teams in and out of Pokémon Showdown with
+                            a single paste, straight from the builder.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="home-feature-card">
+                    <span
+                        class="home-feature-icon"
+                        aria-hidden="true"
+                    >
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="18" cy="5" r="3" />
+                            <circle cx="6" cy="12" r="3" />
+                            <circle cx="18" cy="19" r="3" />
+                            <path d="m8.6 13.5 6.8 4" />
+                            <path d="m15.4 6.5-6.8 4" />
+                        </svg>
+                    </span>
+
+                    <div>
+                        <h3>Share &amp; Discover</h3>
+
+                        <p>
+                            Make teams public with a shareable link, like
+                            what others build, and browse popular and recent
+                            teams from your dashboard.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="home-feature-card">
+                    <span
+                        class="home-feature-icon"
+                        aria-hidden="true"
+                    >
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+                            />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="m16 11 2 2 4-4" />
+                        </svg>
+                    </span>
+
+                    <div>
+                        <h3>Follow Trainers</h3>
+
+                        <p>
+                            Follow other trainers, get their new teams in
+                            your feed, and customize your profile with a
+                            display name, bio, and Pokémon avatar.
                         </p>
                     </div>
                 </article>
@@ -177,13 +231,13 @@ require dirname(__DIR__) . '/layouts/header.php';
                 </p>
 
                 <h2>
-                    Build. Optimize.
-                    <span>Dominate.</span>
+                    Build. Analyze.
+                    <span>Share.</span>
                 </h2>
 
                 <p>
-                    Everything you need to create, analyze,
-                    and organize your Pokémon teams.
+                    From a blank slate to a team the whole community
+                    can see.
                 </p>
             </div>
 
@@ -204,11 +258,12 @@ require dirname(__DIR__) . '/layouts/header.php';
                     <div class="step-content">
                         <span class="step-label">Step 1</span>
 
-                        <h3>Search and Select</h3>
+                        <h3>Build your team</h3>
 
                         <p>
-                            Search for Pokémon and add your favorites
-                            to a new team.
+                            Search the National Dex and configure every set
+                            detail: ability, item, four moves, EVs, IVs,
+                            and nature.
                         </p>
                     </div>
                 </article>
@@ -231,11 +286,12 @@ require dirname(__DIR__) . '/layouts/header.php';
                     <div class="step-content">
                         <span class="step-label">Step 2</span>
 
-                        <h3>Configure and Analyze</h3>
+                        <h3>Check the analysis</h3>
 
                         <p>
-                            Choose abilities, items, moves, EVs,
-                            IVs, and review your team analysis.
+                            Review shared weaknesses with resistance
+                            suggestions, type coverage, and team role
+                            balance, then adjust.
                         </p>
                     </div>
                 </article>
@@ -246,20 +302,23 @@ require dirname(__DIR__) . '/layouts/header.php';
                         aria-hidden="true"
                     >
                         <svg viewBox="0 0 24 24">
-                            <path d="M5 4h12l2 2v14H5z"></path>
-                            <path d="M8 4v6h8V4"></path>
-                            <path d="M9 17h6"></path>
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <path d="m8.6 13.5 6.8 4"></path>
+                            <path d="m15.4 6.5-6.8 4"></path>
                         </svg>
                     </span>
 
                     <div class="step-content">
                         <span class="step-label">Step 3</span>
 
-                        <h3>Save and Battle</h3>
+                        <h3>Share and discover</h3>
 
                         <p>
-                            Save your completed team or export it
-                            directly to Pokémon Showdown.
+                            Publish your team with a link, like and follow
+                            other trainers, and keep up with new teams from
+                            your dashboard.
                         </p>
                     </div>
                 </article>
@@ -280,12 +339,12 @@ require dirname(__DIR__) . '/layouts/header.php';
                 ></span>
 
                 <strong>
-                    Version 1 Ready
+                    Version 2
                 </strong>
 
                 <span>
-                    Brymon’s core team-building experience is complete
-                    and ready to use.
+                    Brymon now ships with a full Pokédex and a social layer
+                    for sharing and discovering teams.
                 </span>
             </div>
 
@@ -294,7 +353,7 @@ require dirname(__DIR__) . '/layouts/header.php';
             </p>
 
             <h2>
-                Built, tested, and ready to launch
+                Built, tested, and production-ready
             </h2>
 
             <div class="status-grid">
@@ -303,11 +362,11 @@ require dirname(__DIR__) . '/layouts/header.php';
                         Complete
                     </span>
 
-                    <h3>Core Team Builder</h3>
+                    <h3>Team Builder &amp; Analysis</h3>
 
                     <p>
-                        Search Pokémon, configure full sets,
-                        and save teams to your account.
+                        Full competitive set editing plus type coverage,
+                        weakness resistance, and role-balance analysis.
                     </p>
                 </article>
 
@@ -316,11 +375,12 @@ require dirname(__DIR__) . '/layouts/header.php';
                         Complete
                     </span>
 
-                    <h3>Team Analysis</h3>
+                    <h3>Pokédex</h3>
 
                     <p>
-                        Review shared weaknesses, immunities,
-                        and team type distribution.
+                        Every Pokémon with type, generation, and region
+                        filters, evolution chains, and a full Mega
+                        Evolution gallery.
                     </p>
                 </article>
 
@@ -329,11 +389,11 @@ require dirname(__DIR__) . '/layouts/header.php';
                         Complete
                     </span>
 
-                    <h3>Showdown Integration</h3>
+                    <h3>Public Teams &amp; Social</h3>
 
                     <p>
-                        Import and export Pokémon Showdown teams
-                        directly from the builder.
+                        Shareable team pages, likes, trainer profiles,
+                        following, and a personalized dashboard feed.
                     </p>
                 </article>
 
@@ -345,9 +405,8 @@ require dirname(__DIR__) . '/layouts/header.php';
                     <h3>Production Ready</h3>
 
                     <p>
-                        Protected with CSRF validation, production
-                        error handling, backend validation,
-                        and automated testing.
+                        CSRF protection, server-side validation, email
+                        verification, and 50+ automated tests.
                     </p>
                 </article>
             </div>
