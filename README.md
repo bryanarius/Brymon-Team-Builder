@@ -679,11 +679,14 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
   - [x] Display name
   - [x] Bio
   - [x] Pokémon avatar
-
-### Planned
-
-- [ ] Additional accessibility improvements
-- [ ] Additional usability improvements
+- [x] Accessibility improvements
+  - [x] Visible keyboard focus indicator
+  - [x] Skip-to-content link
+  - [x] `<main>` landmark on every page
+  - [x] Reduced-motion support
+- [x] Usability improvements
+  - [x] Form submit locks and progress state
+  - [x] Consistent page title suffix
 
 ---
 
