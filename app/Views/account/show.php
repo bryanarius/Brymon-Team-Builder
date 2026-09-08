@@ -41,7 +41,13 @@ $spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/'
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="/account/profile" class="account-form">
+            <form
+                method="POST"
+                action="/account/profile"
+                class="account-form"
+                data-submit-lock
+                data-submit-label="Saving…"
+            >
                 <input
                     type="hidden"
                     name="csrf_token"
@@ -212,7 +218,13 @@ $spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/'
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="/account/username" class="account-form">
+            <form
+                method="POST"
+                action="/account/username"
+                class="account-form"
+                data-submit-lock
+                data-submit-label="Saving…"
+            >
                 <input
                     type="hidden"
                     name="csrf_token"
@@ -270,7 +282,13 @@ $spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/'
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="/account/password" class="account-form">
+            <form
+                method="POST"
+                action="/account/password"
+                class="account-form"
+                data-submit-lock
+                data-submit-label="Saving…"
+            >
                 <input
                     type="hidden"
                     name="csrf_token"

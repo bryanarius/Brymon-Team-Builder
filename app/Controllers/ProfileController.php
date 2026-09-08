@@ -38,7 +38,7 @@ final class ProfileController extends Controller
             : null;
 
         $this->view('profile/show', [
-            'pageTitle' => $profileUser['username'],
+            'pageTitle' => '@' . $profileUser['username'],
             'profileUser' => $profileUser,
             'teams' => $teamModel->findPublicByUserId($profileUserId),
             'followerCount' => $followModel->countFollowers($profileUserId),

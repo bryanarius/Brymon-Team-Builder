@@ -72,6 +72,8 @@ $token = $token ?? null;
                             'UTF-8'
                         ) ?>"
                         class="auth-form"
+                        data-submit-lock
+                        data-submit-label="Updating…"
                     >
 
                         <input

@@ -102,7 +102,13 @@ $unverified = $unverified ?? false;
                     </div>
                 <?php endif; ?>
 
-                <form method="POST" action="/login" class="auth-form">
+                <form
+                    method="POST"
+                    action="/login"
+                    class="auth-form"
+                    data-submit-lock
+                    data-submit-label="Signing in…"
+                >
 
                     <input
                         type="hidden"

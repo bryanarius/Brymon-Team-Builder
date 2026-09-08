@@ -55,7 +55,13 @@ $sent = $sent ?? false;
                         Back to Sign In
                     </a>
                 <?php else: ?>
-                    <form method="POST" action="/resend-verification" class="auth-form">
+                    <form
+                        method="POST"
+                        action="/resend-verification"
+                        class="auth-form"
+                        data-submit-lock
+                        data-submit-label="Sending…"
+                    >
 
                         <input
                             type="hidden"

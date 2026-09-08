@@ -74,7 +74,13 @@ $old = $old ?? [];
                     <p>Create your account to begin building.</p>
                 </div>
 
-                <form method="POST" action="/register" class="auth-form">
+                <form
+                    method="POST"
+                    action="/register"
+                    class="auth-form"
+                    data-submit-lock
+                    data-submit-label="Creating account…"
+                >
 
                     <input
                         type="hidden"

@@ -4,6 +4,10 @@ declare(strict_types=1);
 use App\Core\Auth;
 
 $pageTitle = $pageTitle ?? 'Brymon';
+
+$documentTitle = str_contains($pageTitle, 'Brymon')
+    ? $pageTitle
+    : $pageTitle . ' · Brymon';
 ?>
 
 <!DOCTYPE html>
@@ -21,7 +25,7 @@ $pageTitle = $pageTitle ?? 'Brymon';
         content="Brymon is a Pokémon team-building application built with custom PHP MVC architecture."
     >
 
-    <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
+    <title><?= htmlspecialchars($documentTitle, ENT_QUOTES, 'UTF-8') ?></title>
 
     <link rel="stylesheet" href="/css/base.css">
     <link rel="stylesheet" href="/css/navigation.css">
