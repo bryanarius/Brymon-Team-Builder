@@ -19,6 +19,9 @@ final class User extends Model
                 email,
                 password_hash,
                 role,
+                display_name,
+                bio,
+                avatar_pokemon_id,
                 created_at,
                 updated_at
              FROM users
@@ -70,6 +73,9 @@ final class User extends Model
                 email,
                 password_hash,
                 role,
+                display_name,
+                bio,
+                avatar_pokemon_id,
                 created_at,
                 updated_at
              FROM users
@@ -276,6 +282,36 @@ final class User extends Model
 
             $statement->execute([
                 'username' => trim($username),
+                'id' => $userId,
+            ]);
+
+            return true;
+        } catch (PDOException $exception) {
+            error_log((string) $exception);
+
+            return false;
+        }
+    }
+
+    public function updateProfile(
+        int $userId,
+        ?string $displayName,
+        ?string $bio,
+        ?int $avatarPokemonId
+    ): bool {
+        try {
+            $statement = $this->db->prepare(
+                'UPDATE users
+                 SET display_name = :display_name,
+                     bio = :bio,
+                     avatar_pokemon_id = :avatar_pokemon_id
+                 WHERE id = :id'
+            );
+
+            $statement->execute([
+                'display_name' => $displayName,
+                'bio' => $bio,
+                'avatar_pokemon_id' => $avatarPokemonId,
                 'id' => $userId,
             ]);
 
