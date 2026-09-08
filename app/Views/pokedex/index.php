@@ -7,7 +7,7 @@ $pageTitle = $pageTitle ?? 'Pokédex';
 require dirname(__DIR__) . '/layouts/header.php';
 ?>
 
-<main class="pokedex-page">
+<main class="pokedex-page" id="main-content">
     <div class="container">
 
         <header class="pokedex-header">

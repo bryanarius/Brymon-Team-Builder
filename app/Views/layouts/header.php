@@ -57,6 +57,7 @@ $pageTitle = $pageTitle ?? 'Brymon';
 </head>
 
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
 <header class="site-header">
     <div class="container navigation">
         <a class="logo" href="/">

@@ -22,7 +22,7 @@ $spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/'
     . 'sprites/pokemon/';
 ?>
 
-<main class="account-page">
+<main class="account-page" id="main-content">
     <div class="account-container">
         <div class="account-header">
             <h1>Account Settings</h1>

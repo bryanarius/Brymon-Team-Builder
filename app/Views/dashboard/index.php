@@ -27,7 +27,7 @@ $sections = [
 $showOwner = true;
 ?>
 
-<main class="dashboard">
+<main class="dashboard" id="main-content">
     <div class="container">
 
         <header class="dashboard-header">

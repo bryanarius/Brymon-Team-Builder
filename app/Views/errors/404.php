@@ -7,7 +7,7 @@ $pageTitle = 'Page Not Found';
 require dirname(__DIR__) . '/layouts/header.php';
 ?>
 
-<main class="error-page">
+<main class="error-page" id="main-content">
     <div class="container error-content">
         <p class="error-code">404</p>
 

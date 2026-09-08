@@ -7,7 +7,7 @@ $pageTitle = $pageTitle ?? 'Brymon Team Builder';
 require dirname(__DIR__) . '/layouts/header.php';
 ?>
 
-<main>
+<main id="main-content">
     <!-- Hero -->
     <section class="home-hero">
         <div class="container home-hero-container">

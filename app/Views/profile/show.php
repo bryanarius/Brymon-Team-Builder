@@ -25,7 +25,7 @@ $profileHeading = $profileDisplayName !== ''
 $profileBio = trim((string) ($profileUser['bio'] ?? ''));
 ?>
 
-<section class="profile-page">
+<main class="profile-page" id="main-content">
     <div class="container">
 
         <header class="profile-header">
@@ -118,7 +118,7 @@ $profileBio = trim((string) ($profileUser['bio'] ?? ''));
         <?php endif; ?>
 
     </div>
-</section>
+</main>
 
 <?php if ($viewerLoggedIn): ?>
     <script>

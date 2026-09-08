@@ -7,7 +7,7 @@ $pageTitle = $pageTitle ?? 'About Brymon';
 require dirname(__DIR__) . '/layouts/header.php';
 ?>
 
-<main class="about-page">
+<main class="about-page" id="main-content">
     <!-- Hero -->
     <section class="about-hero">
         <div class="container">

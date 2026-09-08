@@ -7,7 +7,7 @@ $pageTitle = $pageTitle ?? 'Request Denied';
 require dirname(__DIR__) . '/layouts/header.php';
 ?>
 
-<main class="error-page">
+<main class="error-page" id="main-content">
     <div class="container error-content">
 
         <p class="error-code">403</p>

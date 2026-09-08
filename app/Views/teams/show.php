@@ -49,7 +49,7 @@ $teamPokemonData = array_map(
 );
 ?>
 
-<section class="team-detail-page">
+<main class="team-detail-page" id="main-content">
     <div class="team-detail-container">
 
         <?php if ($isOwner): ?>
@@ -400,6 +400,6 @@ $teamPokemonData = array_map(
         </section>
 
     </div>
-</section>
+</main>
 
 <?php require dirname(__DIR__) . '/layouts/footer.php'; ?>

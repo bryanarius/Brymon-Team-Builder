@@ -101,6 +101,50 @@ h3 {
   width: min(calc(100% - 2rem), var(--max-width));
   margin-inline: auto;
 }
+
+/* Visible keyboard focus (WCAG 2.4.7).
+   !important is deliberate: it has to win over the scattered
+   `outline: none` declarations on custom-styled inputs. */
+*:focus-visible {
+  outline: 3px solid var(--accent) !important;
+  outline-offset: 2px !important;
+}
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Skip link — hidden until focused, then pinned to the top-left */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.75rem 1.25rem;
+  background: var(--accent);
+  color: #171717;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 0 0 var(--radius-medium) 0;
+  transform: translateY(-120%);
+  transition: transform 150ms ease;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Respect reduced-motion preferences (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 /* Trainer avatar (shared: nav, cards, banners, profile header) */
 .avatar {
   display: inline-flex;

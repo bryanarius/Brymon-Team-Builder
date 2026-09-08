@@ -23,7 +23,7 @@ $formatDate = static function (?string $date): string {
 };
 ?>
 
-<section class="saved-teams-page">
+<main class="saved-teams-page" id="main-content">
     <div class="saved-teams-container">
 
         <div class="saved-teams-header">
@@ -334,6 +334,6 @@ $formatDate = static function (?string $date): string {
         <?php endif; ?>
 
     </div>
-</section>
+</main>
 
 <?php require dirname(__DIR__) . '/layouts/footer.php'; ?>

@@ -10,7 +10,7 @@ $status = $status ?? 'invalid';
 ?>
 
 
-<main class="auth-page">
+<main class="auth-page" id="main-content">
     <div class="auth-background-glow auth-background-glow--left"></div>
     <div class="auth-background-glow auth-background-glow--right"></div>
 

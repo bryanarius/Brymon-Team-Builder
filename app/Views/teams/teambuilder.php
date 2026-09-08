@@ -21,7 +21,7 @@ $initialTeamData = $team !== null
 require dirname(__DIR__) . '/layouts/header.php';
 ?>
 
-<section class="team-builder-page">
+<main class="team-builder-page" id="main-content">
 
     <div class="container">
 
@@ -162,7 +162,7 @@ require dirname(__DIR__) . '/layouts/header.php';
                      Center: Team Workspace
                 ====================================================== -->
 
-                <main class="builder-workspace">
+                <div class="builder-workspace">
 
                     <header class="team-builder-topbar">
 
@@ -834,7 +834,7 @@ require dirname(__DIR__) . '/layouts/header.php';
 
                     </section>
 
-                </main>
+                </div>
 
                 <!-- =====================================================
                      Right Sidebar: Team Summary
@@ -964,7 +964,7 @@ require dirname(__DIR__) . '/layouts/header.php';
 
     </div>
 
-</section>
+</main>
 
 <script>
     window.BRYMON_INITIAL_TEAM = <?= json_encode(
