@@ -73,7 +73,7 @@ Vanilla JS, no build step or bundler — files are included directly by views. E
 
 ### Database
 
-PostgreSQL, accessed only via PDO prepared statements (no ORM). Core tables: `users`, `teams` (owned by a user), `team_pokemon` (up to 6 per team, ordered by `slot_number`, storing ability/item/nature/4 moves/EVs/IVs). Schema/migrations live under `database/` (`schema.sql`, `seeds.sql`) — note these files are currently empty in the working tree; check `database/migrations/` or ask before assuming schema state.
+PostgreSQL, accessed only via PDO prepared statements (no ORM). Core tables: `users`, `teams` (owned by a user), `team_pokemon` (up to 6 per team, ordered by `slot_number`, storing ability/item/nature/4 moves/EVs/IVs). The schema is defined by incremental, hand-applied SQL migrations under `docs/database/migrations/`, with a reference ERD dump at `docs/database/brymon-erd.sql`; a `migrations` table tracks which have been applied.
 
 ## Environment configuration
 

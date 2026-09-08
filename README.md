@@ -482,13 +482,10 @@ Brymon/
 │   ├── Models/          # Team, User, Follow, TeamLike
 │   └── Views/           # feature-grouped templates, shared layouts and partials
 │
-├── database/
-│   ├── schema.sql
-│   └── seeds.sql
-│
 ├── docs/
 │   ├── architecture/
 │   ├── database/
+│   │   ├── brymon-erd.sql
 │   │   └── migrations/  # incremental, hand-applied SQL migrations
 │   ├── high-fi/
 │   ├── low-fi/
@@ -774,7 +771,7 @@ MAIL_FROM=noreply@yourdomain.com
 
 ## 5. Configure PostgreSQL
 
-Create a PostgreSQL database for Brymon and load the application's schema and migrations.
+Create a PostgreSQL database for Brymon, then apply the migrations in `docs/database/migrations/` in filename order.
 
 ---
 

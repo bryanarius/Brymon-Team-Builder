@@ -1,0 +1,28 @@
+# Version control
+.git
+.gitignore
+
+# Dependencies (reinstalled in the build stage)
+node_modules
+vendor
+
+# Docs, design assets, and screenshots (~14MB, not needed at runtime)
+docs
+
+# Tests and their output
+tests
+test-results
+playwright-report
+phpunit.xml
+.phpunit.result.cache
+playwright.config.js
+package.json
+package-lock.json
+
+# Local environment and editor cruft
+.env
+.env.testing
+.DS_Store
+
+# Agent instructions
+CLAUDE.md
