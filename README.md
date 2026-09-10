@@ -690,6 +690,26 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
 
 ---
 
+## Under Consideration
+
+Feature ideas from player feedback, not yet scheduled:
+
+- **Damage calculator** — choose an attacker, defender, move, and spread to
+  see damage ranges and KO chances, in the spirit of the Pokémon Showdown
+  calculator.
+- **Mega Evolutions in the builder** — add Mega forms to a team slot, with
+  the Mega's typing and ability carried through to team analysis.
+- **Regional and convergent forms** — make alternate forms selectable in the
+  builder (e.g. Hisuian Samurott, Galarian Slowking, Paldean Tauros).
+- **Defensive coverage chart** — a full team-by-type defensive grid showing
+  weak / resist / immune for each member with per-type totals, similar to
+  Marriland's team builder.
+- **Meta usage stats** — surface Smogon / Pokémon Showdown usage data (most-used
+  Pokémon per format, common moves, items, and EV spreads) on Pokédex entries
+  and in team analysis, via a CORS-friendly mirror such as `pkmn.github.io`.
+
+---
+
 ## Version 3
 
 Possible modernization and architecture experiments include:
