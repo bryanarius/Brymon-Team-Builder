@@ -3,6 +3,8 @@
 A full-stack Pokémon team builder built from scratch using a custom **PHP MVC architecture**, **PostgreSQL**, **Vanilla JavaScript**, and the **PokéAPI**.
 
 > ✅ **Status:** Version 1.0 live at [brymonteambuilder.com](https://brymonteambuilder.com) — Version 2 in active development
+>
+> 🚧 **Up next:** a player-feedback sprint adding regional forms, Mega Evolutions, a defensive coverage chart, meta usage stats, and a damage calculator — see the [roadmap](#player-feedback-sprint--in-progress).
 
 ---
 
@@ -690,37 +692,48 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
 
 ---
 
-## Under Consideration
+## Player Feedback Sprint — In Progress
 
-Feature ideas from player feedback, not yet scheduled:
+Five features requested by players, built in this order. Each one ships with
+tests and is integrated without breaking existing saved teams.
 
-- **Damage calculator** — choose an attacker, defender, move, and spread to
-  see damage ranges and KO chances, in the spirit of the Pokémon Showdown
-  calculator.
-- **Mega Evolutions in the builder** — add Mega forms to a team slot, with
-  the Mega's typing and ability carried through to team analysis.
-- **Regional and convergent forms** — make alternate forms selectable in the
-  builder (e.g. Hisuian Samurott, Galarian Slowking, Paldean Tauros).
-- **Defensive coverage chart** — a full team-by-type defensive grid showing
-  weak / resist / immune for each member with per-type totals, similar to
-  Marriland's team builder.
-- **Meta usage stats** — surface Smogon / Pokémon Showdown usage data (most-used
-  Pokémon per format, common moves, items, and EV spreads) on Pokédex entries
-  and in team analysis, via a CORS-friendly mirror such as `pkmn.github.io`.
+1. [ ] **Regional and convergent forms** — make alternate forms selectable in
+   the builder (e.g. Hisuian Samurott, Galarian Slowking, Paldean Tauros),
+   with correct typing, abilities, artwork, saved-team support, team
+   analysis, and Showdown import/export. Convergent Pokémon (Wiglett,
+   Toedscool) are already distinct species and supported today.
+2. [ ] **Mega Evolutions in the builder** — add Mega forms to a team slot,
+   with the Mega's typing and ability carried through to team analysis.
+   Built on the same form-loading mechanism as regional forms.
+3. [ ] **Defensive coverage chart** — a full team-by-type defensive grid
+   across all 18 types, showing weak / resist / immune multipliers for each
+   member with per-type totals, similar to Marriland's team builder.
+4. [ ] **Meta usage stats** — surface Smogon / Pokémon Showdown usage data
+   (most-used Pokémon per format, common moves, items, abilities, and EV
+   spreads) via a CORS-friendly source such as `pkmn.github.io`, with
+   caching and format selection.
+5. [ ] **Damage calculator** — choose an attacker, defender, move, and stat
+   spreads to see damage ranges and KO chances, in the spirit of the
+   Pokémon Showdown calculator. Existing calculation libraries will be
+   evaluated before implementing battle mechanics from scratch.
 
 ---
 
-## Version 3
+## Version 3 — Incremental Modernization
 
-Possible modernization and architecture experiments include:
+The goal is to adopt modern tooling where it adds real value, **not** to
+rewrite Brymon. The custom PHP MVC core stays in place.
 
-- REST API
-- React or Vue frontend
-- Laravel backend
+- **React + TypeScript** — introduce them through one self-contained
+  interface (likely the team analysis dashboard), talking to the existing
+  PHP backend over REST endpoints.
+- **Laravel** — explore it through a small, isolated API or feature rather
+  than migrating the application.
+- **CI/CD** — run PHPUnit and Playwright automatically on every push.
+- **Expanded automated testing** — broader E2E coverage of the builder and
+  analysis features.
 - Custom uploaded profile pictures
-- Advanced analytics
 - Performance optimization
-- Expanded automated testing
 
 ---
 
