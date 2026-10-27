@@ -141,11 +141,22 @@ document.addEventListener("DOMContentLoaded", () => {
     filterVersion: 0,
   };
 
-  initializePokemonBrowser().then(() => {
-    if (window.BRYMON_IS_EDITING && window.BRYMON_INITIAL_TEAM) {
-      hydrateInitialTeam(window.BRYMON_INITIAL_TEAM);
-    }
-  });
+  /*
+   * The save button starts disabled in the markup and is only enabled once
+   * the builder is ready. When editing, saving before the saved Pokémon
+   * finish loading would submit an empty team.
+   */
+  initializePokemonBrowser()
+    .then(() => {
+      if (window.BRYMON_IS_EDITING && window.BRYMON_INITIAL_TEAM) {
+        return hydrateInitialTeam(window.BRYMON_INITIAL_TEAM);
+      }
+    })
+    .finally(() => {
+      if (saveTeamButton) {
+        saveTeamButton.disabled = false;
+      }
+    });
 
   searchInput.addEventListener("input", () => {
     clearTimeout(state.searchTimeout);

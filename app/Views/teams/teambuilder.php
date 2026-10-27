@@ -179,6 +179,7 @@ require dirname(__DIR__) . '/layouts/header.php';
                             class="button button-primary team-builder-action"
                             id="save-team-button"
                             type="submit"
+                            disabled
                         >
                             Save Team
                         </button>
