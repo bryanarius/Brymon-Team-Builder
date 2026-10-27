@@ -1041,7 +1041,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const listItem = document.createElement("li");
 
         const name = document.createElement("span");
-        name.textContent = formatPokemonName(entry.name);
+        name.textContent = formatPokemonDisplayName(entry.name);
 
         listItem.appendChild(name);
         list.appendChild(listItem);
@@ -1214,7 +1214,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const listItem = document.createElement("li");
 
         const name = document.createElement("span");
-        name.textContent = formatPokemonName(pokemonEntry.name);
+        name.textContent = formatPokemonDisplayName(pokemonEntry.name);
 
         listItem.appendChild(name);
 
@@ -1300,15 +1300,6 @@ document.addEventListener("DOMContentLoaded", () => {
     paragraph.textContent = message;
 
     return paragraph;
-  }
-
-  function formatPokemonName(pokemonName) {
-    return pokemonName
-      .split("-")
-      .map((word) => {
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(" ");
   }
 
   function formatTypeName(typeName) {

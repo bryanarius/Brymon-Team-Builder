@@ -246,7 +246,7 @@ $teamPokemonData = array_map(
                 );
 
                 $formattedPokemonName = $pokemonName !== ''
-                    ? ucwords(str_replace('-', ' ', $pokemonName))
+                    ? \App\Core\PokemonName::display($pokemonName)
                     : 'Pokémon #' . $pokemonApiId;
 
                 $displayName = $nickname !== ''

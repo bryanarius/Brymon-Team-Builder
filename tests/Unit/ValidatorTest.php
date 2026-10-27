@@ -43,6 +43,19 @@ final class ValidatorTest extends TestCase
         $this->assertSame([], $errors);
     }
 
+    public function testAlternateFormIdPassesValidation(): void
+    {
+        $pokemon = $this->validPokemon();
+
+        // Forms live above PokéAPI's 1–1025 national dex range
+        // (10236 is Hisuian Samurott).
+        $pokemon['pokemon_api_id'] = 10236;
+
+        $errors = Validator::pokemonTeam([$pokemon]);
+
+        $this->assertSame([], $errors);
+    }
+
     public function testEvCannotExceed252(): void
     {
         $pokemon = $this->validPokemon();

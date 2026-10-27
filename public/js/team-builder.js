@@ -192,6 +192,10 @@ document.addEventListener("DOMContentLoaded", () => {
   async function initializePokemonBrowser() {
     const NATIONAL_POKEDEX_TOTAL = 1025;
 
+    // Upper bound covering every Pokémon resource (default forms plus
+    // alternate forms), so SELECTABLE_POKEMON_FORMS can be picked out of it.
+    const ALL_POKEMON_RESOURCES_LIMIT = 3000;
+
     setPokemonBrowserDisabled(true);
     renderStatus("Loading Pokémon data...");
 
@@ -204,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
         natureResponse,
       ] = await Promise.all([
         fetch(
-          `https://pokeapi.co/api/v2/pokemon?limit=${NATIONAL_POKEDEX_TOTAL}`,
+          `https://pokeapi.co/api/v2/pokemon?limit=${ALL_POKEMON_RESOURCES_LIMIT}`,
         ),
         fetch("https://pokeapi.co/api/v2/generation?limit=20"),
         fetch("https://pokeapi.co/api/v2/type?limit=50"),
@@ -228,11 +232,22 @@ document.addEventListener("DOMContentLoaded", () => {
       const itemData = await itemResponse.json();
       const natureData = await natureResponse.json();
 
-      state.pokemonList = pokemonData.results.map((pokemon) => ({
-        name: pokemon.name,
-        url: pokemon.url,
-        id: getPokemonIdFromUrl(pokemon.url),
-      }));
+      state.pokemonList = pokemonData.results
+        .map((pokemon) => ({
+          name: pokemon.name,
+          url: pokemon.url,
+          id: getPokemonIdFromUrl(pokemon.url),
+          // Lets "hisuian" find "samurott-hisui".
+          searchName: normalizePokemonName(
+            formatPokemonDisplayName(pokemon.name),
+          ),
+        }))
+        .filter((pokemon) => {
+          return (
+            pokemon.id <= NATIONAL_POKEDEX_TOTAL ||
+            SELECTABLE_POKEMON_FORMS.has(pokemon.name)
+          );
+        });
 
       state.itemList = itemData.results.map((item) => item.name);
 
@@ -362,7 +377,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (hasSearch) {
       matches = matches.filter((pokemon) => {
-        return normalizePokemonName(pokemon.name).includes(query);
+        return (
+          normalizePokemonName(pokemon.name).includes(query) ||
+          pokemon.searchName.includes(query)
+        );
       });
     }
 
@@ -412,11 +430,21 @@ document.addEventListener("DOMContentLoaded", () => {
             case "name-desc":
               return secondPokemon.name.localeCompare(firstPokemon.name);
 
+            // Forms sort next to their species (Samurott, then Hisuian
+            // Samurott) instead of after #1025 by their PokéAPI id.
             case "id-asc":
-              return firstPokemon.id - secondPokemon.id;
+              return (
+                getNationalDexNumber(firstPokemon) -
+                  getNationalDexNumber(secondPokemon) ||
+                firstPokemon.id - secondPokemon.id
+              );
 
             case "id-desc":
-              return secondPokemon.id - firstPokemon.id;
+              return (
+                getNationalDexNumber(secondPokemon) -
+                  getNationalDexNumber(firstPokemon) ||
+                firstPokemon.id - secondPokemon.id
+              );
 
             case "name-asc":
             default:
@@ -613,7 +641,7 @@ document.addEventListener("DOMContentLoaded", () => {
       pokemon.sprites.front_default ??
       pokemon.sprites.other["official-artwork"].front_default ??
       "";
-    image.alt = formatPokemonName(pokemon.name);
+    image.alt = formatPokemonDisplayName(pokemon.name);
     image.loading = "lazy";
     image.width = 56;
     image.height = 56;
@@ -626,11 +654,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const name = document.createElement("strong");
     name.className = "pokemon-search-result-name";
-    name.textContent = formatPokemonName(pokemon.name);
+    name.textContent = formatPokemonDisplayName(pokemon.name);
 
     const number = document.createElement("span");
     number.className = "pokemon-search-result-number";
-    number.textContent = `#${String(pokemon.id).padStart(4, "0")}`;
+    number.textContent = formatDexNumber(getNationalDexNumber(pokemon));
 
     headingRow.append(name, number);
 
@@ -655,7 +683,7 @@ document.addEventListener("DOMContentLoaded", () => {
     addButton.dataset.pokemonName = pokemon.name;
     addButton.setAttribute(
       "aria-label",
-      `Add ${formatPokemonName(pokemon.name)} to team`,
+      `Add ${formatPokemonDisplayName(pokemon.name)} to team`,
     );
     addButton.textContent = "+";
 
@@ -737,7 +765,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function createTeamPokemon(pokemon) {
     return {
+      // PokéAPI resource id: what gets saved and looked up later. For forms
+      // this differs from the dex number (Hisuian Samurott is 10236, #0503).
       id: pokemon.id,
+      dexNumber: getNationalDexNumber(pokemon),
       name: pokemon.name,
 
       image:
@@ -799,7 +830,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     slotButton.setAttribute(
       "aria-label",
-      `Configure ${formatPokemonName(pokemon.name)} in slot ${slotIndex + 1}`,
+      `Configure ${formatPokemonDisplayName(pokemon.name)} in slot ${slotIndex + 1}`,
     );
 
     slotButton.innerHTML = `
@@ -810,11 +841,11 @@ document.addEventListener("DOMContentLoaded", () => {
     >
 
     <span class="team-slot-pokemon-name">
-      ${formatPokemonName(pokemon.name)}
+      ${formatPokemonDisplayName(pokemon.name)}
     </span>
 
     <span class="team-slot-pokemon-number">
-      #${String(pokemon.id).padStart(4, "0")}
+      ${formatDexNumber(pokemon.dexNumber)}
     </span>
   `;
   }
@@ -878,11 +909,11 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedPokemonIdInput.value = String(pokemon.id);
 
     selectedPokemonImage.src = pokemon.image;
-    selectedPokemonImage.alt = formatPokemonName(pokemon.name);
+    selectedPokemonImage.alt = formatPokemonDisplayName(pokemon.name);
 
-    selectedPokemonName.textContent = formatPokemonName(pokemon.name);
+    selectedPokemonName.textContent = formatPokemonDisplayName(pokemon.name);
 
-    selectedPokemonNumber.textContent = `#${String(pokemon.id).padStart(4, "0")}`;
+    selectedPokemonNumber.textContent = formatDexNumber(pokemon.dexNumber);
 
     renderSelectedPokemonTypes(pokemon.types);
 
@@ -1536,7 +1567,7 @@ function parseShowdownPokemon(block) {
   const heading = parseShowdownHeading(lines.shift());
 
   const parsedPokemon = {
-    species: heading.species,
+    species: fromShowdownSpecies(heading.species),
     nickname: heading.nickname,
     item: heading.item,
     ability: "",
@@ -1605,7 +1636,8 @@ function exportTeamToShowdown(slots) {
 function formatPokemonForShowdown(pokemon) {
   const lines = [];
 
-  const species = formatShowdownName(pokemon.name);
+  const species =
+    toShowdownSpecies(pokemon.name) ?? formatShowdownName(pokemon.name);
 
   const nickname = String(pokemon.nickname ?? "").trim();
 
@@ -1746,6 +1778,21 @@ function getPokemonIdFromUrl(url) {
   const id = Number(urlParts.at(-1));
 
   return Number.isInteger(id) ? id : null;
+}
+
+/*
+ * A form shares its species' national dex number, which PokéAPI exposes via
+ * the species URL. List entries (no species yet) fall back to their id; that
+ * is only reached for default forms, where the two are equal.
+ */
+function getNationalDexNumber(pokemon) {
+  return pokemon.species
+    ? getPokemonIdFromUrl(pokemon.species.url) ?? pokemon.id
+    : pokemon.id;
+}
+
+function formatDexNumber(dexNumber) {
+  return `#${String(dexNumber).padStart(4, "0")}`;
 }
 
 function normalizeSearchQuery(value) {

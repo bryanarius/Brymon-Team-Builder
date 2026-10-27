@@ -27,11 +27,9 @@ $showOwner = $showOwner ?? true;
                         (int) $cardPokemon['pokemon_api_id']
                     ?>.png"
                     alt="<?= htmlspecialchars(
-                        ucwords(str_replace(
-                            '-',
-                            ' ',
+                        \App\Core\PokemonName::display(
                             (string) ($cardPokemon['pokemon_name'] ?? '')
-                        )),
+                        ),
                         ENT_QUOTES,
                         'UTF-8'
                     ) ?>"
