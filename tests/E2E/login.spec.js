@@ -12,6 +12,10 @@ test("user can login and logout", async ({ page }) => {
   // Login succeeded and redirected to the dashboard.
   await expect(page).toHaveURL("/dashboard");
 
+  // The URL changes before deferred scripts run; wait for navigation.js to
+  // attach the account menu's click handler.
+  await page.waitForLoadState("load");
+
   // Account menu should now exist because Auth::check() is true.
   const accountMenuButton = page.locator("#account-menu-button");
 

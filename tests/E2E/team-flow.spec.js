@@ -30,6 +30,9 @@ test("user can create, edit, delete a team, and logout", async ({ page }) => {
 
   await expect(page).toHaveURL("/teambuilder");
 
+  // The save button is enabled once the builder has finished loading.
+  await expect(page.locator("#save-team-button")).toBeEnabled();
+
   /*
   |--------------------------------------------------------------------------
   | Give Team A Name
@@ -114,6 +117,11 @@ EVs: 4 HP / 252 SpA / 252 Spe
   await page.getByRole("link", { name: "Edit Team" }).click();
 
   await expect(page).toHaveURL(/\/teams\/\d+\/edit/);
+
+  // Wait for the saved Pokémon to load back in before saving.
+  await expect(page.locator("#save-team-button")).toBeEnabled();
+
+  await expect(page.locator("#summary-pokemon-count")).toHaveText("1/6");
 
   await page.getByLabel("Team Name").fill(updatedTeamName);
 
