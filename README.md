@@ -136,6 +136,8 @@ Brymon combines:
 ## Team Builder
 
 - Teams of up to six Pokémon
+- Regional forms (Alolan, Galarian, Hisuian, Paldean)
+- Mega Evolutions and Primal Reversions, with the Mega Stone equipped automatically
 - Team names and notes
 - Pokémon nicknames
 - Ability selection
@@ -697,12 +699,12 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
 Five features requested by players, built in this order. Each one ships with
 tests and is integrated without breaking existing saved teams.
 
-1. [ ] **Regional and convergent forms** — make alternate forms selectable in
+1. [x] **Regional and convergent forms** — make alternate forms selectable in
    the builder (e.g. Hisuian Samurott, Galarian Slowking, Paldean Tauros),
    with correct typing, abilities, artwork, saved-team support, team
    analysis, and Showdown import/export. Convergent Pokémon (Wiglett,
    Toedscool) are already distinct species and supported today.
-2. [ ] **Mega Evolutions in the builder** — add Mega forms to a team slot,
+2. [x] **Mega Evolutions in the builder** — add Mega forms to a team slot,
    with the Mega's typing and ability carried through to team analysis.
    Built on the same form-loading mechanism as regional forms.
 3. [ ] **Defensive coverage chart** — a full team-by-type defensive grid
