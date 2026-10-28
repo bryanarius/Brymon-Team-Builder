@@ -418,6 +418,7 @@ require dirname(__DIR__) . '/layouts/header.php';
                                                 id="pokemon-item"
                                                 name="pokemon_item"
                                                 placeholder="Search items"
+                                                aria-describedby="pokemon-item-hint"
                                             >
                                             <ul
                                                 class="combobox-list"
@@ -426,6 +427,14 @@ require dirname(__DIR__) . '/layouts/header.php';
                                                 hidden
                                             ></ul>
                                         </div>
+
+                                        <p
+                                            class="field-hint"
+                                            id="pokemon-item-hint"
+                                            hidden
+                                        >
+                                            A Mega Evolution must hold its Mega Stone.
+                                        </p>
 
                                     </div>
 

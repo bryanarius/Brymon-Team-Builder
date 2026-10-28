@@ -91,6 +91,15 @@
 .team-builder-page textarea::placeholder {
   color: #7185a2;
 }
+.team-builder-page input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.team-builder-page .field-hint {
+  margin: 0;
+  color: #9fb0c7;
+  font-size: 0.85rem;
+}
 .team-builder-page input:focus,
 .team-builder-page textarea:focus,
 .team-builder-page select:focus {

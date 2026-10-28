@@ -22,10 +22,31 @@ class PokemonName
 
     private const DEFAULT_FORM_VARIANTS = ['standard'];
 
+    private const MEGA_DISPLAY_NAMES = [
+        'meowstic-male-mega' => 'Mega Meowstic (Male)',
+        'meowstic-female-mega' => 'Mega Meowstic (Female)',
+        'magearna-original-mega' => 'Mega Magearna (Original Color)',
+        'tatsugiri-curly-mega' => 'Mega Tatsugiri (Curly)',
+        'tatsugiri-droopy-mega' => 'Mega Tatsugiri (Droopy)',
+        'tatsugiri-stretchy-mega' => 'Mega Tatsugiri (Stretchy)',
+    ];
+
     // "samurott-hisui" -> "Hisuian Samurott",
-    // "tauros-paldea-combat-breed" -> "Paldean Tauros (Combat Breed)".
+    // "tauros-paldea-combat-breed" -> "Paldean Tauros (Combat Breed)",
+    // "charizard-mega-x" -> "Mega Charizard X", "kyogre-primal" -> "Primal Kyogre".
     public static function display(string $name): string
     {
+        if (isset(self::MEGA_DISPLAY_NAMES[$name])) {
+            return self::MEGA_DISPLAY_NAMES[$name];
+        }
+
+        if (preg_match('/^(.+?)-(mega|primal)(?:-([xyz]))?$/', $name, $mega) === 1) {
+            $prefix = $mega[2] === 'primal' ? 'Primal' : 'Mega';
+            $letter = isset($mega[3]) ? ' ' . strtoupper($mega[3]) : '';
+
+            return $prefix . ' ' . self::capitalizeHyphenatedWords($mega[1]) . $letter;
+        }
+
         $matched = preg_match(
             '/^(.+?)-(alola|galar|hisui|paldea)(?:-(.+))?$/',
             $name,

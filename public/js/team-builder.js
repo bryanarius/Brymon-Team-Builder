@@ -51,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectedSlotInput = document.querySelector("#selected-slot");
   const selectedPokemonIdInput = document.querySelector("#selected-pokemon-id");
 
+  const itemHint = document.querySelector("#pokemon-item-hint");
   const nicknameInput = document.querySelector("#pokemon-nickname");
   const abilitySelect = document.querySelector("#pokemon-ability");
   const natureSelect = document.querySelector("#pokemon-nature");
@@ -583,7 +584,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         hydratedPokemon.ability = savedEntry.ability ?? "";
 
-        hydratedPokemon.item = savedEntry.item ?? "";
+        hydratedPokemon.item =
+          getRequiredItem(hydratedPokemon.name) ?? savedEntry.item ?? "";
 
         hydratedPokemon.nature = savedEntry.nature ?? "";
 
@@ -775,6 +777,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function createTeamPokemon(pokemon) {
+    const abilities = pokemon.abilities.map((entry) => entry.ability.name);
+
+    // A Mega has exactly one ability, so it is filled in up front.
+    const isMega = pokemon.name in MEGA_STONES;
+
     return {
       // PokéAPI resource id: what gets saved and looked up later. For forms
       // this differs from the dex number (Hisuian Samurott is 10236, #0503).
@@ -789,7 +796,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       types: pokemon.types.map((entry) => entry.type.name),
 
-      abilities: pokemon.abilities.map((entry) => entry.ability.name),
+      abilities,
 
       availableMoves: pokemon.moves.map((entry) => entry.move.name),
 
@@ -798,8 +805,8 @@ document.addEventListener("DOMContentLoaded", () => {
       ),
 
       nickname: "",
-      ability: "",
-      item: "",
+      ability: isMega && abilities.length === 1 ? abilities[0] : "",
+      item: getRequiredItem(pokemon.name) ?? "",
       nature: "",
 
       moves: ["", "", "", ""],
@@ -939,6 +946,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     itemCombobox?.setValue(pokemon.item);
 
+    const itemIsLocked = getRequiredItem(pokemon.name) !== null;
+
+    itemCombobox?.setDisabled(itemIsLocked);
+
+    if (itemHint) {
+      itemHint.hidden = !itemIsLocked;
+    }
+
     natureSelect.value = pokemon.nature;
 
     moveComboboxes.forEach((combobox, moveIndex) => {
@@ -1060,6 +1075,11 @@ document.addEventListener("DOMContentLoaded", () => {
     natureSelect.value = "";
 
     itemCombobox?.setValue("");
+    itemCombobox?.setDisabled(false);
+
+    if (itemHint) {
+      itemHint.hidden = true;
+    }
 
     moveComboboxes.forEach((combobox) => {
       combobox?.setOptions([]);
@@ -1406,8 +1426,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const pokemon = createTeamPokemon(details);
 
         pokemon.nickname = imported.nickname;
-        pokemon.item = imported.item;
-        pokemon.ability = imported.ability;
+        pokemon.item = getRequiredItem(pokemon.name) ?? imported.item;
+        // Keep a Mega's ability if the pasted set omits it.
+        pokemon.ability = imported.ability || pokemon.ability;
         pokemon.nature = imported.nature;
 
         pokemon.moves = [
@@ -1800,6 +1821,14 @@ function getNationalDexNumber(pokemon) {
   return pokemon.species
     ? getPokemonIdFromUrl(pokemon.species.url) ?? pokemon.id
     : pokemon.id;
+}
+
+/*
+ * The item a Pokémon must hold to exist in that form (a Mega Stone or a
+ * Primal orb), or null when the item is the player's choice.
+ */
+function getRequiredItem(pokemonName) {
+  return MEGA_STONES[pokemonName] ?? null;
 }
 
 function formatDexNumber(dexNumber) {

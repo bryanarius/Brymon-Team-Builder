@@ -78,6 +78,14 @@ function createCombobox(root, { onChange, formatLabel, maxResults = 60 } = {}) {
     close();
   }
 
+  function setDisabled(disabled) {
+    input.disabled = disabled;
+
+    if (disabled) {
+      close();
+    }
+  }
+
   function getValue() {
     return committedValue;
   }
@@ -288,6 +296,7 @@ function createCombobox(root, { onChange, formatLabel, maxResults = 60 } = {}) {
   return {
     setOptions,
     setValue,
+    setDisabled,
     getValue,
   };
 }
