@@ -25,6 +25,14 @@ final class PokemonNameTest extends TestCase
                 'darmanitan-galar-standard',
                 'Galarian Darmanitan',
             ],
+            'mega' => ['venusaur-mega', 'Mega Venusaur'],
+            'mega with letter' => ['charizard-mega-x', 'Mega Charizard X'],
+            'primal' => ['kyogre-primal', 'Primal Kyogre'],
+            'mega with species form' => [
+                'meowstic-male-mega',
+                'Mega Meowstic (Male)',
+            ],
+            'species containing "mega"' => ['yanmega', 'Yanmega'],
         ];
     }
 
