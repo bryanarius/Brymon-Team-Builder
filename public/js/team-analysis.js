@@ -25,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const summaryList = document.querySelector("#team-analysis-summary-list");
 
+  const defensiveChartContainer = document.querySelector(
+    "#analysis-defensive-chart",
+  );
+
   const typeCache = new Map();
   const moveCache = new Map();
   const teamPokemon = window.BRYMON_TEAM_POKEMON || [];
@@ -229,9 +233,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }),
       );
 
-      const multipliers = await buildTypeMultiplierMap(pokemonDetails);
+      const multipliers = buildTypeMultiplierMap(pokemonDetails);
 
       const defensiveAnalysis = analyzeTeamDefense(multipliers);
+
+      renderDefensiveChart(
+        defensiveChartContainer,
+        pokemonDetails.map((pokemon, index) => ({
+          name: formatPokemonDisplayName(pokemon.name),
+          image:
+            pokemon.sprites.other["official-artwork"].front_default ??
+            pokemon.sprites.front_default ??
+            "",
+          types: pokemon.types.map((entry) => entry.type.name),
+          ability: teamPokemon[index]?.ability ?? "",
+        })),
+      );
       const resistanceMap = await buildResistanceMap();
       const roleBalance = computeRoleBalance(pokemonDetails, teamPokemon);
 
@@ -248,39 +265,6 @@ document.addEventListener("DOMContentLoaded", () => {
       renderTypeCoverage(typeCoverage.covered, typeCoverage.gaps);
 
       renderRoleBalance(roleBalance);
-
-      // console.log(
-      // "Team defense:",
-      // defensiveAnalysis,
-      // );
-
-      // console.log(
-      // "Defensive multiplier map:",
-      // multipliers,
-      // );
-
-      Object.entries(multipliers).forEach(([pokemonName, multiplierMap]) => {
-        const weaknesses = Object.entries(multiplierMap).filter(
-          ([, multiplier]) => multiplier > 1,
-        );
-
-        const immunities = Object.entries(multiplierMap).filter(
-          ([, multiplier]) => multiplier === 0,
-        );
-
-        // console.log(
-        // pokemonName,
-        // "weaknesses:",
-        // weaknesses,
-        // "immunities:",
-        // immunities,
-        // );
-      });
-
-      // console.log(
-      //     "Team analysis Pokémon:",
-      //     pokemonDetails,
-      // );
 
       statusElement.hidden = true;
       contentElement.hidden = false;
@@ -373,25 +357,25 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  async function buildTypeMultiplierMap(pokemonDetails) {
-    const result = {};
+  /*
+   * One entry per team slot (not keyed by name, so two of the same species
+   * both count), including each Pokémon's ability.
+   */
+  function buildTypeMultiplierMap(pokemonDetails) {
+    return pokemonDetails.map((pokemon, index) => {
+      const types = pokemon.types.map((entry) => entry.type.name);
+      const ability = teamPokemon[index]?.ability ?? "";
 
-    for (const pokemon of pokemonDetails) {
-      const typeMultiplierMaps = [];
-
-      for (const typeEntry of pokemon.types) {
-        const typeName = typeEntry.type.name;
-        const typeData = await fetchType(typeName);
-
-        const multiplierMap = buildSingleTypeMultiplierMap(typeData);
-
-        typeMultiplierMaps.push(multiplierMap);
-      }
-
-      result[pokemon.name] = combineTypeMultiplierMaps(typeMultiplierMaps);
-    }
-
-    return result;
+      return {
+        name: pokemon.name,
+        multiplierMap: Object.fromEntries(
+          ATTACKING_TYPES.map((typeName) => [
+            typeName,
+            getTypeMultiplier(typeName, types, ability),
+          ]),
+        ),
+      };
+    });
   }
 
   async function buildResistanceMap() {
@@ -435,7 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
       immunities[typeName] = [];
     });
 
-    Object.entries(multipliers).forEach(([pokemonName, multiplierMap]) => {
+    multipliers.forEach(({ name: pokemonName, multiplierMap }) => {
       ATTACKING_TYPES.forEach((typeName) => {
         const multiplier = multiplierMap[typeName];
 
@@ -459,44 +443,6 @@ document.addEventListener("DOMContentLoaded", () => {
       sharedWeaknesses,
       immunities,
     };
-  }
-
-  function combineTypeMultiplierMaps(typeMultiplierMaps) {
-    const combinedMultipliers = {};
-
-    ATTACKING_TYPES.forEach((typeName) => {
-      combinedMultipliers[typeName] = 1;
-    });
-
-    typeMultiplierMaps.forEach((multiplierMap) => {
-      ATTACKING_TYPES.forEach((typeName) => {
-        combinedMultipliers[typeName] *= multiplierMap[typeName];
-      });
-    });
-
-    return combinedMultipliers;
-  }
-
-  function buildSingleTypeMultiplierMap(typeData) {
-    const multipliers = {};
-
-    ATTACKING_TYPES.forEach((type) => {
-      multipliers[type] = 1;
-    });
-
-    typeData.damage_relations.double_damage_from.forEach(({ name }) => {
-      multipliers[name] = 2;
-    });
-
-    typeData.damage_relations.half_damage_from.forEach(({ name }) => {
-      multipliers[name] = 0.5;
-    });
-
-    typeData.damage_relations.no_damage_from.forEach(({ name }) => {
-      multipliers[name] = 0;
-    });
-
-    return multipliers;
   }
 
   function renderSharedWeaknesses(sharedWeaknesses, resistanceMap) {

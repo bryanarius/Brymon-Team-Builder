@@ -29,6 +29,7 @@ $teamPokemonData = array_map(
         'name' => $pokemon['pokemon_name'] ?? null,
         'slot' => (int) $pokemon['slot_number'],
         'nature' => $pokemon['nature'] ?? null,
+        'ability' => $pokemon['ability'] ?? null,
         'item' => $pokemon['item'] ?? null,
         'moves' => array_values(array_filter([
             $pokemon['move_1'] ?? null,
@@ -352,6 +353,13 @@ $teamPokemonData = array_map(
                         id="team-analysis-summary-list"
                     ></ul>
                 </article>
+
+                <article class="team-analysis-card">
+                    <h3>Defensive Coverage</h3>
+
+                    <div id="analysis-defensive-chart"></div>
+                </article>
+
                 <article class="team-analysis-card">
                     <h3>Shared Weaknesses</h3>
 
