@@ -844,6 +844,33 @@ require dirname(__DIR__) . '/layouts/header.php';
 
                     </section>
 
+                    <!-- =================================================
+                         Defensive Coverage
+                    ================================================== -->
+
+                    <section
+                        class="builder-panel defensive-chart-panel"
+                        aria-labelledby="defensive-chart-heading"
+                    >
+
+                        <header class="selected-pokemon-heading">
+
+                            <h2 id="defensive-chart-heading">
+                                Defensive Coverage
+                            </h2>
+
+                            <p>
+                                How much damage each type deals to each
+                                team member, including abilities like
+                                Levitate.
+                            </p>
+
+                        </header>
+
+                        <div id="builder-defensive-chart"></div>
+
+                    </section>
+
                 </div>
 
                 <!-- =====================================================

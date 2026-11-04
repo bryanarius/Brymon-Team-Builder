@@ -80,6 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const deletePokemonButton = document.querySelector("#delete-pokemon-button");
 
   const summaryPokemonCount = document.querySelector("#summary-pokemon-count");
+  const defensiveChartContainer = document.querySelector(
+    "#builder-defensive-chart",
+  );
 
   const teamState = {
     selectedSlot: null,
@@ -147,6 +150,8 @@ document.addEventListener("DOMContentLoaded", () => {
    * the builder is ready. When editing, saving before the saved Pokémon
    * finish loading would submit an empty team.
    */
+  renderBuilderDefensiveChart();
+
   initializePokemonBrowser()
     .then(() => {
       if (window.BRYMON_IS_EDITING && window.BRYMON_INITIAL_TEAM) {
@@ -1035,6 +1040,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     pokemon.ability = abilitySelect.value;
+
+    // Abilities like Levitate change the defensive chart.
+    renderBuilderDefensiveChart();
   });
 
   deletePokemonButton.addEventListener("click", () => {
@@ -1172,10 +1180,24 @@ document.addEventListener("DOMContentLoaded", () => {
       : "";
   }
 
+  function renderBuilderDefensiveChart() {
+    renderDefensiveChart(
+      defensiveChartContainer,
+      teamState.slots.filter(Boolean).map((pokemon) => ({
+        name: formatPokemonDisplayName(pokemon.name),
+        image: pokemon.image,
+        types: pokemon.types,
+        ability: pokemon.ability,
+      })),
+    );
+  }
+
   function updateTeamSummary() {
     const populatedSlots = teamState.slots.filter(Boolean);
 
     summaryPokemonCount.textContent = `${populatedSlots.length}/6`;
+
+    renderBuilderDefensiveChart();
 
     const teamTypes = [
       ...new Set(populatedSlots.flatMap((pokemon) => pokemon.types)),
