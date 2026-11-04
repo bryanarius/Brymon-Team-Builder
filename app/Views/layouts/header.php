@@ -35,6 +35,7 @@ $documentTitle = str_contains($pageTitle, 'Brymon')
     <link rel="stylesheet" href="/css/saved-teams.css">
     <link rel="stylesheet" href="/css/team-show.css">
     <link rel="stylesheet" href="/css/team-analysis.css">
+    <link rel="stylesheet" href="/css/defensive-chart.css">
     <link rel="stylesheet" href="/css/team-builder.css">
     <link rel="stylesheet" href="/css/pokedex.css">
     <link rel="stylesheet" href="/css/auth.css">
