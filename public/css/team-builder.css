@@ -127,12 +127,14 @@
   font-weight: 600;
 }
 
-/* Combobox */
-.team-builder-page .combobox {
+/* Combobox (shared with the damage calculator) */
+.team-builder-page .combobox,
+.calc-page .combobox {
   position: relative;
 }
 
-.team-builder-page .combobox-list {
+.team-builder-page .combobox-list,
+.calc-page .combobox-list {
   position: absolute;
   z-index: 40;
   top: calc(100% + 4px);
@@ -149,11 +151,13 @@
   box-shadow: 0 12px 30px rgba(3, 10, 24, 0.45);
 }
 
-.team-builder-page .combobox-list[hidden] {
+.team-builder-page .combobox-list[hidden],
+.calc-page .combobox-list[hidden] {
   display: none;
 }
 
-.team-builder-page .combobox-option {
+.team-builder-page .combobox-option,
+.calc-page .combobox-option {
   padding: 0.55rem 0.6rem;
   border-radius: 6px;
   color: #dce7f6;
@@ -162,12 +166,15 @@
 }
 
 .team-builder-page .combobox-option:hover,
-.team-builder-page .combobox-option.is-active {
+.calc-page .combobox-option:hover,
+.team-builder-page .combobox-option.is-active,
+.calc-page .combobox-option.is-active {
   background: rgba(20, 132, 245, 0.18);
   color: #f8fafc;
 }
 
-.team-builder-page .combobox-empty {
+.team-builder-page .combobox-empty,
+.calc-page .combobox-empty {
   padding: 0.55rem 0.6rem;
   color: var(--app-muted);
   font-size: 0.88rem;

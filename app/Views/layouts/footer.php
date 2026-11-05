@@ -29,5 +29,9 @@
 <script src="/js/meta.js" defer></script>
 <script src="/js/profile.js" defer></script>
 <script src="/js/account.js" defer></script>
+<?php // Scripts only one page needs, e.g. a large library. ?>
+<?php foreach ($pageScripts ?? [] as $pageScript): ?>
+<script src="<?= htmlspecialchars($pageScript, ENT_QUOTES, 'UTF-8') ?>" defer></script>
+<?php endforeach; ?>
 </body>
 </html>

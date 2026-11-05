@@ -140,6 +140,40 @@ test("status moves and immunities do no damage without throwing", () => {
   }
 });
 
+test("status, critical hits, and battle conditions change the damage", () => {
+  const maxDamage = (attacker, defender, field, options) =>
+    calculateDamage(attacker, defender, field, options)[0].maxDamage;
+
+  const base = maxDamage(greatTusk, kingambit);
+
+  // A burn halves physical damage; a crit is 1.5x; Reflect cuts it.
+  assert.ok(maxDamage({ ...greatTusk, status: "brn" }, kingambit) < base);
+  assert.ok(maxDamage(greatTusk, kingambit, {}, { isCrit: true }) > base);
+  assert.ok(
+    maxDamage(greatTusk, kingambit, { defenderSide: { isReflect: true } }) <
+      base,
+  );
+
+  // Rain boosts Water moves.
+  const surf = { name: "vaporeon", moves: ["surf"] };
+
+  assert.ok(
+    maxDamage(surf, kingambit, { weather: "Rain" }) >
+      maxDamage(surf, kingambit),
+  );
+});
+
+test("Booster Energy activates Protosynthesis", () => {
+  const [plain] = calculateDamage(greatTusk, kingambit);
+  const [boosted] = calculateDamage(
+    { ...greatTusk, item: "booster-energy" },
+    kingambit,
+  );
+
+  assert.ok(boosted.maxDamage > plain.maxDamage);
+  assert.match(boosted.description, /Protosynthesis/);
+});
+
 test("builder EV keys map to the library's stats", () => {
   const pokemon = createCalcPokemon(gen, {
     name: "gengar",

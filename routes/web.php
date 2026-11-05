@@ -24,6 +24,8 @@ $router->get('/pokedex', [PageController::class, 'pokedex']);
 
 $router->get('/meta', [PageController::class, 'meta']);
 
+$router->get('/calc', [PageController::class, 'calc']);
+
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes

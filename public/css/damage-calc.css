@@ -1,0 +1,384 @@
+/* Damage Calculator Page */
+
+.calc-page {
+  padding: 2.5rem 0 4rem;
+  background:
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(40, 105, 223, 0.1),
+      transparent 32%
+    ),
+    var(--app-background);
+}
+
+.calc-header {
+  margin-bottom: 1.75rem;
+}
+
+.calc-header h1 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  line-height: 1.05;
+}
+
+.calc-intro {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.calc-panel {
+  min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-panel);
+}
+
+.calc-panel h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+/* Fields */
+
+.calc-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1rem;
+}
+
+.calc-page .form-group {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.calc-page label,
+.calc-page legend {
+  color: #f8fafc;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Includes .form-group so it outranks auth.css's global `.form-group input`. */
+.calc-page .form-group input,
+.calc-page .form-group select,
+.calc-moves input {
+  width: 100%;
+  height: 42px;
+  min-height: 42px;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 8px;
+  background-color: var(--app-input);
+  color: #f8fafc;
+  font: inherit;
+}
+
+.calc-page input:focus,
+.calc-page select:focus {
+  border-color: var(--app-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(20, 132, 245, 0.16);
+}
+
+.calc-page fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.calc-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.calc-checkbox input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--app-blue);
+}
+
+/* Results */
+
+.calc-results {
+  margin-bottom: 1.25rem;
+}
+
+.calc-results h2 {
+  margin-bottom: 0.25rem;
+}
+
+.calc-message,
+.calc-matchup {
+  margin: 0 0 0.75rem;
+  color: var(--app-muted);
+}
+
+.calc-result-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.calc-result {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-panel-dark);
+}
+
+.calc-result-heading {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.calc-result-move {
+  font-weight: 700;
+}
+
+.calc-result-category {
+  color: var(--app-muted);
+  font-size: 0.8rem;
+}
+
+.calc-result-percent {
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* Damage as a share of the defender's HP: solid to the lowest roll,
+   lighter up to the highest. */
+.calc-damage-bar {
+  position: relative;
+  grid-column: 1 / -1;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.calc-damage-bar span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: inherit;
+}
+
+.calc-damage-max {
+  background: rgba(20, 132, 245, 0.4);
+}
+
+.calc-damage-min {
+  background: var(--app-blue);
+}
+
+.calc-result.can-ohko .calc-damage-max {
+  background: rgba(255, 116, 116, 0.45);
+}
+
+.calc-result.can-ohko .calc-damage-min {
+  background: var(--danger);
+}
+
+.calc-result-outcome {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.calc-result.can-ohko .calc-result-outcome {
+  color: var(--danger);
+}
+
+.calc-result.is-no-damage .calc-result-outcome,
+.calc-result.is-no-damage .calc-result-percent {
+  color: var(--app-muted);
+}
+
+.calc-result-description {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--app-muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+/* Sides */
+
+.calc-sides {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.calc-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.calc-side-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.calc-types {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.calc-tera {
+  margin-left: 0.35rem;
+  color: var(--app-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Stats table */
+
+.calc-stats-wrapper {
+  overflow-x: auto;
+}
+
+.calc-stats {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.calc-stats th,
+.calc-stats td {
+  padding: 0.3rem 0.35rem;
+  text-align: center;
+}
+
+.calc-stats thead th {
+  color: var(--app-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.calc-stats tbody th {
+  text-align: left;
+}
+
+.calc-stats td[data-role="base"] {
+  color: var(--app-muted);
+}
+
+.calc-stats td[data-role="total"] {
+  font-weight: 700;
+}
+
+.calc-stats input,
+.calc-stats select {
+  width: 100%;
+  min-width: 3.5rem;
+  max-width: 5rem;
+  height: 34px;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 6px;
+  background-color: var(--app-input);
+  color: #f8fafc;
+  font: inherit;
+  text-align: center;
+}
+
+.calc-ev-total {
+  margin: 0.5rem 0 0;
+  color: var(--app-muted);
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+.calc-ev-total .is-over-limit {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+/* Moves */
+
+.calc-moves {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.calc-moves legend {
+  margin-bottom: 0.4rem;
+}
+
+.calc-moves .calc-checkbox {
+  grid-column: 1 / -1;
+  margin-top: 0.2rem;
+}
+
+/* Battle conditions */
+
+.calc-conditions h2 {
+  margin-bottom: 1rem;
+}
+
+.calc-conditions .calc-fields {
+  grid-template-columns: repeat(3, minmax(0, 12rem)) minmax(0, 1fr);
+  align-items: end;
+}
+
+.calc-screens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
+.calc-screens legend {
+  margin-bottom: 0.6rem;
+}
+
+.calc-credit {
+  margin: 1.5rem 0 0;
+  color: var(--app-muted);
+  font-size: 0.85rem;
+}
+
+.calc-credit a {
+  color: var(--app-blue);
+}
+
+@media (max-width: 860px) {
+  .calc-sides,
+  .calc-result-list,
+  .calc-conditions .calc-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

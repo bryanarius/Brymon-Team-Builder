@@ -74,8 +74,10 @@ function toCalcStats(builderStats) {
 }
 
 /*
- * set: { name, level, ability, item, nature, evs, ivs, boosts, teraType }
- * with PokéAPI slugs and builder stat keys, as the team builder stores them.
+ * set: { name, level, ability, item, nature, evs, ivs, boosts, teraType,
+ * status } with PokéAPI slugs (or the library's own names) and builder
+ * stat keys, as the team builder stores them. `status` is the library's
+ * code: "brn", "par", "psn", "tox", "slp", or "frz".
  */
 function createCalcPokemon(gen, set) {
   const species = findCalcSpecies(gen, set.name);
@@ -93,6 +95,10 @@ function createCalcPokemon(gen, set) {
     ivs: toCalcStats(set.ivs),
     boosts: toCalcStats(set.boosts),
     teraType: set.teraType ? capitalizeHyphenatedWords(set.teraType) : undefined,
+    status: set.status || undefined,
+    // Protosynthesis and Quark Drive stay off without this. "auto" turns
+    // them on when the game would: Booster Energy, Sun, or Electric Terrain.
+    boostedStat: "auto",
   });
 }
 
@@ -101,14 +107,14 @@ function createCalcPokemon(gen, set) {
  * defender's max HP, plus the library's KO chance and description.
  * Status moves and immunities come back with zero damage and no KO text.
  */
-function calculateMoveDamage(gen, attacker, defender, moveSlug, field) {
+function calculateMoveDamage(gen, attacker, defender, moveSlug, field, isCrit) {
   const moveName = findCalcName(gen.moves, moveSlug);
 
   if (!moveName) {
     return null;
   }
 
-  const move = new calc.Move(gen, moveName);
+  const move = new calc.Move(gen, moveName, { isCrit });
   const result = calc.calculate(
     gen,
     attacker,
@@ -122,6 +128,7 @@ function calculateMoveDamage(gen, attacker, defender, moveSlug, field) {
 
   return {
     move: moveName,
+    type: move.type,
     category: move.category,
     minDamage,
     maxDamage,
@@ -133,12 +140,23 @@ function calculateMoveDamage(gen, attacker, defender, moveSlug, field) {
   };
 }
 
-function calculateDamage(attackerSet, defenderSet, field = {}) {
+/*
+ * field: the library's Field options, e.g. { gameType: "Doubles",
+ * weather: "Rain", terrain: "Electric", defenderSide: { isReflect: true } }.
+ */
+function calculateDamage(
+  attackerSet,
+  defenderSet,
+  field = {},
+  { isCrit = false } = {},
+) {
   const gen = getCalcGeneration();
   const attacker = createCalcPokemon(gen, attackerSet);
   const defender = createCalcPokemon(gen, defenderSet);
 
   return (attackerSet.moves ?? [])
-    .map((move) => calculateMoveDamage(gen, attacker, defender, move, field))
+    .map((move) =>
+      calculateMoveDamage(gen, attacker, defender, move, field, isCrit),
+    )
     .filter(Boolean);
 }
