@@ -241,6 +241,8 @@ const SHOWDOWN_SPECIES_ALIASES = {
   "tauros-paldea-combat": "tauros-paldea-combat-breed",
   "tauros-paldea-blaze": "tauros-paldea-blaze-breed",
   "tauros-paldea-aqua": "tauros-paldea-aqua-breed",
+  "meowstic-m-mega": "meowstic-male-mega",
+  "meowstic-f-mega": "meowstic-female-mega",
 };
 
 const POKEAPI_TO_SHOWDOWN_SPECIES = Object.fromEntries(
@@ -337,7 +339,10 @@ function fromShowdownSpecies(normalizedName) {
  */
 function toShowdownSpecies(name) {
   if (parseMegaForm(name)) {
-    return String(name).split("-").map(capitalizeHyphenatedWords).join("-");
+    return String(POKEAPI_TO_SHOWDOWN_SPECIES[name] ?? name)
+      .split("-")
+      .map(capitalizeHyphenatedWords)
+      .join("-");
   }
 
   const form = parseRegionalForm(POKEAPI_TO_SHOWDOWN_SPECIES[name] ?? name);
