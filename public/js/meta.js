@@ -3,6 +3,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   const formatSelect = document.querySelector("#meta-format");
   const searchInput = document.querySelector("#meta-search");
+  const formatDescription = document.querySelector(
+    "#meta-format-description",
+  );
   const statusElement = document.querySelector("#meta-status");
   const layout = document.querySelector("#meta-layout");
   const usageList = document.querySelector("#meta-usage-list");
@@ -75,6 +78,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadFormat(initialPokemon = null) {
     const format = formatSelect.value;
+
+    if (formatDescription) {
+      formatDescription.textContent =
+        formatSelect.selectedOptions[0]?.dataset.description ?? "";
+    }
 
     // Ignore responses for a format the user has already switched away from.
     state.requestVersion += 1;

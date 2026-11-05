@@ -30,12 +30,17 @@
 
 /* Controls */
 
+/*
+ * Compact format picker and search, with the selected format's
+ * description filling the rest of the row. The glossary spans every column.
+ */
 .meta-controls {
   display: grid;
-  grid-template-columns: minmax(0, 14rem) minmax(0, 20rem);
-  gap: 1rem;
-  margin-bottom: 1rem;
-  padding: 1.1rem;
+  grid-template-columns: minmax(0, 14rem) minmax(0, 22rem) minmax(0, 1fr);
+  align-items: end;
+  gap: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  padding: 1.5rem;
   border: 1px solid var(--app-border);
   border-radius: 12px;
   background: var(--app-panel);
@@ -54,9 +59,11 @@
   font-weight: 700;
 }
 
-.meta-controls input,
-.meta-controls select {
+/* Includes .form-group so it outranks auth.css's global `.form-group input`. */
+.meta-controls .form-group input,
+.meta-controls .form-group select {
   width: 100%;
+  height: 44px;
   min-height: 44px;
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--app-border-strong);
@@ -71,6 +78,62 @@
   border-color: var(--app-blue);
   outline: none;
   box-shadow: 0 0 0 3px rgba(20, 132, 245, 0.16);
+}
+
+/* Format explanations. */
+.meta-glossary {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.meta-format-description {
+  max-width: 70ch;
+  margin: 0;
+  padding-left: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.meta-format-description:empty {
+  display: none;
+}
+
+.meta-glossary {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--app-border);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.meta-glossary summary {
+  color: var(--app-blue);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.meta-glossary p {
+  max-width: 70ch;
+  margin: 1rem 0 1.25rem;
+}
+
+/* Two columns of formats on wide screens, one on narrow ones. */
+.meta-glossary dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 2.5rem;
+  margin: 0;
+}
+
+.meta-glossary dt {
+  margin-bottom: 0.25rem;
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+.meta-glossary dd {
+  margin: 0;
 }
 
 .meta-status {
@@ -305,5 +368,19 @@
 
   .meta-usage-bar {
     display: none;
+  }
+
+  .meta-controls {
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .meta-format-description {
+    padding-left: 0;
+  }
+
+  .meta-glossary dl {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
   }
 }
