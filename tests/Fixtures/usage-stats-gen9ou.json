@@ -1,0 +1,215 @@
+{
+  "battles": 608936,
+  "pokemon": {
+    "Kingambit": {
+      "usage": {
+        "raw": 0.2055,
+        "real": 0.1766,
+        "weighted": 0.2688
+      },
+      "abilities": {
+        "Supreme Overlord": 0.9852,
+        "Defiant": 0.014,
+        "Pressure": 0.0008
+      },
+      "items": {
+        "Leftovers": 0.5081,
+        "Black Glasses": 0.2319,
+        "Air Balloon": 0.1258,
+        "Lum Berry": 0.0547,
+        "Shuca Berry": 0.0174,
+        "Life Orb": 0.0087,
+        "Sitrus Berry": 0.0072,
+        "Dread Plate": 0.0061
+      },
+      "moves": {
+        "Sucker Punch": 0.9976,
+        "Swords Dance": 0.9508,
+        "Iron Head": 0.8609,
+        "Kowtow Cleave": 0.7231,
+        "Low Kick": 0.4469,
+        "Brick Break": 0.0057,
+        "Protect": 0.0025,
+        "Stealth Rock": 0.0023
+      },
+      "teraTypes": {
+        "Ghost": 0.3401,
+        "Dark": 0.1831,
+        "Fire": 0.1282,
+        "Fairy": 0.1125,
+        "Flying": 0.1014,
+        "Bug": 0.067,
+        "Fighting": 0.0527,
+        "Ground": 0.007,
+        "Water": 0.0037,
+        "Grass": 0.0019,
+        "Rock": 0.0007,
+        "Poison": 0.0006,
+        "Stellar": 0.0004,
+        "Steel": 0.0003,
+        "Normal": 0.0002,
+        "Psychic": 0.0001
+      },
+      "teammates": {
+        "Great Tusk": 0.3247,
+        "Raging Bolt": 0.2995,
+        "Landorus-Therian": 0.2436,
+        "Iron Valiant": 0.2397,
+        "Zamazenta": 0.214,
+        "Ogerpon-Wellspring": 0.2046,
+        "Gholdengo": 0.1841,
+        "Kyurem": 0.1705
+      },
+      "spreads": {
+        "Adamant:0/252/4/0/0/252": 0.1359,
+        "Adamant:0/252/0/0/4/252": 0.1096,
+        "Jolly:0/252/4/0/0/252": 0.0647,
+        "Adamant:248/252/8/0/0/0": 0.0633,
+        "Jolly:0/252/0/0/4/252": 0.0608,
+        "Adamant:252/252/0/0/4/0": 0.0583,
+        "Adamant:156/252/0/0/0/100": 0.0386,
+        "Adamant:240/252/0/0/0/16": 0.0316
+      }
+    },
+    "Great Tusk": {
+      "usage": {
+        "raw": 0.2832,
+        "real": 0.2805,
+        "weighted": 0.3282
+      },
+      "abilities": {
+        "Protosynthesis": 1
+      },
+      "items": {
+        "Heavy-Duty Boots": 0.2611,
+        "Booster Energy": 0.2578,
+        "Rocky Helmet": 0.2128,
+        "Leftovers": 0.1032,
+        "Choice Scarf": 0.0658,
+        "Assault Vest": 0.053,
+        "Choice Band": 0.0175,
+        "Life Orb": 0.0126
+      },
+      "moves": {
+        "Headlong Rush": 0.9387,
+        "Rapid Spin": 0.8908,
+        "Ice Spinner": 0.8173,
+        "Stealth Rock": 0.373,
+        "Close Combat": 0.3528,
+        "Knock Off": 0.1729,
+        "Bulk Up": 0.1625,
+        "Head Smash": 0.0683,
+        "": 0.5
+      },
+      "teraTypes": {
+        "Steel": 0.2677,
+        "Fighting": 0.1383,
+        "Ghost": 0.1185,
+        "Ice": 0.098,
+        "Water": 0.0948,
+        "Ground": 0.0814,
+        "Fire": 0.0793,
+        "Poison": 0.0526,
+        "Fairy": 0.0215,
+        "Dark": 0.0171,
+        "Electric": 0.0083,
+        "Rock": 0.0066,
+        "Dragon": 0.0057,
+        "Grass": 0.0052,
+        "Flying": 0.0015,
+        "Normal": 0.0012,
+        "Stellar": 0.0012,
+        "Bug": 0.0011
+      },
+      "teammates": {
+        "Gholdengo": 0.3346,
+        "Kingambit": 0.2654,
+        "Dragonite": 0.2263,
+        "Slowking-Galar": 0.2123,
+        "Kyurem": 0.195,
+        "Raging Bolt": 0.1837,
+        "Samurott-Hisui": 0.1653,
+        "Ogerpon-Wellspring": 0.1511
+      },
+      "spreads": {
+        "Jolly:0/252/4/0/0/252": 0.2388,
+        "Jolly:0/252/0/0/4/252": 0.1689,
+        "Jolly:252/4/0/0/0/252": 0.1421,
+        "Jolly:4/252/0/0/0/252": 0.0899,
+        "Jolly:248/4/4/0/0/252": 0.0618,
+        "Adamant:4/252/0/0/0/252": 0.0165,
+        "Jolly:56/200/0/0/0/252": 0.0161,
+        "Jolly:252/0/0/0/4/252": 0.0131
+      }
+    },
+    "Gholdengo": {
+      "usage": {
+        "raw": 0.2164,
+        "real": 0.2132,
+        "weighted": 0.2697
+      },
+      "abilities": {
+        "Good as Gold": 1
+      },
+      "items": {
+        "Choice Scarf": 0.3954,
+        "Air Balloon": 0.3222,
+        "Custap Berry": 0.0441,
+        "Leftovers": 0.0399,
+        "Rocky Helmet": 0.0395,
+        "Shuca Berry": 0.0348,
+        "Metal Coat": 0.0261,
+        "Grassy Seed": 0.0259
+      },
+      "moves": {
+        "Shadow Ball": 0.8623,
+        "Make It Rain": 0.8291,
+        "Recover": 0.5944,
+        "Nasty Plot": 0.5187,
+        "Trick": 0.4063,
+        "Focus Blast": 0.1762,
+        "Psyshock": 0.164,
+        "Thunder Wave": 0.1376
+      },
+      "teraTypes": {
+        "Fairy": 0.3526,
+        "Steel": 0.1744,
+        "Ghost": 0.1603,
+        "Flying": 0.1336,
+        "Fighting": 0.0901,
+        "Water": 0.0594,
+        "Dark": 0.0103,
+        "Normal": 0.0053,
+        "Bug": 0.0053,
+        "Electric": 0.0047,
+        "Dragon": 0.0014,
+        "Grass": 0.0011,
+        "Stellar": 0.0006,
+        "Fire": 0.0003,
+        "Psychic": 0.0002,
+        "Ground": 0.0001,
+        "Poison": 0.0001
+      },
+      "teammates": {
+        "Dragonite": 0.4084,
+        "Great Tusk": 0.4076,
+        "Zamazenta": 0.2616,
+        "Samurott-Hisui": 0.2573,
+        "Iron Valiant": 0.2335,
+        "Kingambit": 0.1833,
+        "Glimmora": 0.1786,
+        "Ogerpon-Wellspring": 0.1738
+      },
+      "spreads": {
+        "Timid:0/0/0/252/4/252": 0.3402,
+        "Timid:4/0/0/252/0/252": 0.1249,
+        "Bold:252/0/196/0/0/60": 0.0551,
+        "Timid:0/0/4/252/0/252": 0.0508,
+        "Modest:248/0/176/72/0/12": 0.0366,
+        "Modest:0/0/0/252/4/252": 0.0321,
+        "Timid:0/0/68/252/0/188": 0.0256,
+        "Modest:72/0/0/252/0/184": 0.0188
+      }
+    }
+  }
+}

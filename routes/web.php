@@ -8,6 +8,7 @@ use App\Controllers\DashboardController;
 use App\Controllers\PageController;
 use App\Controllers\ProfileController;
 use App\Controllers\TeamController;
+use App\Controllers\UsageStatsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,3 +106,11 @@ $router->get('/p/{id}', [TeamController::class, 'showPublic']);
 $router->get('/u/{username}', [ProfileController::class, 'show']);
 $router->post('/u/{username}/follow', [ProfileController::class, 'follow']);
 $router->post('/u/{username}/unfollow', [ProfileController::class, 'unfollow']);
+
+/*
+|--------------------------------------------------------------------------
+| Usage Stats API (public, read-only)
+|--------------------------------------------------------------------------
+*/
+
+$router->get('/api/usage/{format}', [UsageStatsController::class, 'show']);
