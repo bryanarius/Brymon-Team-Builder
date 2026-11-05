@@ -1,0 +1,65 @@
+{
+  "format": "gen9ou",
+  "formatName": "OU",
+  "battles": 123456,
+  "fetchedAt": 1760000000,
+  "pokemon": [
+    {
+      "name": "Great Tusk",
+      "usage": 0.3,
+      "abilities": [{ "name": "Protosynthesis", "share": 1 }],
+      "items": [
+        { "name": "Booster Energy", "share": 0.5 },
+        { "name": "Leftovers", "share": 0.3 }
+      ],
+      "moves": [
+        { "name": "Headlong Rush", "share": 0.9 },
+        { "name": "Rapid Spin", "share": 0.85 },
+        { "name": "Ice Spinner", "share": 0.6 },
+        { "name": "Knock Off", "share": 0.5 }
+      ],
+      "teraTypes": [{ "name": "Steel", "share": 0.4 }],
+      "teammates": [{ "name": "Kingambit", "share": 0.3 }],
+      "spreads": [
+        {
+          "nature": "Jolly",
+          "evs": {
+            "hp": 0,
+            "attack": 252,
+            "defense": 4,
+            "special-attack": 0,
+            "special-defense": 0,
+            "speed": 252
+          },
+          "share": 0.4
+        }
+      ]
+    },
+    {
+      "name": "Kingambit",
+      "usage": 0.25,
+      "abilities": [{ "name": "Supreme Overlord", "share": 0.98 }],
+      "items": [{ "name": "Leftovers", "share": 0.5 }],
+      "moves": [
+        { "name": "Sucker Punch", "share": 0.99 },
+        { "name": "Swords Dance", "share": 0.95 }
+      ],
+      "teraTypes": [{ "name": "Ghost", "share": 0.34 }],
+      "teammates": [{ "name": "Great Tusk", "share": 0.32 }],
+      "spreads": [
+        {
+          "nature": "Adamant",
+          "evs": {
+            "hp": 252,
+            "attack": 252,
+            "defense": 0,
+            "special-attack": 0,
+            "special-defense": 4,
+            "speed": 0
+          },
+          "share": 0.3
+        }
+      ]
+    }
+  ]
+}

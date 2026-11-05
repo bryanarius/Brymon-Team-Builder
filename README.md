@@ -148,6 +148,16 @@ Brymon combines:
 - IV configuration
 - Pokémon base stats
 - Dynamic team summary
+- Live defensive coverage chart (all 18 types, ability-aware)
+- Popular Sets hints: the most-used moves, items, abilities, and EV spreads for the selected Pokémon in a chosen format, applied with one click
+
+## Meta Usage Stats
+
+- `/meta` page ranking the 100 most-used Pokémon per format (OU, Ubers, UU, RU, NU, PU, National Dex, Doubles OU, VGC)
+- Plain-language explanation of each format
+- Per-Pokémon breakdown: moves, items, abilities, EV spreads, Tera types, and teammates
+- Search, and shareable URLs (`?format=gen9ou&pokemon=Kingambit`)
+- Data from Smogon via `pkmn.github.io`, trimmed and cached server-side for a day (`/api/usage/{format}`), with stale data served if the source is down
 
 ## Team Management
 
@@ -168,6 +178,7 @@ Brymon combines:
 - Resistance recommendations for shared weaknesses
 - Team role balance analysis
 - Team analysis summary
+- Defensive coverage chart: each member's multiplier against all 18 types, with weak / resist / immune totals
 
 ## Pokémon Showdown Integration
 
@@ -257,20 +268,33 @@ Playwright tests exercise real browser workflows, including:
 - Viewing a saved team
 - Editing a team
 - Deleting a team
+- Regional forms and Mega Evolutions (search, import/export, locked Mega Stones)
+- Defensive coverage chart in the builder and saved-team analysis
+- Meta page rankings, search, and shareable links
+- Applying Popular Sets suggestions in the builder
+
+Usage stats are served from a fixed fixture in the E2E tests, so they don't
+break when Smogon's monthly rankings change.
 
 ### Current Test Results
 
 ```text
 PHPUnit
 
-50 tests
-105 assertions
+73 tests
+138 assertions
 100% passing
 
 
 Playwright
 
-2 end-to-end tests
+7 end-to-end tests
+100% passing
+
+
+Node (JS unit tests)
+
+6 tests
 100% passing
 ```
 
@@ -278,6 +302,7 @@ Run the complete automated test suite with:
 
 ```bash
 ./vendor/bin/phpunit
+npm run test:js
 npx playwright test
 ```
 
@@ -707,10 +732,10 @@ tests and is integrated without breaking existing saved teams.
 2. [x] **Mega Evolutions in the builder** — add Mega forms to a team slot,
    with the Mega's typing and ability carried through to team analysis.
    Built on the same form-loading mechanism as regional forms.
-3. [ ] **Defensive coverage chart** — a full team-by-type defensive grid
+3. [x] **Defensive coverage chart** — a full team-by-type defensive grid
    across all 18 types, showing weak / resist / immune multipliers for each
    member with per-type totals, similar to Marriland's team builder.
-4. [ ] **Meta usage stats** — surface Smogon / Pokémon Showdown usage data
+4. [x] **Meta usage stats** — surface Smogon / Pokémon Showdown usage data
    (most-used Pokémon per format, common moves, items, abilities, and EV
    spreads) via a CORS-friendly source such as `pkmn.github.io`, with
    caching and format selection.
