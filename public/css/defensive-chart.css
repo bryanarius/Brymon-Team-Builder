@@ -24,8 +24,15 @@
   text-transform: uppercase;
 }
 
-.defensive-chart tbody th {
-  text-align: left;
+/*
+ * The Type column: header centered over the badges like every other
+ * column, and only as wide as the badges (width: 1% shrinks it; nowrap
+ * stops it from wrapping), so the Pokémon columns share the rest.
+ */
+.defensive-chart th:first-child {
+  width: 1%;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .defensive-chart tbody th .pokemon-type-badge {
@@ -72,8 +79,12 @@
   color: var(--app-muted);
 }
 
+/* Fixed width so the totals don't take space from the Pokémon columns. */
+.defensive-chart-total {
+  width: 4.5rem;
+}
+
 td.defensive-chart-total {
-  min-width: 3rem;
   color: #f8fafc;
   font-weight: 700;
 }
