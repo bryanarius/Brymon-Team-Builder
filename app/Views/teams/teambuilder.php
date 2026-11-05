@@ -845,6 +845,48 @@ require dirname(__DIR__) . '/layouts/header.php';
                     </section>
 
                     <!-- =================================================
+                         Popular Sets
+                    ================================================== -->
+
+                    <section
+                        class="builder-panel popular-sets-panel"
+                        aria-labelledby="popular-sets-heading"
+                    >
+
+                        <header class="popular-sets-header">
+
+                            <div class="selected-pokemon-heading">
+                                <h2 id="popular-sets-heading">
+                                    Popular Sets
+                                </h2>
+
+                                <p>
+                                    Moves, items, and spreads from Smogon
+                                    usage stats.
+                                </p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="popular-sets-format">
+                                    Format
+                                </label>
+
+                                <select id="popular-sets-format">
+                                    <?php foreach (\App\Core\UsageStats::FORMATS as $formatId => $formatName): ?>
+                                        <option value="<?= htmlspecialchars($formatId, ENT_QUOTES, 'UTF-8') ?>">
+                                            <?= htmlspecialchars($formatName, ENT_QUOTES, 'UTF-8') ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                        </header>
+
+                        <div id="popular-sets" aria-live="polite"></div>
+
+                    </section>
+
+                    <!-- =================================================
                          Defensive Coverage
                     ================================================== -->
 

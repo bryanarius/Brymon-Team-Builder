@@ -83,6 +83,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const defensiveChartContainer = document.querySelector(
     "#builder-defensive-chart",
   );
+  const popularSetsContainer = document.querySelector("#popular-sets");
+  const popularSetsFormatSelect = document.querySelector(
+    "#popular-sets-format",
+  );
 
   const teamState = {
     selectedSlot: null,
@@ -112,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (pokemon) {
           pokemon.item = value;
+          renderBuilderPopularSets();
         }
       },
     },
@@ -129,6 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (pokemon) {
             pokemon.moves[moveIndex] = value;
+            renderBuilderPopularSets();
           }
         },
       },
@@ -143,7 +149,67 @@ document.addEventListener("DOMContentLoaded", () => {
     natureList: [],
     searchTimeout: null,
     filterVersion: 0,
+    usageStatsCache: new Map(),
+    usageRequestVersion: 0,
   };
+
+  const POPULAR_SETS_FORMAT_KEY = "brymon.popularSetsFormat";
+
+  // Remember the player's format between visits (best effort: storage can
+  // be unavailable, e.g. in private browsing).
+  try {
+    const savedFormat = localStorage.getItem(POPULAR_SETS_FORMAT_KEY);
+
+    if (
+      popularSetsFormatSelect &&
+      [...popularSetsFormatSelect.options].some(
+        (option) => option.value === savedFormat,
+      )
+    ) {
+      popularSetsFormatSelect.value = savedFormat;
+    }
+  } catch {
+    // Fall back to the default format.
+  }
+
+  popularSetsFormatSelect?.addEventListener("change", () => {
+    try {
+      localStorage.setItem(
+        POPULAR_SETS_FORMAT_KEY,
+        popularSetsFormatSelect.value,
+      );
+    } catch {
+      // Not remembered; nothing else depends on it.
+    }
+
+    renderBuilderPopularSets();
+  });
+
+  popularSetsContainer?.addEventListener("click", (event) => {
+    const chip = event.target.closest(".popular-set-chip");
+    const pokemon = getSelectedPokemon();
+
+    if (!chip || chip.disabled || !pokemon) {
+      return;
+    }
+
+    const { kind, value } = chip.dataset;
+
+    if (kind === "move") {
+      applyPopularMove(pokemon, value);
+    } else if (kind === "item") {
+      pokemon.item = value;
+      itemCombobox?.setValue(value);
+    } else if (kind === "ability") {
+      pokemon.ability = value;
+      abilitySelect.value = value;
+      renderBuilderDefensiveChart();
+    } else if (kind === "spread") {
+      applyPopularSpread(pokemon, value, JSON.parse(chip.dataset.evs));
+    }
+
+    renderBuilderPopularSets();
+  });
 
   /*
    * The save button starts disabled in the markup and is only enabled once
@@ -151,6 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
    * finish loading would submit an empty team.
    */
   renderBuilderDefensiveChart();
+  renderBuilderPopularSets();
 
   initializePokemonBrowser()
     .then(() => {
@@ -793,6 +860,9 @@ document.addEventListener("DOMContentLoaded", () => {
       id: pokemon.id,
       dexNumber: getNationalDexNumber(pokemon),
       name: pokemon.name,
+      // Used to match usage stats, which name default forms by species.
+      speciesName: pokemon.species.name,
+      isDefaultForm: pokemon.is_default,
 
       image:
         pokemon.sprites.other["official-artwork"].front_default ??
@@ -980,6 +1050,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateEvTotal();
     renderPokemonStats(pokemon.stats);
+    renderBuilderPopularSets();
   }
 
   function renderSelectedPokemonTypes(types) {
@@ -1020,6 +1091,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     pokemon.nature = natureSelect.value;
+    renderBuilderPopularSets();
   });
 
   nicknameInput.addEventListener("input", () => {
@@ -1043,6 +1115,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Abilities like Levitate change the defensive chart.
     renderBuilderDefensiveChart();
+    renderBuilderPopularSets();
   });
 
   deletePokemonButton.addEventListener("click", () => {
@@ -1110,6 +1183,7 @@ document.addEventListener("DOMContentLoaded", () => {
     evTotalError.hidden = true;
 
     renderPokemonStats({});
+    renderBuilderPopularSets();
   }
 
   resetIvsButton?.addEventListener("click", () => {
@@ -1143,6 +1217,7 @@ document.addEventListener("DOMContentLoaded", () => {
       input.value = pokemon.evs[statName];
 
       updateEvTotal();
+      renderBuilderPopularSets();
     });
   });
 
@@ -1190,6 +1265,114 @@ document.addEventListener("DOMContentLoaded", () => {
         ability: pokemon.ability,
       })),
     );
+  }
+
+  async function renderBuilderPopularSets() {
+    if (!popularSetsContainer || !popularSetsFormatSelect) {
+      return;
+    }
+
+    const pokemon = getSelectedPokemon();
+
+    if (!pokemon) {
+      renderPopularSetsMessage(
+        popularSetsContainer,
+        "Select a Pokémon to see what players run on it.",
+      );
+      return;
+    }
+
+    const format = popularSetsFormatSelect.value;
+
+    // Ignore a response if the selection or format changed while it loaded.
+    state.usageRequestVersion += 1;
+    const requestVersion = state.usageRequestVersion;
+
+    let stats = state.usageStatsCache.get(format);
+
+    if (!stats) {
+      renderPopularSetsMessage(popularSetsContainer, "Loading popular sets...");
+
+      try {
+        stats = await fetchUsageStats(format);
+      } catch (error) {
+        console.error("Popular sets error:", error);
+
+        if (requestVersion === state.usageRequestVersion) {
+          renderPopularSetsMessage(
+            popularSetsContainer,
+            "Popular sets are unavailable right now.",
+          );
+        }
+
+        return;
+      }
+
+      if (requestVersion !== state.usageRequestVersion) {
+        return;
+      }
+    }
+
+    renderPopularSets(popularSetsContainer, {
+      entry: findUsageEntry(stats, pokemon),
+      pokemon,
+      formatName: stats.formatName,
+      itemIsLocked: getRequiredItem(pokemon.name) !== null,
+    });
+  }
+
+  async function fetchUsageStats(format) {
+    const response = await fetch(`/api/usage/${encodeURIComponent(format)}`, {
+      headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Usage stats request failed: ${response.status}`);
+    }
+
+    const stats = await response.json();
+
+    state.usageStatsCache.set(format, stats);
+
+    return stats;
+  }
+
+  // Fills the first empty move slot.
+  function applyPopularMove(pokemon, move) {
+    if (pokemon.moves.includes(move)) {
+      return;
+    }
+
+    const emptyIndex = pokemon.moves.findIndex((slot) => !slot);
+
+    if (emptyIndex === -1) {
+      showToast(
+        `All four move slots are full. Clear one to add ${formatPokemonName(move)}.`,
+        { type: "info", title: "Moves are full" },
+      );
+      return;
+    }
+
+    pokemon.moves[emptyIndex] = move;
+    moveComboboxes[emptyIndex]?.setValue(move);
+  }
+
+  // Sets the nature and EVs; IVs are left as they are.
+  function applyPopularSpread(pokemon, nature, evs) {
+    pokemon.nature = nature;
+    natureSelect.value = nature;
+
+    Object.entries(evs).forEach(([stat, value]) => {
+      pokemon.evs[USAGE_STAT_TO_BUILDER_STAT[stat]] = value;
+    });
+
+    Object.entries(evInputs).forEach(([statName, input]) => {
+      if (input) {
+        input.value = String(pokemon.evs[statName]);
+      }
+    });
+
+    updateEvTotal();
   }
 
   function updateTeamSummary() {
