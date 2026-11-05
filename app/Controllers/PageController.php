@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\UsageStats;
 
 final class PageController extends Controller
 {
@@ -26,6 +27,14 @@ final class PageController extends Controller
     {
         $this->view('pokedex/index', [
             'pageTitle' => 'Pokédex',
+        ]);
+    }
+
+    public function meta(): void
+    {
+        $this->view('meta/index', [
+            'pageTitle' => 'Meta',
+            'formats' => UsageStats::FORMATS,
         ]);
     }
 }

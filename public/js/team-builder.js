@@ -1597,17 +1597,6 @@ function applyShowdownStats(statObject, valueText) {
     });
 }
 
-function normalizeShowdownName(value) {
-  return String(value)
-    .trim()
-    .toLowerCase()
-    .replace(/♀/g, "-f")
-    .replace(/♂/g, "-m")
-    .replace(/[.'’]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
 function parseShowdownPokemon(block) {
   const lines = block
     .split("\n")

@@ -1,0 +1,309 @@
+/* Meta Page */
+
+.meta-page {
+  padding: 2.5rem 0 4rem;
+  background:
+    radial-gradient(
+      circle at 20% 25%,
+      rgba(40, 105, 223, 0.1),
+      transparent 32%
+    ),
+    var(--app-background);
+}
+
+.meta-header {
+  margin-bottom: 1.75rem;
+}
+
+.meta-header h1 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  line-height: 1.05;
+}
+
+.meta-intro {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Controls */
+
+.meta-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) minmax(0, 20rem);
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1.1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-panel);
+}
+
+.meta-controls .form-group {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.meta-controls label {
+  color: #f8fafc;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.meta-controls input,
+.meta-controls select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--app-border-strong);
+  border-radius: 8px;
+  background-color: var(--app-input);
+  color: #f8fafc;
+  font: inherit;
+}
+
+.meta-controls input:focus,
+.meta-controls select:focus {
+  border-color: var(--app-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(20, 132, 245, 0.16);
+}
+
+.meta-status {
+  margin: 0 0 1rem;
+  color: var(--app-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Layout */
+
+/*
+ * Both panels share one grid row and stretch to its height. The usage list
+ * is taken out of the layout flow (absolutely positioned) so it doesn't
+ * affect that height: the selected Pokémon panel sets it, and the list
+ * fills the same height and scrolls.
+ */
+.meta-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  align-items: stretch;
+  gap: 1.25rem;
+}
+
+.meta-layout[hidden] {
+  display: none;
+}
+
+.meta-panel {
+  min-width: 0;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-panel);
+}
+
+/* Usage ranking */
+
+.meta-usage-panel {
+  position: relative;
+  min-height: 24rem;
+}
+
+.meta-usage-list {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0.5rem;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.meta-usage-item {
+  display: grid;
+  grid-template-columns: 2rem 40px minmax(0, 1fr) minmax(3rem, 6rem) 3.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #f8fafc;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.meta-usage-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.meta-usage-item[aria-pressed="true"] {
+  border-color: var(--app-blue);
+  background: rgba(20, 132, 245, 0.12);
+}
+
+.meta-usage-rank {
+  color: var(--app-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.meta-usage-name {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta-usage-percent,
+.meta-share-percent {
+  color: var(--app-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.meta-usage-bar,
+.meta-share-bar {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.meta-usage-bar span,
+.meta-share-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--app-blue);
+}
+
+.meta-sprite {
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.meta-empty {
+  padding: 1.5rem;
+  color: var(--app-muted);
+  text-align: center;
+}
+
+/* Selected Pokémon */
+
+.meta-detail {
+  padding: 1.25rem;
+}
+
+.meta-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.meta-detail-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.meta-detail-header p {
+  margin: 0.25rem 0 0;
+  color: var(--app-muted);
+}
+
+.meta-share-section {
+  padding-top: 1rem;
+  border-top: 1px solid var(--app-border);
+}
+
+.meta-share-section + .meta-share-section {
+  margin-top: 1rem;
+}
+
+.meta-share-section h3 {
+  margin: 0 0 0.6rem;
+  color: var(--app-blue);
+  font-size: 0.95rem;
+}
+
+.meta-share-list {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.meta-share-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(3rem, 7rem) 3.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.meta-share-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta-share-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--app-blue);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.meta-share-link:hover {
+  text-decoration: underline;
+}
+
+.meta-credit {
+  margin: 1.5rem 0 0;
+  color: var(--app-muted);
+  font-size: 0.85rem;
+}
+
+.meta-credit a {
+  color: var(--app-blue);
+}
+
+@media (max-width: 860px) {
+  .meta-controls,
+  .meta-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Stacked: there's no panel beside the list to match, so give it a
+     scrollable height of its own. */
+  .meta-usage-panel {
+    min-height: 0;
+  }
+
+  .meta-usage-list {
+    position: static;
+    max-height: 50vh;
+  }
+
+  /* Drop the bar on narrow screens so names have room; the percentage
+     already shows the same number. */
+  .meta-usage-item {
+    grid-template-columns: 2rem 40px minmax(0, 1fr) 3.5rem;
+  }
+
+  .meta-usage-bar {
+    display: none;
+  }
+}

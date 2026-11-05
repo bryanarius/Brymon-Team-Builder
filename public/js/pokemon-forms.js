@@ -313,6 +313,18 @@ function formatPokemonDisplayName(name) {
   return `${displayName} (${capitalizeHyphenatedWords(form.variant)})`;
 }
 
+// "Samurott-Hisui" -> "samurott-hisui", "Farfetch’d" -> "farfetchd".
+function normalizeShowdownName(value) {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/♀/g, "-f")
+    .replace(/♂/g, "-m")
+    .replace(/[.'’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 // Normalized Showdown species -> PokéAPI resource name.
 function fromShowdownSpecies(normalizedName) {
   return SHOWDOWN_SPECIES_ALIASES[normalizedName] ?? normalizedName;

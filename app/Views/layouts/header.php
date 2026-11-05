@@ -38,6 +38,7 @@ $documentTitle = str_contains($pageTitle, 'Brymon')
     <link rel="stylesheet" href="/css/defensive-chart.css">
     <link rel="stylesheet" href="/css/team-builder.css">
     <link rel="stylesheet" href="/css/pokedex.css">
+    <link rel="stylesheet" href="/css/meta.css">
     <link rel="stylesheet" href="/css/auth.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="/css/errors.css">
@@ -79,6 +80,8 @@ $documentTitle = str_contains($pageTitle, 'Brymon')
             <?php endif; ?>
 
             <a href="/pokedex">Pokédex</a>
+
+            <a href="/meta">Meta</a>
 
             <a href="/about">About</a>
         </nav>
@@ -249,6 +252,8 @@ $documentTitle = str_contains($pageTitle, 'Brymon')
             <?php endif; ?>
 
             <a href="/pokedex">Pokédex</a>
+
+            <a href="/meta">Meta</a>
 
             <a href="/about">About</a>
         </div>
