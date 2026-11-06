@@ -70,6 +70,8 @@ Brymon combines:
 
 ![Brymon Team Analysis](docs/screenshots/team-analysis2.png)
 
+![Brymon Defensive Coverage Chart](docs/screenshots/defensive-chart.png)
+
 ---
 
 ## Pokédex
