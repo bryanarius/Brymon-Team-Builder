@@ -176,8 +176,8 @@ require dirname(__DIR__) . '/layouts/header.php';
                             <h3>Competitive Battlers</h3>
 
                             <p>
-                                Fine-tune complete sets, analyze team
-                                composition, and export directly to
+                                Fine-tune complete sets, study the meta,
+                                calculate damage, and export directly to
                                 Pokémon Showdown.
                             </p>
                         </div>
@@ -285,8 +285,9 @@ require dirname(__DIR__) . '/layouts/header.php';
                             <h3>Team Analysis</h3>
 
                             <p>
-                                Review shared weaknesses, immunities,
-                                and the team's overall type distribution.
+                                A defensive coverage chart across all 18
+                                types, shared weaknesses, immunities, and
+                                type distribution.
                             </p>
                         </div>
                     </article>
@@ -358,6 +359,72 @@ require dirname(__DIR__) . '/layouts/header.php';
                             </p>
                         </div>
                     </article>
+
+                    <article class="about-feature-item">
+                        <span
+                            class="about-feature-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="m12 3 1.9 5.8L20 10.5l-5 3.6 1.9 5.9L12 16.4 7.1 20l1.9-5.9-5-3.6 6.1-1.7z"></path>
+                            </svg>
+                        </span>
+
+                        <div>
+                            <h3>Forms and Megas</h3>
+
+                            <p>
+                                Use regional forms and Mega Evolutions,
+                                with the right typing and abilities.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="about-feature-item">
+                        <span
+                            class="about-feature-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <path d="m3 17 6-6 4 4 8-8"></path>
+                                <path d="M14 7h7v7"></path>
+                            </svg>
+                        </span>
+
+                        <div>
+                            <h3>Meta Usage Stats</h3>
+
+                            <p>
+                                See what's popular in each Smogon format
+                                and apply common sets in one click.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="about-feature-item">
+                        <span
+                            class="about-feature-icon"
+                            aria-hidden="true"
+                        >
+                            <svg viewBox="0 0 24 24">
+                                <rect x="5" y="2" width="14" height="20" rx="2"></rect>
+                                <path d="M8 6h8"></path>
+                                <path d="M8 11h2"></path>
+                                <path d="M14 11h2"></path>
+                                <path d="M8 15h2"></path>
+                                <path d="M14 15h2"></path>
+                            </svg>
+                        </span>
+
+                        <div>
+                            <h3>Damage Calculator</h3>
+
+                            <p>
+                                Check damage ranges and KO chances, the
+                                same way Pokémon Showdown does.
+                            </p>
+                        </div>
+                    </article>
                 </div>
             </article>
 
@@ -370,6 +437,12 @@ require dirname(__DIR__) . '/layouts/header.php';
                     Brymon uses PokéAPI to retrieve Pokémon species,
                     sprites, types, abilities, moves, items, stats, and
                     related game data.
+                </p>
+
+                <p>
+                    Usage stats come from Smogon, and damage calculations
+                    from @smogon/calc, the engine behind Pokémon
+                    Showdown's calculator.
                 </p>
 
                 <a
@@ -453,6 +526,8 @@ require dirname(__DIR__) . '/layouts/header.php';
                             <ul>
                                 <li>PokéAPI</li>
                                 <li>Pokémon Showdown import/export</li>
+                                <li>Smogon usage stats</li>
+                                <li>@smogon/calc</li>
                             </ul>
                         </div>
 
@@ -462,6 +537,7 @@ require dirname(__DIR__) . '/layouts/header.php';
                             <ul>
                                 <li>PHPUnit</li>
                                 <li>Playwright</li>
+                                <li>Node test runner</li>
                                 <li>Render</li>
                                 <li>PostgreSQL production database</li>
                             </ul>
@@ -473,36 +549,35 @@ require dirname(__DIR__) . '/layouts/header.php';
                     <h2>Current Version</h2>
 
                     <p class="about-version">
-                        Version 1.0
+                        Version 2.1
                     </p>
 
                     <ul class="about-version-list">
-                        <li>Authentication and session security</li>
-                        <li>Full Pokémon team builder</li>
-                        <li>Saved team management</li>
-                        <li>Team analysis</li>
+                        <li>Full Pokémon team builder and team analysis</li>
+                        <li>Regional forms and Mega Evolutions</li>
+                        <li>Defensive coverage chart</li>
+                        <li>Meta usage stats and Popular Sets suggestions</li>
+                        <li>Damage calculator</li>
+                        <li>Pokédex</li>
+                        <li>Public teams, likes, profiles, and following</li>
                         <li>Showdown import and export</li>
-                        <li>Backend validation and CSRF protection</li>
-                        <li>Production error handling</li>
+                        <li>Email verification and password reset</li>
                         <li>
                             Automated unit, integration, and E2E testing
                         </li>
-                        <li>Responsive mobile interface</li>
                     </ul>
 
                     <h3>Future Roadmap</h3>
 
                     <ul>
-                        <li>Password reset</li>
-                        <li>Public team sharing</li>
-                        <li>User profiles</li>
                         <li>
-                            Deeper team analysis and recommendations
+                            Automated testing on every push (CI/CD)
                         </li>
                         <li>
-                            Additional usability and accessibility
-                            improvements
+                            A React and TypeScript team analysis view
                         </li>
+                        <li>A small Laravel-powered API</li>
+                        <li>Uploaded profile pictures</li>
                     </ul>
                 </article>
             </div>

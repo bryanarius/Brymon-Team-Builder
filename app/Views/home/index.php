@@ -23,8 +23,9 @@ require dirname(__DIR__) . '/layouts/header.php';
 
                 <p class="home-hero-description">
                     Assemble a competitive six-Pokémon team, break down its
-                    weaknesses and coverage, explore a full Pokédex, and
-                    share what you build with other trainers.
+                    weaknesses and coverage, see what's popular in the
+                    meta, calculate damage, and share what you build with
+                    other trainers.
                 </p>
 
                 <div class="home-hero-actions">
@@ -89,9 +90,9 @@ require dirname(__DIR__) . '/layouts/header.php';
                         <h3>Team Builder</h3>
 
                         <p>
-                            Search any Pokémon and configure full sets:
-                            ability, held item, four moves, EVs, IVs,
-                            and nature.
+                            Search any Pokémon and configure full sets,
+                            with one-click Popular Sets suggestions from
+                            competitive usage data.
                         </p>
                     </div>
                 </article>
@@ -113,9 +114,9 @@ require dirname(__DIR__) . '/layouts/header.php';
                         <h3>Team Analysis</h3>
 
                         <p>
-                            Shared weaknesses with resistance suggestions,
-                            full type-coverage, and offensive and defensive
-                            role balance.
+                            A defensive coverage chart across all 18
+                            types, shared weaknesses with resistance
+                            suggestions, type coverage, and role balance.
                         </p>
                     </div>
                 </article>
@@ -215,6 +216,79 @@ require dirname(__DIR__) . '/layouts/header.php';
                             Follow other trainers, get their new teams in
                             your feed, and customize your profile with a
                             display name, bio, and Pokémon avatar.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="home-feature-card">
+                    <span
+                        class="home-feature-icon"
+                        aria-hidden="true"
+                    >
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="m12 3 1.9 5.8L20 10.5l-5 3.6 1.9 5.9L12 16.4 7.1 20l1.9-5.9-5-3.6 6.1-1.7z"
+                            />
+                        </svg>
+                    </span>
+
+                    <div>
+                        <h3>Regional Forms &amp; Megas</h3>
+
+                        <p>
+                            Build with Alolan, Galarian, Hisuian, and
+                            Paldean forms, plus every Mega Evolution with its
+                            Mega Stone equipped automatically.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="home-feature-card">
+                    <span
+                        class="home-feature-icon"
+                        aria-hidden="true"
+                    >
+                        <svg viewBox="0 0 24 24">
+                            <path d="m3 17 6-6 4 4 8-8" />
+                            <path d="M14 7h7v7" />
+                        </svg>
+                    </span>
+
+                    <div>
+                        <h3>Meta Usage Stats</h3>
+
+                        <p>
+                            See the most-used Pokémon in each Smogon format
+                            and the moves, items, and EV spreads players
+                            run on them.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="home-feature-card">
+                    <span
+                        class="home-feature-icon"
+                        aria-hidden="true"
+                    >
+                        <svg viewBox="0 0 24 24">
+                            <rect x="5" y="2" width="14" height="20" rx="2" />
+                            <path d="M8 6h8" />
+                            <path d="M8 11h2" />
+                            <path d="M14 11h2" />
+                            <path d="M8 15h2" />
+                            <path d="M14 15h2" />
+                            <path d="M8 19h2" />
+                            <path d="M14 19h2" />
+                        </svg>
+                    </span>
+
+                    <div>
+                        <h3>Damage Calculator</h3>
+
+                        <p>
+                            Check damage ranges and KO chances with the
+                            same engine as Pokémon Showdown, using
+                            Pokémon straight from your saved teams.
                         </p>
                     </div>
                 </article>
@@ -339,12 +413,13 @@ require dirname(__DIR__) . '/layouts/header.php';
                 ></span>
 
                 <strong>
-                    Version 2
+                    Version 2.1
                 </strong>
 
                 <span>
-                    Brymon now ships with a full Pokédex and a social layer
-                    for sharing and discovering teams.
+                    New from player feedback: regional forms, Mega
+                    Evolutions, a defensive coverage chart, meta usage
+                    stats, and a damage calculator.
                 </span>
             </div>
 
@@ -402,11 +477,37 @@ require dirname(__DIR__) . '/layouts/header.php';
                         Complete
                     </span>
 
+                    <h3>Regional Forms &amp; Megas</h3>
+
+                    <p>
+                        Regional forms and Mega Evolutions in the builder,
+                        analysis, and Showdown import and export.
+                    </p>
+                </article>
+
+                <article class="status-card">
+                    <span class="status-label status-complete">
+                        Complete
+                    </span>
+
+                    <h3>Competitive Tools</h3>
+
+                    <p>
+                        Smogon usage stats, Popular Sets suggestions, and
+                        a Showdown-accurate damage calculator.
+                    </p>
+                </article>
+
+                <article class="status-card">
+                    <span class="status-label status-complete">
+                        Complete
+                    </span>
+
                     <h3>Production Ready</h3>
 
                     <p>
                         CSRF protection, server-side validation, email
-                        verification, and 50+ automated tests.
+                        verification, and 100+ automated tests.
                     </p>
                 </article>
             </div>

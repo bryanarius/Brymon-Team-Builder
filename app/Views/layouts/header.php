@@ -22,7 +22,7 @@ $documentTitle = str_contains($pageTitle, 'Brymon')
 
     <meta
         name="description"
-        content="Brymon is a Pokémon team-building application built with custom PHP MVC architecture."
+        content="Brymon is a Pokémon team builder with team analysis, regional forms and Mega Evolutions, meta usage stats, and a damage calculator."
     >
 
     <title><?= htmlspecialchars($documentTitle, ENT_QUOTES, 'UTF-8') ?></title>

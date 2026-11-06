@@ -2,9 +2,9 @@
 
 A full-stack Pokémon team builder built from scratch using a custom **PHP MVC architecture**, **PostgreSQL**, **Vanilla JavaScript**, and the **PokéAPI**.
 
-> ✅ **Status:** Version 1.0 live at [brymonteambuilder.com](https://brymonteambuilder.com) — Version 2 in active development
+> ✅ **Status:** Version 2.1 live at [brymonteambuilder.com](https://brymonteambuilder.com), adding regional forms, Mega Evolutions, a defensive coverage chart, meta usage stats, and a damage calculator
 >
-> 🚧 **Up next:** a player-feedback sprint adding regional forms, Mega Evolutions, a defensive coverage chart, meta usage stats, and a damage calculator — see the [roadmap](#player-feedback-sprint--in-progress).
+> 🚧 **Up next:** Version 3, incremental modernization with CI/CD, React + TypeScript, and a small Laravel API. See the [roadmap](#version-3--incremental-modernization).
 
 ---
 
@@ -28,6 +28,10 @@ Brymon combines:
 - Interactive JavaScript state management
 - PokéAPI integration (REST and GraphQL)
 - Pokémon Showdown import/export
+- Regional forms and Mega Evolutions
+- A defensive coverage chart across all 18 types
+- Competitive usage stats from Smogon, with Popular Sets suggestions
+- A damage calculator powered by Pokémon Showdown's engine
 - A browsable Pokédex reference
 - Public team sharing, likes, and following
 - Trainer profiles and a personalized dashboard feed
@@ -73,6 +77,18 @@ Brymon combines:
 ![Brymon Pokédex](docs/screenshots/pokedex.png)
 
 ![Brymon Pokédex detail panel](docs/screenshots/pokedex-detail.png)
+
+---
+
+## Meta Usage Stats
+
+![Brymon Meta Usage Stats](docs/screenshots/meta.png)
+
+---
+
+## Damage Calculator
+
+![Brymon Damage Calculator](docs/screenshots/damage-calc.png)
 
 ---
 
@@ -158,6 +174,15 @@ Brymon combines:
 - Per-Pokémon breakdown: moves, items, abilities, EV spreads, Tera types, and teammates
 - Search, and shareable URLs (`?format=gen9ou&pokemon=Kingambit`)
 - Data from Smogon via `pkmn.github.io`, trimmed and cached server-side for a day (`/api/usage/{format}`), with stale data served if the source is down
+
+## Damage Calculator
+
+- `/calc` page powered by `@smogon/calc`, the same engine as Pokémon Showdown's calculator, so results match Showdown's
+- Attacker and defender: Pokémon (including regional forms and Megas), level, ability, item, nature, Tera type, status, EVs, IVs, and stat boosts
+- Each move's damage range as a percentage of the defender's HP, KO chance, and Showdown's standard description line
+- Battle conditions: singles / doubles, weather, terrain, Reflect, Light Screen, Aurora Veil, and critical hits
+- Load any Pokémon from your saved teams into either side, swap attacker and defender, or open a Pokémon straight from its saved team page
+- The ~500 KB library is vendored in `public/vendor/smogon-calc` and only loaded on this page
 
 ## Team Management
 
@@ -272,6 +297,7 @@ Playwright tests exercise real browser workflows, including:
 - Defensive coverage chart in the builder and saved-team analysis
 - Meta page rankings, search, and shareable links
 - Applying Popular Sets suggestions in the builder
+- Damage calculator results, immunities, status and screens, swapping sides, and loading saved Pokémon
 
 Usage stats are served from a fixed fixture in the E2E tests, so they don't
 break when Smogon's monthly rankings change.
@@ -281,20 +307,20 @@ break when Smogon's monthly rankings change.
 ```text
 PHPUnit
 
-73 tests
-138 assertions
+78 tests
+152 assertions
 100% passing
 
 
 Playwright
 
-7 end-to-end tests
+9 end-to-end tests
 100% passing
 
 
 Node (JS unit tests)
 
-6 tests
+18 tests
 100% passing
 ```
 
@@ -464,7 +490,8 @@ This process allowed Brymon to evolve from an initial product concept into a tes
 | Database Access    | PDO                             |
 | External API       | PokéAPI (REST + GraphQL)        |
 | Email              | Resend                          |
-| Testing            | PHPUnit, Playwright             |
+| Damage Calculator  | @smogon/calc (vendored)         |
+| Testing            | PHPUnit, Playwright, Node test runner |
 | Package Management | Composer, npm                   |
 | Deployment         | Docker, Render                  |
 | Version Control    | Git & GitHub                    |
@@ -719,7 +746,7 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
 
 ---
 
-## Player Feedback Sprint — In Progress
+## ✅ Version 2.1 — Player Feedback Sprint
 
 Five features requested by players, built in this order. Each one ships with
 tests and is integrated without breaking existing saved teams.
@@ -739,10 +766,10 @@ tests and is integrated without breaking existing saved teams.
    (most-used Pokémon per format, common moves, items, abilities, and EV
    spreads) via a CORS-friendly source such as `pkmn.github.io`, with
    caching and format selection.
-5. [ ] **Damage calculator** — choose an attacker, defender, move, and stat
+5. [x] **Damage calculator** — choose an attacker, defender, move, and stat
    spreads to see damage ranges and KO chances, in the spirit of the
-   Pokémon Showdown calculator. Existing calculation libraries will be
-   evaluated before implementing battle mechanics from scratch.
+   Pokémon Showdown calculator. Built on `@smogon/calc`, the library behind
+   Showdown's own calculator, rather than reimplementing battle mechanics.
 
 ---
 
