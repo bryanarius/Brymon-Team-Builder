@@ -66,6 +66,71 @@ final class Team
         return $teams;
     }
 
+    /**
+     * Every team the user owns, most recently updated first, with each
+     * Pokémon's full set. Used by the damage calculator to load saved
+     * Pokémon. Teams without Pokémon are left out.
+     *
+     * @return list<array{id: int, name: string, pokemon: list<array<string, mixed>>}>
+     */
+    public function findAllWithSetsByUserId(int $userId): array
+    {
+        $statement = $this->database->prepare(
+            '
+            SELECT
+                teams.id AS team_id,
+                teams.name AS team_name,
+                team_pokemon.pokemon_name,
+                team_pokemon.slot_number,
+                team_pokemon.nickname,
+                team_pokemon.ability,
+                team_pokemon.item,
+                team_pokemon.nature,
+                team_pokemon.move_1,
+                team_pokemon.move_2,
+                team_pokemon.move_3,
+                team_pokemon.move_4,
+                team_pokemon.hp_ev,
+                team_pokemon.attack_ev,
+                team_pokemon.defense_ev,
+                team_pokemon.special_attack_ev,
+                team_pokemon.special_defense_ev,
+                team_pokemon.speed_ev,
+                team_pokemon.hp_iv,
+                team_pokemon.attack_iv,
+                team_pokemon.defense_iv,
+                team_pokemon.special_attack_iv,
+                team_pokemon.special_defense_iv,
+                team_pokemon.speed_iv
+            FROM teams
+            INNER JOIN team_pokemon
+                ON team_pokemon.team_id = teams.id
+            WHERE teams.user_id = :user_id
+            ORDER BY teams.updated_at DESC, teams.id, team_pokemon.slot_number
+            '
+        );
+
+        $statement->execute([
+            'user_id' => $userId,
+        ]);
+
+        $teams = [];
+
+        foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $teamId = (int) $row['team_id'];
+
+            $teams[$teamId] ??= [
+                'id' => $teamId,
+                'name' => (string) $row['team_name'],
+                'pokemon' => [],
+            ];
+
+            $teams[$teamId]['pokemon'][] = $row;
+        }
+
+        return array_values($teams);
+    }
+
     public function findPublicByUserId(int $userId): array
     {
         $statement = $this->database->prepare(

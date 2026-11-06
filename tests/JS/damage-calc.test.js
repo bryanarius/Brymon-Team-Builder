@@ -25,7 +25,7 @@ function loadDamageCalc() {
   });
 
   return vm.runInContext(
-    "({ calc, getCalcGeneration, createCalcPokemon, calculateDamage, toShowdownSpecies, fromShowdownSpecies })",
+    "({ calc, getCalcGeneration, createCalcPokemon, calculateDamage, toCalcSet, toShowdownSpecies, fromShowdownSpecies })",
     context,
   );
 }
@@ -35,6 +35,7 @@ const {
   getCalcGeneration,
   createCalcPokemon,
   calculateDamage,
+  toCalcSet,
   toShowdownSpecies,
   fromShowdownSpecies,
 } = loadDamageCalc();
@@ -209,6 +210,27 @@ test("Mega Meowstic uses Showdown's M / F names", () => {
   assert.equal(toShowdownSpecies("meowstic-male-mega"), "Meowstic-M-Mega");
   assert.equal(toShowdownSpecies("meowstic-female-mega"), "Meowstic-F-Mega");
   assert.equal(fromShowdownSpecies("meowstic-m-mega"), "meowstic-male-mega");
+});
+
+test("saved sets convert to the library's names", () => {
+  const set = toCalcSet(gen, {
+    name: "samurott-hisui",
+    ability: "sharpness",
+    item: "choice-band",
+    nature: "adamant",
+    moves: ["ceaseless-edge", "", "not-a-move", "king-s-shield"],
+    evs: { attack: 252 },
+  });
+
+  assert.equal(set.name, "Samurott-Hisui");
+  assert.equal(set.ability, "Sharpness");
+  assert.equal(set.item, "Choice Band");
+  assert.equal(set.nature, "Adamant");
+  assert.deepEqual(
+    [...set.moves],
+    ["Ceaseless Edge", "", "", "King's Shield"],
+  );
+  assert.equal(set.evs.attack, 252);
 });
 
 test("unknown Pokémon throw a clear error", () => {

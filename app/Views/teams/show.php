@@ -300,6 +300,16 @@ $teamPokemonData = array_map(
                                 'UTF-8'
                             ) ?>
                         </p>
+
+                        <?php // /calc can only load the viewer's own teams. ?>
+                        <?php if ($isOwner): ?>
+                            <a
+                                class="team-detail-calc-link"
+                                href="/calc?team=<?= (int) $team['id'] ?>&amp;slot=<?= (int) $pokemon['slot_number'] ?>"
+                            >
+                                Damage calc →
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </article>
             <?php endforeach; ?>

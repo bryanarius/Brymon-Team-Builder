@@ -94,6 +94,60 @@ final class TeamOwnershipTest extends TestCase
         $this->assertNotNull($team);
     }
 
+    public function testTeamsWithSetsOnlyIncludeTheUsersOwnTeams(): void
+    {
+        $teamModel = new Team();
+
+        $setsTeamId = $teamModel->createWithPokemon(
+            $this->userAId,
+            'User A Sets',
+            null,
+            [
+                [
+                    'pokemon_api_id' => 984,
+                    'pokemon_name' => 'great-tusk',
+                    'slot_number' => 1,
+                    'nickname' => 'Tusky',
+                    'ability' => 'protosynthesis',
+                    'item' => 'booster-energy',
+                    'nature' => 'jolly',
+                    'move_1' => 'headlong-rush',
+                    'attack_ev' => 252,
+                    'speed_ev' => 252,
+                ],
+            ]
+        );
+
+        $teamModel->createWithPokemon(
+            $this->userBId,
+            'User B Sets',
+            null,
+            [
+                [
+                    'pokemon_api_id' => 983,
+                    'pokemon_name' => 'kingambit',
+                    'slot_number' => 1,
+                ],
+            ]
+        );
+
+        $teams = $teamModel->findAllWithSetsByUserId($this->userAId);
+
+        // User A's empty team from setUp() is left out, and User B's is
+        // never included.
+        $this->assertCount(1, $teams);
+        $this->assertSame($setsTeamId, $teams[0]['id']);
+        $this->assertSame('User A Sets', $teams[0]['name']);
+
+        $pokemon = $teams[0]['pokemon'][0];
+
+        $this->assertSame('great-tusk', $pokemon['pokemon_name']);
+        $this->assertSame('Tusky', $pokemon['nickname']);
+        $this->assertSame('booster-energy', $pokemon['item']);
+        $this->assertSame('headlong-rush', $pokemon['move_1']);
+        $this->assertSame(252, (int) $pokemon['attack_ev']);
+    }
+
     private function createUser(
         string $username,
         string $email

@@ -103,6 +103,24 @@ function createCalcPokemon(gen, set) {
 }
 
 /*
+ * A saved or builder set with every name swapped for the library's own
+ * ("choice-band" -> "Choice Band"), for showing in the calculator's inputs.
+ * Names the library doesn't know become "".
+ */
+function toCalcSet(gen, set) {
+  return {
+    ...set,
+    name: findCalcSpecies(gen, set.name)?.name ?? "",
+    ability: findCalcName(gen.abilities, set.ability) ?? "",
+    item: findCalcName(gen.items, set.item) ?? "",
+    nature: findCalcName(gen.natures, set.nature) ?? "",
+    moves: (set.moves ?? []).map(
+      (move) => findCalcName(gen.moves, move) ?? "",
+    ),
+  };
+}
+
+/*
  * One result per move: the damage range in HP and as a percent of the
  * defender's max HP, plus the library's KO chance and description.
  * Status moves and immunities come back with zero damage and no KO text.

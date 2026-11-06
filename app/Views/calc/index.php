@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 $pageTitle = $pageTitle ?? 'Damage Calculator';
+$savedTeams = $savedTeams ?? null;
 
 $sides = [
     'attacker' => 'Attacker',
@@ -57,7 +58,17 @@ require dirname(__DIR__) . '/layouts/header.php';
             class="calc-panel calc-results"
             aria-labelledby="calc-results-heading"
         >
-            <h2 id="calc-results-heading">Results</h2>
+            <header class="calc-results-header">
+                <h2 id="calc-results-heading">Results</h2>
+
+                <button
+                    type="button"
+                    class="calc-swap-button"
+                    id="calc-swap"
+                >
+                    ⇄ Swap attacker and defender
+                </button>
+            </header>
 
             <div id="calc-results" aria-live="polite">
                 <p class="calc-message">Loading the calculator...</p>
@@ -80,6 +91,33 @@ require dirname(__DIR__) . '/layouts/header.php';
                             id="calc-<?= $side ?>-types"
                         ></div>
                     </header>
+
+                    <?php if ($savedTeams === null): ?>
+                        <p class="calc-saved-hint">
+                            <a href="/login">Sign in</a> to load Pokémon
+                            from your saved teams.
+                        </p>
+                    <?php elseif ($savedTeams === []): ?>
+                        <p class="calc-saved-hint">
+                            Save a team in the
+                            <a href="/teambuilder">Team Builder</a>
+                            to load its Pokémon here.
+                        </p>
+                    <?php else: ?>
+                        <div class="form-group calc-saved">
+                            <label for="calc-<?= $side ?>-saved">
+                                Load a saved Pokémon
+                            </label>
+
+                            <?php // Options are filled from the saved teams JSON below. ?>
+                            <select
+                                id="calc-<?= $side ?>-saved"
+                                data-role="saved"
+                            >
+                                <option value="">Choose from your teams</option>
+                            </select>
+                        </div>
+                    <?php endif; ?>
 
                     <div class="calc-fields">
                         <div class="form-group">
@@ -353,6 +391,20 @@ require dirname(__DIR__) . '/layouts/header.php';
         </p>
 
     </div>
+
+    <?php if (!empty($savedTeams)): ?>
+        <?php
+        /*
+         * Data, not code: the browser never runs a JSON script block.
+         * JSON_HEX_TAG encodes < and > so text like a nickname can't
+         * close the tag early.
+         */
+        ?>
+        <script type="application/json" id="calc-saved-teams"><?= json_encode(
+            $savedTeams,
+            JSON_THROW_ON_ERROR | JSON_HEX_TAG | JSON_HEX_AMP
+        ) ?></script>
+    <?php endif; ?>
 </main>
 
 <?php require dirname(__DIR__) . '/layouts/footer.php'; ?>

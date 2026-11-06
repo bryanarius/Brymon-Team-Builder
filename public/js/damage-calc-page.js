@@ -38,6 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
     .filter((move) => !move.isMax && !move.isZ && move.name !== "(No Move)")
     .map((move) => move.name);
 
+  // The signed-in user's teams, embedded by the page as JSON.
+  const savedTeams = readSavedTeams();
+
   const speciesNames = [...gen.species].map((species) => species.name);
   const abilityNames = [...gen.abilities].map((ability) => ability.name);
   const itemNames = [...gen.items].map((item) => item.name);
@@ -57,15 +60,27 @@ document.addEventListener("DOMContentLoaded", () => {
     criticalHit: document.querySelector("#calc-critical-hit"),
   };
 
-  // A sample matchup, so the page explains itself before anything is picked.
-  writeSide("attacker", {
-    name: "Great Tusk",
-    ability: "Protosynthesis",
-    item: "Booster Energy",
-    nature: "Jolly",
-    evs: { attack: 252, defense: 4, speed: 252 },
-    moves: ["Headlong Rush", "Close Combat", "Ice Spinner", "Knock Off"],
-  });
+  /*
+   * A sample matchup, so the page explains itself before anything is
+   * picked. A link from a saved team (?team=12&slot=3) loads that Pokémon
+   * as the attacker instead.
+   */
+  const params = new URLSearchParams(window.location.search);
+  const linkedPokemon = findSavedPokemon(params.get("team"), params.get("slot"));
+
+  writeSide(
+    "attacker",
+    linkedPokemon
+      ? toCalcSet(gen, linkedPokemon)
+      : {
+          name: "Great Tusk",
+          ability: "Protosynthesis",
+          item: "Booster Energy",
+          nature: "Jolly",
+          evs: { attack: 252, defense: 4, speed: 252 },
+          moves: ["Headlong Rush", "Close Combat", "Ice Spinner", "Knock Off"],
+        },
+  );
 
   writeSide("defender", {
     name: "Kingambit",
@@ -88,7 +103,70 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  document.querySelector("#calc-swap").addEventListener("click", () => {
+    const attacker = readSide("attacker");
+    const defender = readSide("defender");
+
+    writeSide("attacker", defender);
+    writeSide("defender", attacker);
+
+    render();
+  });
+
   render();
+
+  /*
+  |--------------------------------------------------------------------------
+  | Saved Teams
+  |--------------------------------------------------------------------------
+  */
+
+  function readSavedTeams() {
+    const element = document.querySelector("#calc-saved-teams");
+
+    if (!element) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(element.textContent);
+    } catch (error) {
+      console.error("Couldn't read saved teams:", error);
+      return [];
+    }
+  }
+
+  function findSavedPokemon(teamId, slot) {
+    return (
+      savedTeams
+        .find((team) => String(team.id) === String(teamId))
+        ?.pokemon.find((pokemon) => String(pokemon.slot) === String(slot)) ??
+      null
+    );
+  }
+
+  // One group per team: "Tusky (Great Tusk)", or just "Great Tusk".
+  function fillSavedSelect(select) {
+    savedTeams.forEach((team) => {
+      const group = document.createElement("optgroup");
+      group.label = team.name;
+
+      team.pokemon.forEach((pokemon) => {
+        const displayName = formatPokemonDisplayName(pokemon.name);
+
+        group.appendChild(
+          new Option(
+            pokemon.nickname
+              ? `${pokemon.nickname} (${displayName})`
+              : displayName,
+            `${team.id}:${pokemon.slot}`,
+          ),
+        );
+      });
+
+      select.appendChild(group);
+    });
+  }
 
   /*
   |--------------------------------------------------------------------------
@@ -125,6 +203,25 @@ document.addEventListener("DOMContentLoaded", () => {
     item.setOptions(itemNames);
     moves.forEach((move) => move.setOptions(moveNames));
 
+    const saved = root.querySelector('[data-role="saved"]');
+
+    if (saved) {
+      fillSavedSelect(saved);
+
+      saved.addEventListener("change", () => {
+        const [teamId, slot] = saved.value.split(":");
+        const pokemon = findSavedPokemon(teamId, slot);
+
+        if (pokemon) {
+          writeSide(side, toCalcSet(gen, pokemon));
+        }
+
+        // Back to the prompt, so the same Pokémon can be loaded again
+        // after editing it.
+        saved.value = "";
+      });
+    }
+
     const nature = field("nature");
 
     [...gen.natures]
@@ -146,6 +243,9 @@ document.addEventListener("DOMContentLoaded", () => {
       types: field("types"),
       statRow: (stat) => root.querySelector(`tr[data-stat="${stat}"]`),
       evTotal: root.querySelector('[data-role="ev-total"]'),
+      // The defender has no move inputs, but keeps its moves here so a
+      // swap can bring them over to the attacker.
+      storedMoves: [],
     };
   }
 
@@ -186,7 +286,10 @@ document.addEventListener("DOMContentLoaded", () => {
       evs: readStats("ev", 0, 252, 0),
       ivs: readStats("iv", 0, 31, 31),
       boosts: readStats("boost", -6, 6, 0),
-      moves: controls.moves.map((move) => move.getValue()),
+      moves:
+        controls.moves.length > 0
+          ? controls.moves.map((move) => move.getValue())
+          : controls.storedMoves,
     };
   }
 
@@ -222,6 +325,8 @@ document.addEventListener("DOMContentLoaded", () => {
     controls.moves.forEach((move, index) => {
       move.setValue(set.moves?.[index] ?? "");
     });
+
+    controls.storedMoves = [...(set.moves ?? [])];
   }
 
   /*

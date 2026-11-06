@@ -45,6 +45,22 @@ final class Auth
             : null;
     }
 
+    /**
+     * The signed-in user's id on a page guests can also see, or null when
+     * signed out or the session has timed out. Unlike requireLogin(), it
+     * doesn't redirect, so the page can still render for a guest.
+     */
+    public static function activeId(): ?int
+    {
+        if (!self::check() || self::sessionHasExpired()) {
+            return null;
+        }
+
+        self::updateLastActivity();
+
+        return self::id();
+    }
+
     public static function requireLogin(): void
     {
         if (!self::check()) {

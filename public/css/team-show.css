@@ -327,6 +327,19 @@
   line-height: 1.45;
 }
 
+.team-detail-calc-link {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  color: var(--app-blue);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.team-detail-calc-link:hover {
+  text-decoration: underline;
+}
+
 .team-analysis {
   margin-top: 3rem;
 }
