@@ -230,6 +230,15 @@ final class TeamController extends Controller
             return;
         }
 
+        /*
+         * Owners get their own team page instead, with Edit, Delete, and
+         * the visibility toggle. That page checks ownership again in SQL.
+         */
+        if (Auth::activeId() === (int) $team['user_id']) {
+            header('Location: /teams/' . (int) $teamId);
+            exit;
+        }
+
         $viewerLoggedIn = Auth::check();
         $likeModel = new TeamLike();
 
