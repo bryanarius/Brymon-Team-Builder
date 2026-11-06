@@ -178,10 +178,16 @@
   color: #f8fafc;
 }
 
-.avatar-picker .combobox-empty {
+.avatar-picker .combobox-empty,
+.avatar-picker .combobox-more {
   padding: 0.5rem 0.6rem;
   color: var(--app-muted);
   font-size: 0.88rem;
+}
+
+.avatar-picker .combobox-more {
+  border-top: 1px solid var(--app-border);
+  font-size: 0.8rem;
 }
 
 .avatar-remove {

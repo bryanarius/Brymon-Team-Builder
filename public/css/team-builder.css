@@ -174,10 +174,19 @@
 }
 
 .team-builder-page .combobox-empty,
-.calc-page .combobox-empty {
+.calc-page .combobox-empty,
+.team-builder-page .combobox-more,
+.calc-page .combobox-more {
   padding: 0.55rem 0.6rem;
   color: var(--app-muted);
   font-size: 0.88rem;
+}
+
+/* "Showing 60 of 942" note under a cut-off list. */
+.team-builder-page .combobox-more,
+.calc-page .combobox-more {
+  border-top: 1px solid var(--app-border);
+  font-size: 0.8rem;
 }
 
 /* Search */

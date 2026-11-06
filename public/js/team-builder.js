@@ -129,6 +129,9 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelector(`#pokemon-move-${moveNumber}`)?.closest(".combobox"),
       {
         formatLabel: formatPokemonName,
+        // Only the Pokémon's own learnset (Mew's is the largest, ~375), so
+        // list every move instead of cutting it off alphabetically.
+        maxResults: Infinity,
         onChange: (value) => {
           const pokemon = getSelectedPokemon();
 
@@ -1519,6 +1522,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     teamBuilderForm.setAttribute("aria-busy", "true");
 
+    // Declared outside the try so the finally block can read it. Only a
+    // successful save leaves the button disabled, while the page redirects.
+    let requestSucceeded = false;
+
     try {
       // console.log("Submitting payload:", payload);
       const requestUrl =
@@ -1539,11 +1546,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // console.log("Raw response:", responseText);
 
       let result;
-      let requestSucceeded = false;
 
       try {
         result = JSON.parse(responseText);
-        requestSucceeded = true;
       } catch {
         throw new Error(
           "The server did not return valid JSON. Check the console response.",
@@ -1561,6 +1566,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const successMessage = isEditing
         ? "Team updated successfully."
         : "Team saved successfully.";
+
+      requestSucceeded = true;
 
       window.location.href = `/teams?success=${encodeURIComponent(successMessage)}`;
     } catch (error) {

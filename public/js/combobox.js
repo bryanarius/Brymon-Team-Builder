@@ -42,6 +42,8 @@ function createCombobox(root, { onChange, formatLabel, maxResults = 60 } = {}) {
 
   let options = [];
   let matches = [];
+  // How many matches maxResults left out of the list.
+  let hiddenMatchCount = 0;
   let activeIndex = -1;
   let committedValue = "";
   let isOpen = false;
@@ -91,17 +93,22 @@ function createCombobox(root, { onChange, formatLabel, maxResults = 60 } = {}) {
   }
 
   function computeMatches(query) {
-    const trimmed = query.trim().toLowerCase();
+    const tokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
 
-    if (trimmed === "") {
-      return options.slice(0, maxResults);
-    }
+    const allMatches = options.filter((option) =>
+      tokens.every((token) => option.search.includes(token)),
+    );
 
-    const tokens = trimmed.split(/\s+/);
+    hiddenMatchCount = Math.max(allMatches.length - maxResults, 0);
 
-    return options
-      .filter((option) => tokens.every((token) => option.search.includes(token)))
-      .slice(0, maxResults);
+    return allMatches.slice(0, maxResults);
+  }
+
+  // A box showing its chosen value lists every option, not just that one.
+  function currentQuery() {
+    return committedValue && input.value === labelFor(committedValue)
+      ? ""
+      : input.value;
   }
 
   function renderList() {
@@ -138,6 +145,17 @@ function createCombobox(root, { onChange, formatLabel, maxResults = 60 } = {}) {
 
       fragment.appendChild(item);
     });
+
+    // Say when the list is cut short, so it doesn't look like everything.
+    if (hiddenMatchCount > 0) {
+      const more = document.createElement("li");
+      more.className = "combobox-more";
+      more.textContent =
+        `Showing ${matches.length} of ${matches.length + hiddenMatchCount}. ` +
+        "Type to narrow the list.";
+
+      fragment.appendChild(more);
+    }
 
     listbox.appendChild(fragment);
   }
@@ -227,7 +245,7 @@ function createCombobox(root, { onChange, formatLabel, maxResults = 60 } = {}) {
   });
 
   input.addEventListener("focus", () => {
-    matches = computeMatches(input.value);
+    matches = computeMatches(currentQuery());
     activeIndex = -1;
     open();
     renderList();
@@ -239,7 +257,7 @@ function createCombobox(root, { onChange, formatLabel, maxResults = 60 } = {}) {
         event.preventDefault();
 
         if (!isOpen) {
-          matches = computeMatches(input.value);
+          matches = computeMatches(currentQuery());
           open();
         }
 
