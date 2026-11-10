@@ -184,7 +184,7 @@ Brymon combines:
 - Each move's damage range as a percentage of the defender's HP, KO chance, and Showdown's standard description line
 - Battle conditions: singles / doubles, weather, terrain, Reflect, Light Screen, Aurora Veil, and critical hits
 - Load any Pokémon from your saved teams into either side, swap attacker and defender, or open a Pokémon straight from its saved team page
-- The ~500 KB library is vendored in `public/vendor/smogon-calc` and only loaded on this page
+- Brymon's adapter around the library is TypeScript (`resources/ts/calc/damage-calc.ts`), bundled by Vite with `@smogon/calc` from npm and only loaded on this page
 
 ## Team Management
 
@@ -309,20 +309,26 @@ break when Smogon's monthly rankings change.
 ```text
 PHPUnit
 
-78 tests
-152 assertions
+84 tests
+164 assertions
 100% passing
 
 
 Playwright
 
-9 end-to-end tests
+11 end-to-end tests
+100% passing
+
+
+Vitest (TypeScript unit tests)
+
+13 tests
 100% passing
 
 
 Node (JS unit tests)
 
-18 tests
+6 tests
 100% passing
 ```
 
@@ -330,6 +336,7 @@ Run the complete automated test suite with:
 
 ```bash
 ./vendor/bin/phpunit
+npm run test:ts
 npm run test:js
 npx playwright test
 ```
@@ -485,6 +492,7 @@ This process allowed Brymon to evolve from an initial product concept into a tes
 | Layer              | Technology                      |
 | ------------------ | ------------------------------- |
 | Frontend           | HTML5, CSS3, Vanilla JavaScript |
+| Frontend (islands) | React, TypeScript, Vite         |
 | Icons              | Font Awesome                    |
 | Backend            | PHP 8                           |
 | Architecture       | Custom MVC                      |
@@ -492,8 +500,8 @@ This process allowed Brymon to evolve from an initial product concept into a tes
 | Database Access    | PDO                             |
 | External API       | PokéAPI (REST + GraphQL)        |
 | Email              | Resend                          |
-| Damage Calculator  | @smogon/calc (vendored)         |
-| Testing            | PHPUnit, Playwright, Node test runner |
+| Damage Calculator  | @smogon/calc                    |
+| Testing            | PHPUnit, Playwright, Vitest, Node test runner |
 | Package Management | Composer, npm                   |
 | Deployment         | Docker, Render                  |
 | Version Control    | Git & GitHub                    |

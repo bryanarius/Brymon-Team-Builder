@@ -3,8 +3,10 @@
 /*
  * The /calc page. Each side (attacker, defender) is read into a plain set
  * object shaped like the team builder's ({ name, ability, item, nature,
- * evs, ivs, boosts, ... }) and handed to damage-calc.js, which does the
- * calculating. Everything recalculates whenever any input changes.
+ * evs, ivs, boosts, ... }) and handed to the TypeScript adapter
+ * (resources/ts/calc/damage-calc.ts, exposed as globals by legacy-bridge.ts),
+ * which does the calculating. Everything recalculates whenever any input
+ * changes.
  */
 document.addEventListener("DOMContentLoaded", () => {
   const page = document.querySelector(".calc-page");

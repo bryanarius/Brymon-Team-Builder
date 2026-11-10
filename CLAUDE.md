@@ -28,6 +28,8 @@ npm run dev         # Vite dev server on :5173; set VITE_DEV_SERVER=http://local
 ```bash
 ./vendor/bin/phpunit              # PHPUnit: Unit + Integration suites (see phpunit.xml)
 ./vendor/bin/phpunit --filter TestName   # run a single test/method
+npm run test:ts                   # Vitest: TypeScript unit tests (tests/TS)
+npm run test:js                   # node:test: classic JS unit tests (tests/JS)
 npx playwright test               # E2E suite (tests/E2E)
 npx playwright test tests/E2E/login.spec.js   # run a single E2E spec
 npx playwright test --headed      # run E2E with a visible browser

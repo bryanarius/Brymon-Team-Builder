@@ -1,4 +1,5 @@
-import { defineConfig } from "vite";
+// vitest/config is Vite's defineConfig plus the `test` options below.
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 /*
@@ -28,6 +29,9 @@ export default defineConfig(({ command }) => ({
     outDir: "public/build",
     emptyOutDir: true,
     manifest: "manifest.json",
+    // @smogon/calc's Pokémon/move data is ~500 KB on its own (~190 KB
+    // gzipped with React). Expected, and only /calc loads it.
+    chunkSizeWarningLimit: 800,
     rollupOptions: {
       input: ["resources/ts/calc/main.tsx"],
     },
@@ -38,5 +42,11 @@ export default defineConfig(({ command }) => ({
     strictPort: true,
     // Pages come from PHP on :8000, so asset URLs must name this server.
     origin: "http://localhost:5173",
+  },
+
+  // `npm run test:ts`. Vitest compiles TypeScript the same way the build does.
+  test: {
+    include: ["tests/TS/**/*.test.ts"],
+    setupFiles: ["tests/TS/setup.ts"],
   },
 }));

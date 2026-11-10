@@ -54,14 +54,9 @@ final class PageController extends Controller
                     [self::class, 'toCalcTeam'],
                     (new Team())->findAllWithSetsByUserId($userId)
                 ),
-            // The calculator library is ~500 KB, so only this page loads it.
-            'pageScripts' => [
-                '/vendor/smogon-calc/data.min.js',
-                '/vendor/smogon-calc/calc.min.js',
-                '/js/damage-calc.js',
-                '/js/damage-calc-page.js',
-            ],
+            'pageScripts' => ['/js/damage-calc-page.js'],
             // React + TypeScript, compiled by Vite (see vite.config.mts).
+            // Bundles @smogon/calc, so only this page loads the library.
             'viteEntries' => ['resources/ts/calc/main.tsx'],
         ]);
     }

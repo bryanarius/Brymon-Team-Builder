@@ -20,5 +20,5 @@
     // Vite compiles; tsc only checks types.
     "noEmit": true
   },
-  "include": ["resources/ts", "vite.config.mts"]
+  "include": ["resources/ts", "tests/TS", "vite.config.mts"]
 }

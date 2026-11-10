@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { CalcCredit } from "./CalcCredit";
+import "./legacy-bridge";
 
 /*
 |--------------------------------------------------------------------------
