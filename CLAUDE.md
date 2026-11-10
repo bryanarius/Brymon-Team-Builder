@@ -18,7 +18,9 @@ php -S localhost:8000 -t public
 
 ```bash
 composer install   # PHP deps
-npm install         # Playwright/E2E deps
+npm install         # Playwright/E2E deps, React, Vite, TypeScript
+npm run build       # type-check + compile resources/ts → public/build (required before /calc renders)
+npm run dev         # Vite dev server on :5173; set VITE_DEV_SERVER=http://localhost:5173 in .env to use it
 ```
 
 ### Tests

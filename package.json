@@ -8,6 +8,9 @@
     "test": "tests"
   },
   "scripts": {
+    "dev": "vite",
+    "build": "npm run typecheck && vite build",
+    "typecheck": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:js": "node --test \"tests/JS/*.test.js\""
   },
@@ -23,6 +26,15 @@
   },
   "homepage": "https://github.com/bryanarius/Brymon-Team-Builder#readme",
   "devDependencies": {
-    "@playwright/test": "^1.62.1"
+    "@playwright/test": "^1.62.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "typescript": "7.0.2",
+    "vite": "8.3.5"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   }
 }

@@ -384,11 +384,14 @@ require dirname(__DIR__) . '/layouts/header.php';
             </div>
         </section>
 
-        <p class="calc-credit">
-            Calculations by
-            <a href="https://github.com/smogon/damage-calc" rel="noopener">@smogon/calc</a>,
-            the calculator behind Pokémon Showdown.
-        </p>
+        <?php // React island (resources/ts/calc). The <p> is the no-JS fallback. ?>
+        <div id="calc-credit-root">
+            <p class="calc-credit">
+                Calculations by
+                <a href="https://github.com/smogon/damage-calc" rel="noopener">@smogon/calc</a>,
+                the calculator behind Pokémon Showdown.
+            </p>
+        </div>
 
     </div>
 

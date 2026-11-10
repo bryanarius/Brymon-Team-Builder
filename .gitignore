@@ -6,3 +6,5 @@
 .phpunit.result.cache
 /test-results/
 /playwright-report/
+# Vite build output (rebuilt by npm run build and in Docker)
+/public/build/

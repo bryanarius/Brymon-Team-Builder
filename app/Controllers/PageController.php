@@ -61,6 +61,8 @@ final class PageController extends Controller
                 '/js/damage-calc.js',
                 '/js/damage-calc-page.js',
             ],
+            // React + TypeScript, compiled by Vite (see vite.config.mts).
+            'viteEntries' => ['resources/ts/calc/main.tsx'],
         ]);
     }
 

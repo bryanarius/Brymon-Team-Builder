@@ -825,11 +825,17 @@ composer install
 
 ---
 
-## 3. Install JavaScript Dependencies
+## 3. Install JavaScript Dependencies And Build The React Islands
 
 ```bash
 npm install
+npm run build
 ```
+
+`npm run build` type-checks and compiles the React + TypeScript code in
+`resources/ts` into `public/build`. Rerun it after changing that code, or
+use `npm run dev` with `VITE_DEV_SERVER=http://localhost:5173` in `.env`
+for instant reloads.
 
 ---
 

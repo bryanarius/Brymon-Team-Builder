@@ -10,6 +10,21 @@ RUN composer install \
     --prefer-dist \
     --optimize-autoloader
 
+# Compile the React + TypeScript islands into public/build.
+# Node is only needed here; the final image stays PHP-only.
+FROM node:22-alpine AS assets
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm ci --no-audit --no-fund
+
+COPY tsconfig.json vite.config.mts ./
+COPY resources ./resources
+
+RUN npm run build
+
 FROM php:8.3-cli
 
 # Install PostgreSQL PDO driver
@@ -22,6 +37,7 @@ WORKDIR /app
 
 COPY . .
 COPY --from=composer /app/vendor ./vendor
+COPY --from=assets /app/public/build ./public/build
 
 EXPOSE 10000
 

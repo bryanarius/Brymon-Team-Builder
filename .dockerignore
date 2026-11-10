@@ -6,6 +6,9 @@
 node_modules
 vendor
 
+# Built inside the image by the assets stage, never copied from a laptop
+public/build
+
 # Docs, design assets, and screenshots (~14MB, not needed at runtime)
 docs
 
@@ -16,8 +19,6 @@ playwright-report
 phpunit.xml
 .phpunit.result.cache
 playwright.config.js
-package.json
-package-lock.json
 
 # Local environment and editor cruft
 .env
