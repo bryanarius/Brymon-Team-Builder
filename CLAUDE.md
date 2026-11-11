@@ -71,9 +71,13 @@ Hand-rolled infrastructure, no framework:
 - Multi-statement writes (`Team::createWithPokemon`, `Team::updateWithPokemon`) wrap inserts/deletes in a PDO transaction with rollback on `Throwable`.
 - Views (`app/Views/`) are plain PHP templates grouped by feature (`teams/`, `auth/`, `home/`, `about/`, `dashboard/`, `errors/`) plus shared `layouts/header.php` / `layouts/footer.php`.
 
+### React islands (`resources/ts/`)
+
+Pages are being moved to React + TypeScript one at a time ("islands"): PHP still renders the page and its header/footer, and React renders into one mount element. Vite compiles `resources/ts` into `public/build` (`npm run build`); a controller opts a page in with `'viteEntries' => ['resources/ts/.../main.tsx']`, and `app/Core/Vite.php` prints the hashed `<script>` tags from `public/build/manifest.json`. Data comes from PHP as embedded JSON (`<script type="application/json">`) or `data-*` attributes. So far: the damage calculator (`resources/ts/calc/`, mount `#calc-root`). Shared components live in `resources/ts/components/`. Islands may still call classic globals from `public/js` (e.g. `pokemon-forms.js`); declare them in `resources/ts/legacy-globals.d.ts`. Unit tests: Vitest in `tests/TS`.
+
 ### Frontend (`public/js/`)
 
-Vanilla JS, no build step or bundler — files are included directly by views. Each file owns one feature area: `team-builder.js` (Pokémon search/filtering, team slot editing, EV/IV inputs, and Pokémon Showdown import/export parsing — the largest and most complex file), `team-analysis.js` (type/weakness analysis), `saved-teams.js`, `team-show.js`, `navigation.js`, `toast.js` (shared toast notifications). Pokémon data (species, stats, types, abilities) is fetched client-side directly from **PokéAPI**; the PHP backend only persists what the user configures.
+Vanilla JS, no build step or bundler — files are included directly by views (everything not yet moved to `resources/ts`). Each file owns one feature area: `team-builder.js` (Pokémon search/filtering, team slot editing, EV/IV inputs, and Pokémon Showdown import/export parsing — the largest and most complex file), `team-analysis.js` (type/weakness analysis), `saved-teams.js`, `team-show.js`, `navigation.js`, `toast.js` (shared toast notifications). Pokémon data (species, stats, types, abilities) is fetched client-side directly from **PokéAPI**; the PHP backend only persists what the user configures.
 
 ### Database
 

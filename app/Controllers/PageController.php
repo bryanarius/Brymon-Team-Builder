@@ -54,15 +54,15 @@ final class PageController extends Controller
                     [self::class, 'toCalcTeam'],
                     (new Team())->findAllWithSetsByUserId($userId)
                 ),
-            'pageScripts' => ['/js/damage-calc-page.js'],
-            // React + TypeScript, compiled by Vite (see vite.config.mts).
+            // The React calculator, compiled by Vite (see vite.config.mts).
             // Bundles @smogon/calc, so only this page loads the library.
             'viteEntries' => ['resources/ts/calc/main.tsx'],
         ]);
     }
 
     /**
-     * A saved team in the shape damage-calc-page.js reads: the team
+     * A saved team in the shape the calculator reads (SavedTeam in
+     * resources/ts/calc/SidePanel.tsx): the team
      * builder's set format, with stats keyed hp / attack / specialAttack...
      *
      * @param array{id: int, name: string, pokemon: list<array<string, mixed>>} $team

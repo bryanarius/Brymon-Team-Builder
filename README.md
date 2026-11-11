@@ -184,7 +184,7 @@ Brymon combines:
 - Each move's damage range as a percentage of the defender's HP, KO chance, and Showdown's standard description line
 - Battle conditions: singles / doubles, weather, terrain, Reflect, Light Screen, Aurora Veil, and critical hits
 - Load any Pokémon from your saved teams into either side, swap attacker and defender, or open a Pokémon straight from its saved team page
-- Brymon's adapter around the library is TypeScript (`resources/ts/calc/damage-calc.ts`), bundled by Vite with `@smogon/calc` from npm and only loaded on this page
+- Built with React + TypeScript (`resources/ts/calc/`) as Brymon's first React island, bundled by Vite with `@smogon/calc` from npm and only loaded on this page
 
 ## Team Management
 
@@ -322,7 +322,7 @@ Playwright
 
 Vitest (TypeScript unit tests)
 
-13 tests
+20 tests
 100% passing
 
 

@@ -7,3 +7,5 @@
 // public/js/pokemon-forms.js
 declare function toShowdownSpecies(name: string): string | null;
 declare function fromShowdownSpecies(normalizedName: string): string;
+declare function normalizeShowdownName(value: string): string;
+declare function formatPokemonDisplayName(name: string): string;
