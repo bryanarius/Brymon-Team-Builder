@@ -3,13 +3,14 @@ import { readFileSync } from "node:fs";
 import { runInThisContext } from "node:vm";
 
 /*
- * The adapter calls toShowdownSpecies() from public/js/pokemon-forms.js,
- * a classic script that the page loads as a global. Run it here the same
- * way, so its functions become globals for the tests too.
+ * Some TypeScript code still calls functions from classic scripts that
+ * pages load as globals: the calculator adapter uses toShowdownSpecies()
+ * from pokemon-forms.js, and team analysis uses getTypeMultiplier() from
+ * type-chart.js. Run those files here the same way, so their functions
+ * become globals for the tests too.
  */
-runInThisContext(
-  readFileSync(
-    new URL("../../public/js/pokemon-forms.js", import.meta.url),
-    "utf8",
-  ),
-);
+["pokemon-forms.js", "type-chart.js"].forEach((file) => {
+  runInThisContext(
+    readFileSync(new URL(`../../public/js/${file}`, import.meta.url), "utf8"),
+  );
+});

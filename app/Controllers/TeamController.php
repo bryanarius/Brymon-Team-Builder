@@ -12,8 +12,11 @@ use App\Models\TeamLike;
 use App\Core\Validator;
 use App\Core\Csrf;
 
-final class TeamController extends Controller 
+final class TeamController extends Controller
 {
+    // The team page's analysis panel, compiled by Vite (see vite.config.mts).
+    private const TEAM_ANALYSIS_ENTRY = 'resources/ts/analysis/main.ts';
+
     public function index(): void 
     {
         Auth::requireLogin();
@@ -201,6 +204,7 @@ final class TeamController extends Controller
             'viewerLoggedIn' => true,
             'likeCount' => $likeModel->countForTeam((int) $teamId),
             'likedByViewer' => $likeModel->isLikedBy($userId, (int) $teamId),
+            'viteEntries' => [self::TEAM_ANALYSIS_ENTRY],
         ]);
     }
 
@@ -253,6 +257,7 @@ final class TeamController extends Controller
                     (int) $_SESSION['user_id'],
                     (int) $teamId
                 ),
+            'viteEntries' => [self::TEAM_ANALYSIS_ENTRY],
         ]);
     }
 

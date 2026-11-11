@@ -206,6 +206,7 @@ Brymon combines:
 - Team role balance analysis
 - Team analysis summary
 - Defensive coverage chart: each member's multiplier against all 18 types, with weak / resist / immune totals
+- The analysis calculations are TypeScript (`resources/ts/analysis/team-analysis.ts`), unit-tested with Vitest
 
 ## Pokémon Showdown Integration
 
@@ -322,7 +323,7 @@ Playwright
 
 Vitest (TypeScript unit tests)
 
-20 tests
+30 tests
 100% passing
 
 

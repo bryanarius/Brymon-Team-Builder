@@ -9,3 +9,10 @@ declare function toShowdownSpecies(name: string): string | null;
 declare function fromShowdownSpecies(normalizedName: string): string;
 declare function normalizeShowdownName(value: string): string;
 declare function formatPokemonDisplayName(name: string): string;
+
+// public/js/type-chart.js
+declare function getTypeMultiplier(
+  attackingType: string,
+  defendingTypes: string[],
+  ability?: string,
+): number;

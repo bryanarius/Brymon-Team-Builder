@@ -1,5 +1,10 @@
 "use strict";
 
+/*
+ * Fetches the team's data from PokéAPI and renders the analysis panel.
+ * The calculations live in resources/ts/analysis/team-analysis.ts, which
+ * the team page loads as window.BrymonTeamAnalysis.
+ */
 document.addEventListener("DOMContentLoaded", () => {
   const statusElement = document.querySelector("#team-analysis-status");
 
@@ -33,175 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const moveCache = new Map();
   const teamPokemon = window.BRYMON_TEAM_POKEMON || [];
 
-  const ATTACKING_TYPES = [
-    "normal",
-    "fire",
-    "water",
-    "electric",
-    "grass",
-    "ice",
-    "fighting",
-    "poison",
-    "ground",
-    "flying",
-    "psychic",
-    "bug",
-    "rock",
-    "ghost",
-    "dragon",
-    "dark",
-    "steel",
-    "fairy",
-  ];
-
-  const NEUTRAL_NATURES = new Set([
-    "hardy",
-    "docile",
-    "serious",
-    "bashful",
-    "quirky",
-  ]);
-
-  const NATURE_MODIFIERS = {
-    adamant: { plus: "attack", minus: "special-attack" },
-    brave: { plus: "attack", minus: "speed" },
-    lonely: { plus: "attack", minus: "defense" },
-    naughty: { plus: "attack", minus: "special-defense" },
-    bold: { plus: "defense", minus: "attack" },
-    relaxed: { plus: "defense", minus: "speed" },
-    impish: { plus: "defense", minus: "special-attack" },
-    lax: { plus: "defense", minus: "special-defense" },
-    modest: { plus: "special-attack", minus: "attack" },
-    mild: { plus: "special-attack", minus: "defense" },
-    quiet: { plus: "special-attack", minus: "speed" },
-    rash: { plus: "special-attack", minus: "special-defense" },
-    calm: { plus: "special-defense", minus: "attack" },
-    gentle: { plus: "special-defense", minus: "defense" },
-    sassy: { plus: "special-defense", minus: "speed" },
-    careful: { plus: "special-defense", minus: "special-attack" },
-    timid: { plus: "speed", minus: "attack" },
-    hasty: { plus: "speed", minus: "defense" },
-    jolly: { plus: "speed", minus: "special-attack" },
-    naive: { plus: "speed", minus: "special-defense" },
-  };
-
-  const UTILITY_MOVES = {
-    "hazard-setter": new Set([
-      "stealth-rock",
-      "spikes",
-      "toxic-spikes",
-      "sticky-web",
-      "stone-axe",
-      "ceaseless-edge",
-    ]),
-    "hazard-removal": new Set([
-      "rapid-spin",
-      "defog",
-      "tidy-up",
-      "mortal-spin",
-      "court-change",
-    ]),
-    pivot: new Set([
-      "u-turn",
-      "volt-switch",
-      "flip-turn",
-      "teleport",
-      "parting-shot",
-      "baton-pass",
-      "chilly-reception",
-      "shed-tail",
-    ]),
-    "speed-control": new Set([
-      "tailwind",
-      "trick-room",
-      "thunder-wave",
-      "icy-wind",
-      "electroweb",
-      "glare",
-      "nuzzle",
-      "bulldoze",
-      "scary-face",
-      "sticky-web",
-    ]),
-    cleric: new Set([
-      "wish",
-      "heal-bell",
-      "aromatherapy",
-      "healing-wish",
-      "lunar-dance",
-      "jungle-healing",
-      "life-dew",
-      "floral-healing",
-    ]),
-    setup: new Set([
-      "swords-dance",
-      "dragon-dance",
-      "nasty-plot",
-      "calm-mind",
-      "quiver-dance",
-      "bulk-up",
-      "coil",
-      "shift-gear",
-      "agility",
-      "rock-polish",
-      "autotomize",
-      "work-up",
-      "hone-claws",
-      "victory-dance",
-      "no-retreat",
-      "clangorous-soul",
-      "geomancy",
-      "tail-glow",
-      "shell-smash",
-      "belly-drum",
-      "fillet-away",
-      "take-heart",
-      "growth",
-      "curse",
-    ]),
-    recovery: new Set([
-      "recover",
-      "roost",
-      "slack-off",
-      "soft-boiled",
-      "synthesis",
-      "moonlight",
-      "morning-sun",
-      "milk-drink",
-      "shore-up",
-      "strength-sap",
-      "rest",
-    ]),
-  };
-
-  const ROLE_LABELS = {
-    "physical-attacker": "Physical Attacker",
-    "special-attacker": "Special Attacker",
-    wall: "Wall / Tank",
-    balanced: "Balanced Pivot",
-    setup: "Setup Sweeper",
-    pivot: "Pivot",
-    "speed-control": "Speed Control",
-    "hazard-setter": "Hazard Setter",
-    "hazard-removal": "Hazard Removal",
-    cleric: "Cleric",
-    recovery: "Reliable Recovery",
-  };
-
-  const ROLE_ORDER = [
-    "physical-attacker",
-    "special-attacker",
-    "wall",
-    "balanced",
-    "setup",
-    "pivot",
-    "speed-control",
-    "hazard-setter",
-    "hazard-removal",
-    "cleric",
-    "recovery",
-  ];
-
   if (
     !statusElement ||
     !contentElement ||
@@ -221,6 +57,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  const analysis = window.BrymonTeamAnalysis;
+
+  if (!analysis) {
+    statusElement.textContent = "Unable to load team analysis.";
+
+    return;
+  }
+
+  const { formatTypeName } = analysis;
+
   initializeTeamAnalysis();
 
   async function initializeTeamAnalysis() {
@@ -233,9 +79,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }),
       );
 
-      const multipliers = buildTypeMultiplierMap(pokemonDetails);
-
-      const defensiveAnalysis = analyzeTeamDefense(multipliers);
+      const defensiveAnalysis = analysis.analyzeTeamDefense(
+        analysis.buildTypeMultiplierMap(pokemonDetails, teamPokemon),
+      );
 
       renderDefensiveChart(
         defensiveChartContainer,
@@ -249,20 +95,31 @@ document.addEventListener("DOMContentLoaded", () => {
           ability: teamPokemon[index]?.ability ?? "",
         })),
       );
-      const resistanceMap = await buildResistanceMap();
-      const roleBalance = computeRoleBalance(pokemonDetails, teamPokemon);
 
-      renderTeamSummary(
-        defensiveAnalysis,
-        pokemonDetails,
-        roleBalance.findings,
+      const resistanceMap = analysis.buildResistanceMap(
+        await Promise.all(analysis.ATTACKING_TYPES.map(fetchType)),
       );
-      renderSharedWeaknesses(defensiveAnalysis.sharedWeaknesses, resistanceMap);
-      renderImmunities(defensiveAnalysis.immunities);
-      renderTeamTypes(pokemonDetails);
+      const roleBalance = analysis.computeRoleBalance(
+        pokemonDetails,
+        teamPokemon,
+      );
 
-      const typeCoverage = await computeTypeCoverage(teamPokemon);
-      renderTypeCoverage(typeCoverage.covered, typeCoverage.gaps);
+      renderSummaryList(
+        summaryList,
+        analysis.buildTeamSummary(
+          defensiveAnalysis,
+          pokemonDetails,
+          roleBalance.findings,
+        ),
+      );
+      renderSharedWeaknesses(
+        analysis.listSharedWeaknesses(defensiveAnalysis),
+        resistanceMap,
+      );
+      renderImmunities(analysis.listImmunities(defensiveAnalysis));
+      renderTeamTypes(analysis.groupTeamTypes(pokemonDetails));
+
+      renderTypeCoverage(await fetchTypeCoverage());
 
       renderRoleBalance(roleBalance);
 
@@ -323,135 +180,24 @@ document.addEventListener("DOMContentLoaded", () => {
     return data;
   }
 
-  async function computeTypeCoverage(teamMoveData) {
-    const moveNames = new Set();
-
-    teamMoveData.forEach((pokemon) => {
-      pokemon.moves.forEach((moveName) => {
-        moveNames.add(moveName);
-      });
-    });
-
+  async function fetchTypeCoverage() {
     const moveTypes = new Set();
 
-    for (const moveName of moveNames) {
+    for (const moveName of analysis.teamMoveNames(teamPokemon)) {
       const moveData = await fetchMove(moveName);
       moveTypes.add(moveData.type.name);
     }
 
-    const covered = new Set();
+    const moveTypeData = [];
 
     for (const typeName of moveTypes) {
-      const typeData = await fetchType(typeName);
-
-      typeData.damage_relations.double_damage_to.forEach(({ name }) => {
-        covered.add(name);
-      });
+      moveTypeData.push(await fetchType(typeName));
     }
 
-    const gaps = ATTACKING_TYPES.filter((typeName) => !covered.has(typeName));
-
-    return {
-      covered: [...covered],
-      gaps,
-    };
+    return analysis.findTypeCoverage(moveTypeData);
   }
 
-  /*
-   * One entry per team slot (not keyed by name, so two of the same species
-   * both count), including each Pokémon's ability.
-   */
-  function buildTypeMultiplierMap(pokemonDetails) {
-    return pokemonDetails.map((pokemon, index) => {
-      const types = pokemon.types.map((entry) => entry.type.name);
-      const ability = teamPokemon[index]?.ability ?? "";
-
-      return {
-        name: pokemon.name,
-        multiplierMap: Object.fromEntries(
-          ATTACKING_TYPES.map((typeName) => [
-            typeName,
-            getTypeMultiplier(typeName, types, ability),
-          ]),
-        ),
-      };
-    });
-  }
-
-  async function buildResistanceMap() {
-    const allTypeData = await Promise.all(
-      ATTACKING_TYPES.map((typeName) => fetchType(typeName)),
-    );
-
-    const resistanceMap = {};
-
-    ATTACKING_TYPES.forEach((typeName) => {
-      resistanceMap[typeName] = [];
-    });
-
-    allTypeData.forEach((typeData) => {
-      const defendingType = typeData.name;
-
-      typeData.damage_relations.half_damage_from.forEach(({ name }) => {
-        resistanceMap[name].push({
-          type: defendingType,
-          kind: "resist",
-        });
-      });
-
-      typeData.damage_relations.no_damage_from.forEach(({ name }) => {
-        resistanceMap[name].push({
-          type: defendingType,
-          kind: "immune",
-        });
-      });
-    });
-
-    return resistanceMap;
-  }
-
-  function analyzeTeamDefense(multipliers) {
-    const sharedWeaknesses = {};
-    const immunities = {};
-
-    ATTACKING_TYPES.forEach((typeName) => {
-      sharedWeaknesses[typeName] = [];
-      immunities[typeName] = [];
-    });
-
-    multipliers.forEach(({ name: pokemonName, multiplierMap }) => {
-      ATTACKING_TYPES.forEach((typeName) => {
-        const multiplier = multiplierMap[typeName];
-
-        if (multiplier > 1) {
-          sharedWeaknesses[typeName].push({
-            name: pokemonName,
-            multiplier,
-          });
-        }
-
-        if (multiplier === 0) {
-          immunities[typeName].push({
-            name: pokemonName,
-            multiplier,
-          });
-        }
-      });
-    });
-
-    return {
-      sharedWeaknesses,
-      immunities,
-    };
-  }
-
-  function renderSharedWeaknesses(sharedWeaknesses, resistanceMap) {
-    const weaknesses = Object.entries(sharedWeaknesses)
-      .filter(([, pokemon]) => pokemon.length >= 2)
-      .sort((first, second) => {
-        return second[1].length - first[1].length;
-      });
-
+  function renderSharedWeaknesses(weaknesses, resistanceMap) {
     weaknessContainer.replaceChildren();
 
     if (weaknesses.length === 0) {
@@ -462,53 +208,31 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    weaknesses.forEach(([typeName, pokemon]) => {
-      const count = pokemon.length;
-      const severity = getWeaknessSeverity(count);
+    weaknesses.forEach(({ type, pokemon }) => {
+      const severity = analysis.getWeaknessSeverity(pokemon.length);
 
-      const item = createExpandableAnalysisItem({
-        typeName,
-        pokemon,
-        severity,
-        itemType: "weakness",
-        recommendation: resistanceMap[typeName],
-      });
-
-      weaknessContainer.appendChild(item);
+      weaknessContainer.appendChild(
+        createExpandableAnalysisItem({
+          typeName: type,
+          pokemon,
+          severity: {
+            label: severity.label,
+            className: `analysis-severity-${severity.level}`,
+          },
+          itemType: "weakness",
+          recommendation: analysis.buildRecommendation(
+            type,
+            resistanceMap[type],
+          ),
+        }),
+      );
     });
   }
 
-  function getWeaknessSeverity(count) {
-    if (count >= 4) {
-      return {
-        label: "Major",
-        className: "analysis-severity-major",
-      };
-    }
-
-    if (count === 3) {
-      return {
-        label: "Moderate",
-        className: "analysis-severity-moderate",
-      };
-    }
-
-    return {
-      label: "Minor",
-      className: "analysis-severity-minor",
-    };
-  }
-
   function renderImmunities(immunities) {
-    const immunityEntries = Object.entries(immunities)
-      .filter(([, pokemon]) => pokemon.length > 0)
-      .sort((first, second) => {
-        return second[1].length - first[1].length;
-      });
-
     immunityContainer.replaceChildren();
 
-    if (immunityEntries.length === 0) {
+    if (immunities.length === 0) {
       immunityContainer.append(
         createAnalysisEmptyMessage("This team has no base-type immunities."),
       );
@@ -516,60 +240,40 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    immunityEntries.forEach(([typeName, pokemon]) => {
-      const item = createExpandableAnalysisItem({
-        typeName,
-        pokemon,
-        severity: {
-          label: "Immunity",
-          className: "analysis-severity-positive",
-        },
-        itemType: "immunity",
-      });
-
-      immunityContainer.appendChild(item);
+    immunities.forEach(({ type, pokemon }) => {
+      immunityContainer.appendChild(
+        createExpandableAnalysisItem({
+          typeName: type,
+          pokemon,
+          severity: {
+            label: "Immunity",
+            className: "analysis-severity-positive",
+          },
+          itemType: "immunity",
+        }),
+      );
     });
   }
 
-  function renderTeamTypes(pokemonDetails) {
-    const typePokemonMap = {};
-
-    pokemonDetails.forEach((pokemon) => {
-      pokemon.types.forEach((typeEntry) => {
-        const typeName = typeEntry.type.name;
-
-        if (!typePokemonMap[typeName]) {
-          typePokemonMap[typeName] = [];
-        }
-
-        typePokemonMap[typeName].push({
-          name: pokemon.name,
-        });
-      });
-    });
-
-    const sortedTypes = Object.entries(typePokemonMap).sort((first, second) => {
-      return second[1].length - first[1].length;
-    });
-
+  function renderTeamTypes(teamTypes) {
     teamTypesContainer.replaceChildren();
 
-    sortedTypes.forEach(([typeName, pokemon]) => {
-      const item = createExpandableAnalysisItem({
-        typeName,
-        pokemon,
-        severity: {
-          label: "Team Type",
-          className: "analysis-severity-neutral",
-        },
-        itemType: "team-type",
-      });
-
-      teamTypesContainer.appendChild(item);
+    teamTypes.forEach(({ type, pokemon }) => {
+      teamTypesContainer.appendChild(
+        createExpandableAnalysisItem({
+          typeName: type,
+          pokemon,
+          severity: {
+            label: "Team Type",
+            className: "analysis-severity-neutral",
+          },
+          itemType: "team-type",
+        }),
+      );
     });
   }
 
-  function renderTypeCoverage(covered, gaps) {
+  function renderTypeCoverage({ covered, gaps }) {
     typeCoverageContainer.replaceChildren();
 
     if (covered.length === 0) {
@@ -582,14 +286,26 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const coveredHeading = document.createElement("p");
-    coveredHeading.className = "analysis-breakdown-heading";
-    coveredHeading.textContent = "Super-effective against:";
+    typeCoverageContainer.append(
+      ...createTypeBadgeList("Super-effective against:", covered),
+    );
 
-    const coveredList = document.createElement("div");
-    coveredList.className = "analysis-type-badge-list";
+    if (gaps.length > 0) {
+      typeCoverageContainer.append(
+        ...createTypeBadgeList("No coverage against:", gaps),
+      );
+    }
+  }
 
-    covered
+  function createTypeBadgeList(headingText, typeNames) {
+    const heading = document.createElement("p");
+    heading.className = "analysis-breakdown-heading";
+    heading.textContent = headingText;
+
+    const list = document.createElement("div");
+    list.className = "analysis-type-badge-list";
+
+    typeNames
       .slice()
       .sort()
       .forEach((typeName) => {
@@ -597,305 +313,10 @@ document.addEventListener("DOMContentLoaded", () => {
         badge.className = `pokemon-type-badge pokemon-type-${typeName}`;
         badge.textContent = formatTypeName(typeName);
 
-        coveredList.appendChild(badge);
+        list.appendChild(badge);
       });
 
-    typeCoverageContainer.append(coveredHeading, coveredList);
-
-    if (gaps.length > 0) {
-      const gapsHeading = document.createElement("p");
-      gapsHeading.className = "analysis-breakdown-heading";
-      gapsHeading.textContent = "No coverage against:";
-
-      const gapsList = document.createElement("div");
-      gapsList.className = "analysis-type-badge-list";
-
-      gaps
-        .slice()
-        .sort()
-        .forEach((typeName) => {
-          const badge = document.createElement("span");
-          badge.className = `pokemon-type-badge pokemon-type-${typeName}`;
-          badge.textContent = formatTypeName(typeName);
-
-          gapsList.appendChild(badge);
-        });
-
-      typeCoverageContainer.append(gapsHeading, gapsList);
-    }
-  }
-
-  function getBaseStats(details) {
-    const stats = {};
-
-    details.stats.forEach((entry) => {
-      stats[entry.stat.name] = entry.base_stat;
-    });
-
-    return stats;
-  }
-
-  function natureStatMultiplier(nature, statName) {
-    if (!nature || NEUTRAL_NATURES.has(nature)) {
-      return 1;
-    }
-
-    const modifier = NATURE_MODIFIERS[nature];
-
-    if (!modifier) {
-      return 1;
-    }
-
-    if (modifier.plus === statName) {
-      return 1.1;
-    }
-
-    if (modifier.minus === statName) {
-      return 0.9;
-    }
-
-    return 1;
-  }
-
-  function effectiveStat(baseStat, ev, multiplier) {
-    const base = typeof baseStat === "number" ? baseStat : 0;
-
-    return (2 * base + 31 + Math.floor((ev || 0) / 4)) * multiplier;
-  }
-
-  function classifyPokemon(details, config) {
-    const base = getBaseStats(details);
-    const nature = (config.nature || "").toLowerCase();
-    const evs = config.evs || {};
-
-    const attack = effectiveStat(
-      base.attack,
-      evs.attack,
-      natureStatMultiplier(nature, "attack"),
-    );
-
-    const specialAttack = effectiveStat(
-      base["special-attack"],
-      evs["special-attack"],
-      natureStatMultiplier(nature, "special-attack"),
-    );
-
-    const hp = effectiveStat(base.hp, evs.hp, 1);
-
-    const defense = effectiveStat(
-      base.defense,
-      evs.defense,
-      natureStatMultiplier(nature, "defense"),
-    );
-
-    const specialDefense = effectiveStat(
-      base["special-defense"],
-      evs["special-defense"],
-      natureStatMultiplier(nature, "special-defense"),
-    );
-
-    const offense = Math.max(attack, specialAttack);
-    const bulk = (hp + defense + specialDefense) / 3;
-    const ratio = bulk === 0 ? 1 : offense / bulk;
-
-    const roles = new Set();
-
-    if (ratio >= 1.08) {
-      roles.add(
-        attack >= specialAttack ? "physical-attacker" : "special-attacker",
-      );
-    } else if (ratio <= 0.92) {
-      roles.add("wall");
-    } else {
-      roles.add("balanced");
-    }
-
-    const baseSpeed = typeof base.speed === "number" ? base.speed : 0;
-    const speedInvested =
-      (evs.speed || 0) >= 200 || natureStatMultiplier(nature, "speed") > 1;
-
-    let speed = "mid";
-
-    if (baseSpeed >= 100 || (baseSpeed >= 80 && speedInvested)) {
-      speed = "fast";
-    } else if (baseSpeed <= 55 && !speedInvested) {
-      speed = "slow";
-    }
-
-    (config.moves || []).forEach((moveName) => {
-      const move = String(moveName).toLowerCase();
-
-      Object.entries(UTILITY_MOVES).forEach(([roleKey, moveSet]) => {
-        if (moveSet.has(move)) {
-          roles.add(roleKey);
-        }
-      });
-    });
-
-    return {
-      roles: [...roles],
-      speed,
-    };
-  }
-
-  function computeRoleBalance(pokemonDetails, teamConfig) {
-    const detailsById = new Map();
-
-    pokemonDetails.forEach((details) => {
-      detailsById.set(details.id, details);
-    });
-
-    const configs =
-      teamConfig.length > 0
-        ? teamConfig
-        : pokemonDetails.map((details) => ({
-            pokemonApiId: details.id,
-            name: details.name,
-            nature: null,
-            evs: {},
-            moves: [],
-          }));
-
-    const perPokemon = configs.map((config) => {
-      const details = detailsById.get(config.pokemonApiId);
-      const displayName =
-        config.name || (details && details.name) || `#${config.pokemonApiId}`;
-
-      if (!details) {
-        return {
-          name: displayName,
-          roles: [],
-          speed: "mid",
-        };
-      }
-
-      const classified = classifyPokemon(details, config);
-
-      return {
-        name: displayName,
-        roles: classified.roles,
-        speed: classified.speed,
-      };
-    });
-
-    const roleMembers = {};
-
-    ROLE_ORDER.forEach((roleKey) => {
-      roleMembers[roleKey] = [];
-    });
-
-    perPokemon.forEach((entry) => {
-      entry.roles.forEach((roleKey) => {
-        if (!roleMembers[roleKey]) {
-          roleMembers[roleKey] = [];
-        }
-
-        roleMembers[roleKey].push({
-          name: entry.name,
-        });
-      });
-    });
-
-    const speeds = perPokemon.map((entry) => entry.speed);
-
-    const findings = buildRoleFindings(roleMembers, speeds, perPokemon.length);
-
-    return {
-      roleMembers,
-      findings,
-      teamSize: perPokemon.length,
-    };
-  }
-
-  function buildRoleFindings(roleMembers, speeds, teamSize) {
-    const count = (roleKey) => (roleMembers[roleKey] || []).length;
-    const findings = [];
-
-    const physical = count("physical-attacker");
-    const special = count("special-attacker");
-    const walls = count("wall");
-
-    if (teamSize >= 4 && physical >= teamSize - 1 && special === 0) {
-      findings.push({
-        kind: "warning",
-        message:
-          `${physical} of ${teamSize} Pokémon are physical attackers ` +
-          `and none are special — a single physical wall can check ` +
-          `most of the team.`,
-      });
-    } else if (teamSize >= 4 && special >= teamSize - 1 && physical === 0) {
-      findings.push({
-        kind: "warning",
-        message:
-          `${special} of ${teamSize} Pokémon are special attackers ` +
-          `and none are physical — a single special wall can check ` +
-          `most of the team.`,
-      });
-    } else if (physical > 0 && special > 0) {
-      findings.push({
-        kind: "positive",
-        message:
-          `Offense is split across ${physical} physical and ` +
-          `${special} special ` +
-          `${special === 1 ? "attacker" : "attackers"}, ` +
-          `which is harder to wall.`,
-      });
-    }
-
-    if (teamSize >= 5 && walls === 0) {
-      findings.push({
-        kind: "warning",
-        message:
-          "No defensive walls — nothing on the team can switch into " +
-          "strong attackers repeatedly.",
-      });
-    }
-
-    if (count("hazard-removal") === 0) {
-      findings.push({
-        kind: "warning",
-        message:
-          "No hazard removal (Rapid Spin / Defog) — entry hazards will " +
-          "chip the team on every switch-in.",
-      });
-    }
-
-    if (count("hazard-setter") > 0) {
-      findings.push({
-        kind: "positive",
-        message: `${count("hazard-setter")} Pokémon can set entry hazards.`,
-      });
-    }
-
-    const fast = speeds.filter((tier) => tier === "fast").length;
-    const slow = speeds.filter((tier) => tier === "slow").length;
-
-    if (count("speed-control") === 0 && fast <= 1 && slow >= 3) {
-      findings.push({
-        kind: "warning",
-        message:
-          `${slow} Pokémon are slow and the team has no speed control ` +
-          `(Tailwind, Trick Room, paralysis) — faster teams move first.`,
-      });
-    }
-
-    if (count("pivot") === 0 && teamSize >= 5) {
-      findings.push({
-        kind: "neutral",
-        message:
-          "No pivoting moves (U-turn, Volt Switch) — it will be harder " +
-          "to bring threats in safely.",
-      });
-    }
-
-    if (findings.length === 0) {
-      findings.push({
-        kind: "positive",
-        message: "The team has a well-rounded spread of roles.",
-      });
-    }
-
-    return findings;
+    return [heading, list];
   }
 
   function renderRoleBalance({ roleMembers, findings, teamSize }) {
@@ -915,14 +336,12 @@ document.addEventListener("DOMContentLoaded", () => {
     findingsList.className =
       "team-analysis-summary-list analysis-role-findings";
 
-    findings.forEach(({ kind, message }) => {
-      findingsList.appendChild(createSummaryItem(kind, message));
-    });
+    renderSummaryList(findingsList, findings);
 
     roleBalanceContainer.appendChild(findingsList);
 
-    const populatedRoles = ROLE_ORDER.filter(
-      (roleKey) => (roleMembers[roleKey] || []).length > 0,
+    const populatedRoles = analysis.ROLE_ORDER.filter(
+      (roleKey) => roleMembers[roleKey].length > 0,
     );
 
     if (populatedRoles.length === 0) {
@@ -938,7 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
     populatedRoles.forEach((roleKey) => {
       roleBalanceContainer.appendChild(
         createRoleAnalysisItem({
-          label: ROLE_LABELS[roleKey],
+          label: analysis.ROLE_LABELS[roleKey],
           pokemon: roleMembers[roleKey],
         }),
       );
@@ -962,13 +381,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const countText = document.createElement("strong");
     countText.textContent = `${pokemon.length} Pokémon`;
 
-    const arrow = document.createElement("span");
-    arrow.className = "analysis-expand-icon";
-    arrow.setAttribute("aria-hidden", "true");
-    arrow.textContent = "⌄";
-
     summaryContent.appendChild(countText);
-    summary.append(roleBadge, summaryContent, arrow);
+    summary.append(roleBadge, summaryContent, createExpandIcon());
 
     const expandedContent = document.createElement("div");
     expandedContent.className = "analysis-pokemon-breakdown";
@@ -977,118 +391,13 @@ document.addEventListener("DOMContentLoaded", () => {
     heading.className = "analysis-breakdown-heading";
     heading.textContent = `${label}:`;
 
-    const list = document.createElement("ul");
-    list.className = "analysis-pokemon-list";
-
-    pokemon
-      .slice()
-      .sort((first, second) => first.name.localeCompare(second.name))
-      .forEach((entry) => {
-        const listItem = document.createElement("li");
-
-        const name = document.createElement("span");
-        name.textContent = formatPokemonDisplayName(entry.name);
-
-        listItem.appendChild(name);
-        list.appendChild(listItem);
-      });
-
-    expandedContent.append(heading, list);
+    expandedContent.append(
+      heading,
+      createPokemonList(analysis.sortPokemonEntries(pokemon), false),
+    );
     details.append(summary, expandedContent);
 
     return details;
-  }
-
-  function renderTeamSummary(defensiveAnalysis, pokemonDetails, roleFindings = []) {
-    const findings = [];
-
-    const weaknessEntries = Object.entries(defensiveAnalysis.sharedWeaknesses)
-      .filter(([, pokemon]) => pokemon.length >= 2)
-      .sort((first, second) => {
-        return second[1].length - first[1].length;
-      });
-
-    const immunityEntries = Object.entries(defensiveAnalysis.immunities)
-      .filter(([, pokemon]) => pokemon.length > 0)
-      .sort((first, second) => {
-        return second[1].length - first[1].length;
-      });
-
-    const typeCounts = getTeamTypeCounts(pokemonDetails);
-
-    weaknessEntries.slice(0, 3).forEach(([typeName, pokemon]) => {
-      const count = pokemon.length;
-      const severity = getWeaknessSeverity(count);
-
-      findings.push({
-        kind: "warning",
-        message:
-          `${formatTypeName(typeName)} is a ` +
-          `${severity.label.toLowerCase()} shared weakness ` +
-          `for ${count} Pokémon.`,
-      });
-    });
-
-    immunityEntries.slice(0, 2).forEach(([typeName, pokemon]) => {
-      const count = pokemon.length;
-
-      findings.push({
-        kind: "positive",
-        message:
-          `${count} ${count === 1 ? "Pokémon is" : "Pokémon are"} ` +
-          `immune to ${formatTypeName(typeName)}.`,
-      });
-    });
-
-    const mostCommonType = Object.entries(typeCounts).sort((first, second) => {
-      return second[1] - first[1];
-    })[0];
-
-    if (mostCommonType) {
-      const [typeName, count] = mostCommonType;
-
-      if (count > 1) {
-        findings.push({
-          kind: "neutral",
-          message:
-            `${formatTypeName(typeName)} is the team’s most ` +
-            `common type, appearing on ${count} Pokémon.`,
-        });
-      } else {
-        findings.push({
-          kind: "positive",
-          message:
-            `The team has strong type diversity with ` +
-            `${Object.keys(typeCounts).length} unique types.`,
-        });
-      }
-    }
-
-    roleFindings
-      .filter((finding) => finding.kind === "warning")
-      .slice(0, 2)
-      .forEach((finding) => {
-        findings.push({
-          kind: "warning",
-          message: finding.message,
-        });
-      });
-
-    summaryList.replaceChildren();
-
-    if (findings.length === 0) {
-      const item = createSummaryItem(
-        "positive",
-        "No major defensive concerns were found.",
-      );
-
-      summaryList.appendChild(item);
-      return;
-    }
-
-    findings.forEach(({ kind, message }) => {
-      summaryList.appendChild(createSummaryItem(kind, message));
-    });
   }
 
   function createExpandableAnalysisItem({
@@ -1114,21 +423,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const countText = document.createElement("strong");
     countText.textContent = `${pokemon.length} Pokémon`;
 
-    const severityLabel = document.createElement("span");
-    severityLabel.className = `analysis-severity ${severity.className}`;
-    severityLabel.textContent = severity.label;
-
-    const arrow = document.createElement("span");
-    arrow.className = "analysis-expand-icon";
-    arrow.setAttribute("aria-hidden", "true");
-    arrow.textContent = "⌄";
-
     summaryContent.appendChild(countText);
 
     if (itemType !== "team-type") {
+      const severityLabel = document.createElement("span");
+      severityLabel.className = `analysis-severity ${severity.className}`;
+      severityLabel.textContent = severity.label;
+
       summaryContent.appendChild(severityLabel);
     }
-    summary.append(typeBadge, summaryContent, arrow);
+
+    summary.append(typeBadge, summaryContent, createExpandIcon());
 
     const expandedContent = document.createElement("div");
     expandedContent.className = "analysis-pokemon-breakdown";
@@ -1144,69 +449,18 @@ document.addEventListener("DOMContentLoaded", () => {
       heading.textContent = `Pokémon weak to ${formatTypeName(typeName)}:`;
     }
 
-    const list = document.createElement("ul");
-    list.className = "analysis-pokemon-list";
+    expandedContent.append(
+      heading,
+      createPokemonList(
+        analysis.sortPokemonEntries(pokemon),
+        itemType === "weakness",
+      ),
+    );
 
-    pokemon
-      .slice()
-      .sort((first, second) => {
-        if (second.multiplier !== first.multiplier) {
-          return second.multiplier - first.multiplier;
-        }
-
-        return first.name.localeCompare(second.name);
-      })
-      .forEach((pokemonEntry) => {
-        const listItem = document.createElement("li");
-
-        const name = document.createElement("span");
-        name.textContent = formatPokemonDisplayName(pokemonEntry.name);
-
-        listItem.appendChild(name);
-
-        if (itemType === "weakness" && pokemonEntry.multiplier > 1) {
-          const multiplier = document.createElement("strong");
-          multiplier.className = "analysis-damage-multiplier";
-          multiplier.textContent = `${pokemonEntry.multiplier}×`;
-
-          listItem.appendChild(multiplier);
-        }
-
-        list.appendChild(listItem);
-      });
-
-    expandedContent.append(heading, list);
-
-    if (
-      itemType === "weakness" &&
-      recommendation &&
-      recommendation.length > 0
-    ) {
-      const immuneTypes = recommendation
-        .filter((entry) => entry.kind === "immune")
-        .map((entry) => formatTypeName(entry.type))
-        .sort();
-
-      const resistTypes = recommendation
-        .filter((entry) => entry.kind === "resist")
-        .map((entry) => formatTypeName(entry.type))
-        .sort();
-
-      const parts = [];
-
-      if (immuneTypes.length > 0) {
-        parts.push(`immune (${immuneTypes.join(", ")})`);
-      }
-
-      if (resistTypes.length > 0) {
-        parts.push(`resistant (${resistTypes.join(", ")})`);
-      }
-
+    if (itemType === "weakness" && recommendation) {
       const recommendationParagraph = document.createElement("p");
       recommendationParagraph.className = "analysis-recommendation";
-      recommendationParagraph.textContent =
-        `Consider a pokemon that is ${parts.join(" or ")} ` +
-        `to ${formatTypeName(typeName)}.`;
+      recommendationParagraph.textContent = recommendation;
 
       expandedContent.appendChild(recommendationParagraph);
     }
@@ -1214,6 +468,47 @@ document.addEventListener("DOMContentLoaded", () => {
     details.append(summary, expandedContent);
 
     return details;
+  }
+
+  function createPokemonList(pokemon, showMultiplier) {
+    const list = document.createElement("ul");
+    list.className = "analysis-pokemon-list";
+
+    pokemon.forEach((entry) => {
+      const listItem = document.createElement("li");
+
+      const name = document.createElement("span");
+      name.textContent = formatPokemonDisplayName(entry.name);
+
+      listItem.appendChild(name);
+
+      if (showMultiplier && entry.multiplier > 1) {
+        const multiplier = document.createElement("strong");
+        multiplier.className = "analysis-damage-multiplier";
+        multiplier.textContent = `${entry.multiplier}×`;
+
+        listItem.appendChild(multiplier);
+      }
+
+      list.appendChild(listItem);
+    });
+
+    return list;
+  }
+
+  function createExpandIcon() {
+    const arrow = document.createElement("span");
+    arrow.className = "analysis-expand-icon";
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.textContent = "⌄";
+
+    return arrow;
+  }
+
+  function renderSummaryList(list, findings) {
+    list.replaceChildren(
+      ...findings.map(({ kind, message }) => createSummaryItem(kind, message)),
+    );
   }
 
   function createSummaryItem(kind, message) {
@@ -1247,22 +542,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return paragraph;
   }
-
-  function formatTypeName(typeName) {
-    return typeName.charAt(0).toUpperCase() + typeName.slice(1);
-  }
 });
-
-function getTeamTypeCounts(pokemonDetails) {
-  const typeCounts = {};
-
-  pokemonDetails.forEach((pokemon) => {
-    pokemon.types.forEach((typeEntry) => {
-      const typeName = typeEntry.type.name;
-
-      typeCounts[typeName] = (typeCounts[typeName] ?? 0) + 1;
-    });
-  });
-
-  return typeCounts;
-}
