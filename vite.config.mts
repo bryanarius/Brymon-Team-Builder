@@ -33,7 +33,7 @@ export default defineConfig(({ command }) => ({
     // gzipped with React). Expected, and only /calc loads it.
     chunkSizeWarningLimit: 800,
     rollupOptions: {
-      input: ["resources/ts/calc/main.tsx", "resources/ts/analysis/main.ts"],
+      input: ["resources/ts/calc/main.tsx", "resources/ts/analysis/main.tsx"],
     },
   },
 

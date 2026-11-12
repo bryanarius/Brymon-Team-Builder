@@ -22,7 +22,6 @@
 <script src="/js/type-chart.js"></script>
 <script src="/js/popular-sets.js"></script>
 <script src="/js/team-builder.js"></script>
-<script src="/js/team-analysis.js" defer></script>
 <script src="/js/team-show.js" defer></script>
 <script src="/js/saved-teams.js" defer></script>
 <script src="/js/pokedex.js" defer></script>

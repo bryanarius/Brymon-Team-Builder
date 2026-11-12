@@ -16,3 +16,7 @@ declare function getTypeMultiplier(
   defendingTypes: string[],
   ability?: string,
 ): number;
+declare function renderDefensiveChart(
+  container: HTMLElement | null,
+  members: { name: string; image: string; types: string[]; ability: string }[],
+): void;

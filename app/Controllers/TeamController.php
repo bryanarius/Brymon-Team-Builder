@@ -15,7 +15,7 @@ use App\Core\Csrf;
 final class TeamController extends Controller
 {
     // The team page's analysis panel, compiled by Vite (see vite.config.mts).
-    private const TEAM_ANALYSIS_ENTRY = 'resources/ts/analysis/main.ts';
+    private const TEAM_ANALYSIS_ENTRY = 'resources/ts/analysis/main.tsx';
 
     public function index(): void 
     {

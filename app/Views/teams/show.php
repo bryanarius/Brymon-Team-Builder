@@ -315,15 +315,14 @@ $teamPokemonData = array_map(
             <?php endforeach; ?>
         </div>
 
-        <script>
-            window.BRYMON_TEAM_POKEMON = <?= json_encode($teamPokemonData, JSON_THROW_ON_ERROR) ?>;
-            <?php if ($isOwner || $viewerLoggedIn): ?>
-            window.BRYMON_CSRF_TOKEN = <?= json_encode(
-                \App\Core\Csrf::token(),
-                JSON_THROW_ON_ERROR
-            ) ?>;
-            <?php endif; ?>
-        </script>
+        <?php if ($isOwner || $viewerLoggedIn): ?>
+            <script>
+                window.BRYMON_CSRF_TOKEN = <?= json_encode(
+                    \App\Core\Csrf::token(),
+                    JSON_THROW_ON_ERROR
+                ) ?>;
+            </script>
+        <?php endif; ?>
 
         <section class="team-analysis" id="team-analysis">
             <div class="team-analysis-header">
@@ -335,86 +334,21 @@ $teamPokemonData = array_map(
                 </p>
             </div>
 
-            <div
-                class="team-analysis-status"
-                id="team-analysis-status"
-                role="status"
-                aria-live="polite"
-            >
-                Loading team analysis...
+            <?php // React renders the analysis here (resources/ts/analysis). ?>
+            <div id="team-analysis-root">
+                <div
+                    class="team-analysis-status"
+                    role="status"
+                    aria-live="polite"
+                >
+                    Loading team analysis...
+                </div>
             </div>
 
-            <div
-                class="team-analysis-content"
-                id="team-analysis-content"
-                hidden
-            >
-                <article class="team-analysis-summary">
-                    <div class="team-analysis-summary-header">
-                        <h3>Summary</h3>
-
-                        <span class="team-analysis-summary-label">
-                            Key Findings
-                        </span>
-                    </div>
-
-                    <ul
-                        class="team-analysis-summary-list"
-                        id="team-analysis-summary-list"
-                    ></ul>
-                </article>
-
-                <article class="team-analysis-card">
-                    <h3>Defensive Coverage</h3>
-
-                    <div id="analysis-defensive-chart"></div>
-                </article>
-
-                <article class="team-analysis-card">
-                    <h3>Shared Weaknesses</h3>
-
-                    <div
-                        class="analysis-type-list"
-                        id="analysis-weaknesses"
-                    ></div>
-                </article>
-
-                <article class="team-analysis-card">
-                    <h3>Immunities</h3>
-
-                    <div
-                        class="analysis-type-list"
-                        id="analysis-immunities"
-                    ></div>
-                </article>
-
-                <article class="team-analysis-card">
-                    <h3>Team Types</h3>
-
-                    <div
-                        class="analysis-type-list"
-                        id="analysis-team-types"
-                    ></div>
-                </article>
-
-                <article class="team-analysis-card">
-                    <h3>Type Coverage</h3>
-
-                    <div
-                        class="analysis-type-list"
-                        id="analysis-type-coverage"
-                    ></div>
-                </article>
-
-                <article class="team-analysis-card">
-                    <h3>Role Balance</h3>
-
-                    <div
-                        class="analysis-type-list"
-                        id="analysis-role-balance"
-                    ></div>
-                </article>
-            </div>
+            <script type="application/json" id="team-analysis-data"><?= json_encode(
+                $teamPokemonData,
+                JSON_THROW_ON_ERROR | JSON_HEX_TAG | JSON_HEX_AMP
+            ) ?></script>
         </section>
 
     </div>
