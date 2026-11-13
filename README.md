@@ -321,9 +321,9 @@ Playwright
 100% passing
 
 
-Vitest (TypeScript unit tests)
+Vitest + React Testing Library (TypeScript unit and component tests)
 
-30 tests
+37 tests
 100% passing
 
 
@@ -502,7 +502,7 @@ This process allowed Brymon to evolve from an initial product concept into a tes
 | External API       | PokéAPI (REST + GraphQL)        |
 | Email              | Resend                          |
 | Damage Calculator  | @smogon/calc                    |
-| Testing            | PHPUnit, Playwright, Vitest, Node test runner |
+| Testing            | PHPUnit, Playwright, Vitest, React Testing Library, Node test runner |
 | Package Management | Composer, npm                   |
 | Deployment         | Docker, Render                  |
 | Version Control    | Git & GitHub                    |

@@ -1,6 +1,14 @@
 /// <reference types="node" />
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { runInThisContext } from "node:vm";
+import { cleanup } from "@testing-library/react";
+import { afterEach } from "vitest";
+// Adds DOM matchers such as toBeInTheDocument() to expect().
+import "@testing-library/jest-dom/vitest";
+
+// Unmount whatever a component test rendered before the next test.
+afterEach(cleanup);
 
 /*
  * Some TypeScript code still calls functions from classic scripts that
@@ -10,7 +18,7 @@ import { runInThisContext } from "node:vm";
  * become globals for the tests too.
  */
 ["pokemon-forms.js", "type-chart.js"].forEach((file) => {
-  runInThisContext(
-    readFileSync(new URL(`../../public/js/${file}`, import.meta.url), "utf8"),
-  );
+  // Relative to the project root: under jsdom, import.meta.url is an
+  // http:// URL rather than a file path.
+  runInThisContext(readFileSync(resolve("public/js", file), "utf8"));
 });

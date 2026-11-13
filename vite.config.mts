@@ -45,8 +45,10 @@ export default defineConfig(({ command }) => ({
   },
 
   // `npm run test:ts`. Vitest compiles TypeScript the same way the build does.
+  // Tests run in Node; component tests opt into a simulated browser with
+  // a `// @vitest-environment jsdom` comment at the top of the file.
   test: {
-    include: ["tests/TS/**/*.test.ts"],
+    include: ["tests/TS/**/*.test.{ts,tsx}"],
     setupFiles: ["tests/TS/setup.ts"],
   },
 }));
