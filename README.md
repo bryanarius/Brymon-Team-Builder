@@ -323,7 +323,7 @@ Playwright
 
 Vitest + React Testing Library (TypeScript unit and component tests)
 
-37 tests
+40 tests
 100% passing
 
 

@@ -1,9 +1,9 @@
-import { useEffect, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { TypeBadge } from "../components/TypeBadge";
 import { AnalysisItem } from "./AnalysisItem";
 import { DefensiveChart } from "./DefensiveChart";
 import { FindingList } from "./FindingList";
-import { loadTeamAnalysis, type TeamAnalysisResult } from "./load-team-analysis";
+import { useTeamAnalysis } from "./useTeamAnalysis";
 import {
   formatTypeName,
   getWeaknessSeverity,
@@ -14,43 +14,11 @@ import {
   type TypeCoverage,
 } from "./team-analysis";
 
-type LoadState =
-  | { status: "loading" }
-  | { status: "error" }
-  | { status: "ready"; analysis: TeamAnalysisResult };
-
 /** The analysis panel on a saved team's page. */
 export function TeamAnalysis({ team }: { team: TeamPokemon[] }) {
-  const [state, setState] = useState<LoadState>({ status: "loading" });
+  const state = useTeamAnalysis(team);
 
-  useEffect(() => {
-    if (team.length === 0) {
-      return;
-    }
-
-    // Ignore a result that arrives after the component has gone away.
-    let current = true;
-
-    loadTeamAnalysis(team)
-      .then((analysis) => {
-        if (current) {
-          setState({ status: "ready", analysis });
-        }
-      })
-      .catch((error: unknown) => {
-        console.error("Team analysis error:", error);
-
-        if (current) {
-          setState({ status: "error" });
-        }
-      });
-
-    return () => {
-      current = false;
-    };
-  }, [team]);
-
-  if (team.length === 0) {
+  if (state.status === "empty") {
     return <Status>Add Pokémon to this team to view analysis.</Status>;
   }
 
