@@ -1,8 +1,9 @@
 import type { ConditionsForm } from "./calc-form";
+import type { CalcDispatch } from "./calc-reducer";
 
 type ConditionsPanelProps = {
   conditions: ConditionsForm;
-  onChange: (conditions: ConditionsForm) => void;
+  dispatch: CalcDispatch;
 };
 
 const SCREENS = [
@@ -11,9 +12,9 @@ const SCREENS = [
   ["auroraVeil", "calc-aurora-veil", "Aurora Veil"],
 ] as const;
 
-export function ConditionsPanel({ conditions, onChange }: ConditionsPanelProps) {
+export function ConditionsPanel({ conditions, dispatch }: ConditionsPanelProps) {
   const update = (changes: Partial<ConditionsForm>) =>
-    onChange({ ...conditions, ...changes });
+    dispatch({ type: "updateConditions", changes });
 
   return (
     <section

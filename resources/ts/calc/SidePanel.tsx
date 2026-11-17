@@ -8,7 +8,6 @@ import {
   formatNatureLabel,
   gen,
   getCalcDisplayName,
-  getDefaultAbility,
   itemNames,
   natures,
   speciesNames,
@@ -18,6 +17,7 @@ import {
   TERA_TYPES,
 } from "./calc-data";
 import { toBuilderSet, type SideForm, type StatKind } from "./calc-form";
+import type { CalcDispatch } from "./calc-reducer";
 import {
   BUILDER_STAT_TO_CALC_STAT,
   createCalcPokemon,
@@ -42,10 +42,9 @@ type SidePanelProps = {
   side: Side;
   title: string;
   form: SideForm;
-  onChange: (form: SideForm) => void;
   // null when signed out, [] when signed in without saved teams.
   savedTeams: SavedTeam[] | null;
-  onLoadSaved: (pokemon: SavedPokemon) => void;
+  dispatch: CalcDispatch;
   // The attacker's moves.
   children?: ReactNode;
 };
@@ -54,18 +53,17 @@ export function SidePanel({
   side,
   title,
   form,
-  onChange,
   savedTeams,
-  onLoadSaved,
+  dispatch,
   children,
 }: SidePanelProps) {
   const fieldId = (name: string) => `calc-${side}-${name}`;
 
   const update = (changes: Partial<SideForm>) =>
-    onChange({ ...form, ...changes });
+    dispatch({ type: "updateSide", side, changes });
 
   const updateStat = (kind: StatKind, stat: BuilderStat, value: string) =>
-    update({ [kind]: { ...form[kind], [stat]: value } });
+    dispatch({ type: "setStat", side, kind, stat, value });
 
   const set = toBuilderSet(form);
 
@@ -99,7 +97,7 @@ export function SidePanel({
       <SavedPokemonPicker
         id={fieldId("saved")}
         savedTeams={savedTeams}
-        onLoad={onLoadSaved}
+        onLoad={(pokemon) => dispatch({ type: "loadSaved", side, pokemon })}
       />
 
       <div className="calc-fields">
@@ -113,9 +111,7 @@ export function SidePanel({
             formatLabel={getCalcDisplayName}
             placeholder="Search Pokémon"
             listLabel={`${title} Pokémon options`}
-            onChange={(name) =>
-              update({ name, ability: getDefaultAbility(name) })
-            }
+            onChange={(name) => dispatch({ type: "setSpecies", side, name })}
           />
         </div>
 
