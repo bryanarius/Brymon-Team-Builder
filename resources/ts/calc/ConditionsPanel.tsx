@@ -1,10 +1,5 @@
+import { useCalcDispatch, useCalcState } from "./calc-context";
 import type { ConditionsForm } from "./calc-form";
-import type { CalcDispatch } from "./calc-reducer";
-
-type ConditionsPanelProps = {
-  conditions: ConditionsForm;
-  dispatch: CalcDispatch;
-};
 
 const SCREENS = [
   ["reflect", "calc-reflect", "Reflect"],
@@ -12,7 +7,10 @@ const SCREENS = [
   ["auroraVeil", "calc-aurora-veil", "Aurora Veil"],
 ] as const;
 
-export function ConditionsPanel({ conditions, dispatch }: ConditionsPanelProps) {
+export function ConditionsPanel() {
+  const { conditions } = useCalcState();
+  const dispatch = useCalcDispatch();
+
   const update = (changes: Partial<ConditionsForm>) =>
     dispatch({ type: "updateConditions", changes });
 

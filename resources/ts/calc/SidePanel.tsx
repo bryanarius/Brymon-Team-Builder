@@ -16,8 +16,8 @@ import {
   STATUSES,
   TERA_TYPES,
 } from "./calc-data";
+import { useCalcDispatch, useCalcState, useSavedTeams } from "./calc-context";
 import { toBuilderSet, type SideForm, type StatKind } from "./calc-form";
-import type { CalcDispatch } from "./calc-reducer";
 import {
   BUILDER_STAT_TO_CALC_STAT,
   createCalcPokemon,
@@ -41,22 +41,14 @@ export type SavedTeam = {
 type SidePanelProps = {
   side: Side;
   title: string;
-  form: SideForm;
-  // null when signed out, [] when signed in without saved teams.
-  savedTeams: SavedTeam[] | null;
-  dispatch: CalcDispatch;
   // The attacker's moves.
   children?: ReactNode;
 };
 
-export function SidePanel({
-  side,
-  title,
-  form,
-  savedTeams,
-  dispatch,
-  children,
-}: SidePanelProps) {
+export function SidePanel({ side, title, children }: SidePanelProps) {
+  const form = useCalcState()[side];
+  const dispatch = useCalcDispatch();
+
   const fieldId = (name: string) => `calc-${side}-${name}`;
 
   const update = (changes: Partial<SideForm>) =>
@@ -96,7 +88,6 @@ export function SidePanel({
 
       <SavedPokemonPicker
         id={fieldId("saved")}
-        savedTeams={savedTeams}
         onLoad={(pokemon) => dispatch({ type: "loadSaved", side, pokemon })}
       />
 
@@ -320,11 +311,13 @@ function findPokemon(set: BuilderSet) {
 
 type SavedPokemonPickerProps = {
   id: string;
-  savedTeams: SavedTeam[] | null;
   onLoad: (pokemon: SavedPokemon) => void;
 };
 
-function SavedPokemonPicker({ id, savedTeams, onLoad }: SavedPokemonPickerProps) {
+function SavedPokemonPicker({ id, onLoad }: SavedPokemonPickerProps) {
+  // null when signed out, [] when signed in without saved teams.
+  const savedTeams = useSavedTeams();
+
   if (savedTeams === null) {
     return (
       <p className="calc-saved-hint">
