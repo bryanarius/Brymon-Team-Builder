@@ -1,10 +1,10 @@
 # Brymon Team Builder
 
-A full-stack Pokémon team builder built from scratch using a custom **PHP MVC architecture**, **PostgreSQL**, **Vanilla JavaScript**, and the **PokéAPI**.
+A full-stack Pokémon team builder built from scratch using a custom **PHP MVC architecture**, **PostgreSQL**, **Vanilla JavaScript**, **React + TypeScript** islands, and the **PokéAPI**.
 
 > ✅ **Status:** Version 2.1 live at [brymonteambuilder.com](https://brymonteambuilder.com), adding regional forms, Mega Evolutions, a defensive coverage chart, meta usage stats, and a damage calculator
 >
-> 🚧 **Up next:** Version 3, incremental modernization with CI/CD, React + TypeScript, and a small Laravel API. See the [roadmap](#version-3--incremental-modernization).
+> 🚧 **In progress:** Version 3, incremental modernization. The damage calculator and team analysis now run as React + TypeScript islands; CI/CD is next. See the [roadmap](#version-3--incremental-modernization).
 
 ---
 
@@ -26,6 +26,7 @@ Brymon combines:
 - PostgreSQL relational data modeling
 - Authentication and authorization
 - Interactive JavaScript state management
+- React + TypeScript islands for the most stateful pages, built with Vite
 - PokéAPI integration (REST and GraphQL)
 - Pokémon Showdown import/export
 - Regional forms and Mega Evolutions
@@ -185,6 +186,8 @@ Brymon combines:
 - Battle conditions: singles / doubles, weather, terrain, Reflect, Light Screen, Aurora Veil, and critical hits
 - Load any Pokémon from your saved teams into either side, swap attacker and defender, or open a Pokémon straight from its saved team page
 - Built with React + TypeScript (`resources/ts/calc/`) as Brymon's first React island, bundled by Vite with `@smogon/calc` from npm and only loaded on this page
+- State managed with `useReducer`: every change (picking a species, setting a stat, swapping sides, loading a saved Pokémon) is a typed action handled by one pure, unit-tested reducer, with an exhaustiveness check so an unhandled action fails the build
+- Shared through React Context (`CalcProvider`), with separate contexts for state, `dispatch`, and the user's saved teams, so panels read what they need instead of receiving it through props
 
 ## Team Management
 
@@ -207,12 +210,16 @@ Brymon combines:
 - Team analysis summary
 - Defensive coverage chart: each member's multiplier against all 18 types, with weak / resist / immune totals
 - Built with React + TypeScript (`resources/ts/analysis/`) as Brymon's second React island, with the calculations unit-tested in Vitest
+- PokéAPI loading lives in a custom `useTeamAnalysis` hook, and the panel is covered by React Testing Library component tests against a stubbed PokéAPI
 
 ## Pokémon Showdown Integration
 
 - Import Pokémon Showdown teams
 - Export Pokémon Showdown teams
-- Parse moves, abilities, items, natures, EVs, and IVs
+- Parse nicknames, moves, abilities, items, natures, EVs, and IVs
+- Translate between Showdown's and PokéAPI's names: gender markers (`(F)`), default forms named by species (`Shaymin` → `shaymin-land`), female forms (`Indeedee-F`), Ogerpon's masks, and cosmetic forms (`Alcremie-Ruby-Cream`)
+- Exports use names Showdown can import again
+- A failed import names the Pokémon that couldn't be found, and never leaves a half-imported team
 
 ## Public Teams & Social
 
@@ -291,7 +298,7 @@ Playwright tests exercise real browser workflows, including:
 
 - Login and logout
 - Team creation
-- Pokémon Showdown import
+- Pokémon Showdown import, including real teams with gender markers, default forms, and Ogerpon's masks
 - Team saving
 - Viewing a saved team
 - Editing a team
@@ -305,6 +312,19 @@ Playwright tests exercise real browser workflows, including:
 Usage stats are served from a fixed fixture in the E2E tests, so they don't
 break when Smogon's monthly rankings change.
 
+## TypeScript And JavaScript Unit Tests
+
+Vitest and React Testing Library cover the React islands:
+
+- Damage calculator adapter, form state, and reducer (as pure functions)
+- Damage calculator components through `CalcProvider`: loading saved Pokémon, swapping sides, and battle conditions
+- Team analysis calculations, the `useTeamAnalysis` hook, and the analysis panel
+
+Node's built-in test runner covers the classic browser scripts:
+
+- Type matchups and the defensive coverage chart
+- Pokémon Showdown parsing and export, using real pasted teams as fixtures
+
 ### Current Test Results
 
 ```text
@@ -317,19 +337,19 @@ PHPUnit
 
 Playwright
 
-11 end-to-end tests
+14 end-to-end tests
 100% passing
 
 
 Vitest + React Testing Library (TypeScript unit and component tests)
 
-40 tests
+55 tests
 100% passing
 
 
 Node (JS unit tests)
 
-6 tests
+13 tests
 100% passing
 ```
 
@@ -530,11 +550,16 @@ Models
    ▼
 PostgreSQL
 
-Browser / JavaScript
+Browser / JavaScript and React islands
    │
    ▼
 PokéAPI
 ```
+
+PHP still renders every page. On the damage calculator and team analysis,
+React renders into a single mount element, with data passed from PHP as
+embedded JSON; `app/Core/Vite.php` prints the bundle's script tags from
+Vite's manifest.
 
 ---
 
@@ -544,8 +569,8 @@ PokéAPI
 Brymon/
 │
 ├── app/
-│   ├── Controllers/     # Page, Auth, Account, Team, Profile, Dashboard
-│   ├── Core/            # Router, Auth, Csrf, Validator, Database, Mailer, Config
+│   ├── Controllers/     # Page, Auth, Account, Team, Profile, Dashboard, UsageStats
+│   ├── Core/            # Router, Auth, Csrf, Validator, Database, Mailer, Config, Vite
 │   ├── Models/          # Team, User, Follow, TeamLike
 │   └── Views/           # feature-grouped templates, shared layouts and partials
 │
@@ -563,18 +588,28 @@ Brymon/
 │   ├── favicon/
 │   ├── images/
 │   ├── js/              # one file per feature area, no build step
+│   ├── build/           # Vite output (generated, git-ignored)
 │   └── index.php        # front controller
+│
+├── resources/
+│   └── ts/
+│       ├── calc/        # damage calculator island (reducer, context, panels)
+│       ├── analysis/    # team analysis island (calculations, hook, panel)
+│       └── components/  # shared React components (Combobox, TypeBadge)
 │
 ├── routes/
 │   └── web.php
 │
 ├── tests/
-│   ├── Unit/
-│   ├── Integration/
-│   └── E2E/
+│   ├── Unit/            # PHPUnit
+│   ├── Integration/     # PHPUnit against PostgreSQL
+│   ├── TS/              # Vitest + React Testing Library
+│   ├── JS/              # Node test runner for the classic scripts
+│   └── E2E/             # Playwright
 │
 ├── composer.json
 ├── package.json
+├── vite.config.mts
 ├── phpunit.xml
 └── Dockerfile
 ```
@@ -628,6 +663,15 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
 - Form validation
 - Responsive navigation
 
+## React & TypeScript
+
+- Incremental migration through React islands, one page at a time, without a rewrite
+- `useReducer` with typed actions (discriminated unions) and an exhaustiveness check
+- React Context with split state / dispatch contexts and guarded consumer hooks
+- Custom hooks for data loading (`useTeamAnalysis`)
+- Pure calculation modules kept separate from components
+- Vite builds with hashed bundles, served through a PHP manifest reader
+
 ## API Integration
 
 - PokéAPI integration (REST and GraphQL)
@@ -643,6 +687,9 @@ Brymon demonstrates experience across multiple areas of full-stack software deve
 - Playwright browser testing
 - End-to-end CRUD testing
 - Authentication workflow testing
+- Vitest unit testing for TypeScript
+- React Testing Library component and hook testing
+- Regression tests built from real user-reported bugs
 
 ## Deployment
 
@@ -789,12 +836,25 @@ tests and is integrated without breaking existing saved teams.
 The goal is to adopt modern tooling where it adds real value, **not** to
 rewrite Brymon. The custom PHP MVC core stays in place.
 
-- **React + TypeScript** — introduce them through one self-contained
-  interface (likely the team analysis dashboard), talking to the existing
-  PHP backend over REST endpoints.
+### ✅ Completed
+
+- [x] **React + TypeScript islands** — Vite build, served through a PHP
+  manifest reader, with React only on the pages that hold a lot of state
+  - [x] Damage calculator rebuilt as a React island
+  - [x] Team analysis rebuilt as a React island
+  - [x] Custom `useTeamAnalysis` hook
+  - [x] Calculator state managed with `useReducer`
+  - [x] Calculator state shared through React Context
+- [x] Vitest and React Testing Library test suites
+- [x] Showdown import fixes from player reports (gender markers, default
+  forms, Ogerpon masks, cosmetic forms)
+
+### Planned
+
+- **CI/CD** — run PHPUnit, Vitest, and Playwright automatically on every push.
+- **Accessibility testing** — automated axe checks in Playwright.
 - **Laravel** — explore it through a small, isolated API or feature rather
   than migrating the application.
-- **CI/CD** — run PHPUnit and Playwright automatically on every push.
 - **Expanded automated testing** — broader E2E coverage of the builder and
   analysis features.
 - Custom uploaded profile pictures
@@ -906,30 +966,29 @@ Run all PHPUnit unit and integration tests:
 ./vendor/bin/phpunit
 ```
 
-Current test suite:
+---
 
-```text
-50 tests
-105 assertions
+## Vitest And Node
+
+Run the TypeScript unit and component tests, then the classic JavaScript unit tests:
+
+```bash
+npm run test:ts
+npm run test:js
 ```
 
 ---
 
 ## Playwright
 
-Run the browser-based end-to-end tests:
+Start the development server first, then run the browser-based end-to-end tests:
 
 ```bash
+php -S localhost:8000 -t public
 npx playwright test
 ```
 
-Current E2E suite:
-
-```text
-2 tests
-```
-
-The E2E tests cover authentication and Brymon's primary team-management workflow.
+See [Current Test Results](#current-test-results) for what each suite covers.
 
 ---
 
@@ -978,6 +1037,10 @@ Key lessons included:
 - Deploying a Dockerized PHP application
 - Configuring a production PostgreSQL database
 - Configuring a custom production domain
+- Migrating a live application to React + TypeScript incrementally, one island at a time
+- Choosing between `useState`, `useReducer`, and Context based on how state actually flows
+- Measuring before optimizing: skipping a code split that would only have delayed the page
+- Turning user bug reports into regression tests
 - Moving a project from initial planning through production release
 
 ---
