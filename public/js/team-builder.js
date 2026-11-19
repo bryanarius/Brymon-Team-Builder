@@ -615,19 +615,59 @@ document.addEventListener("DOMContentLoaded", () => {
       return state.detailCache.get(name);
     }
 
-    const response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(name)}`,
-    );
+    let response = await fetchPokemonResource(name);
+
+    /*
+     * Showdown names some default forms by species ("Shaymin",
+     * "Landorus", "Urshifu"), but PokéAPI names them by form
+     * ("shaymin-land"). The species resource says which form is default.
+     */
+    if (response.status === 404) {
+      const defaultFormName = await getDefaultFormName(name);
+
+      if (defaultFormName) {
+        response = await fetchPokemonResource(defaultFormName);
+      }
+    }
 
     if (!response.ok) {
-      throw new Error(`Pokémon request failed for ${name}: ${response.status}`);
+      const error = new Error(
+        `Pokémon request failed for ${name}: ${response.status}`,
+      );
+      error.status = response.status;
+      throw error;
     }
 
     const pokemon = await response.json();
 
     state.detailCache.set(name, pokemon);
+    state.detailCache.set(pokemon.name, pokemon);
 
     return pokemon;
+  }
+
+  function fetchPokemonResource(name) {
+    return fetch(`https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(name)}`);
+  }
+
+  // "shaymin" -> "shaymin-land"; null if there's no such species.
+  async function getDefaultFormName(speciesName) {
+    const response = await fetch(
+      `https://pokeapi.co/api/v2/pokemon-species/${encodeURIComponent(
+        speciesName,
+      )}`,
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const species = await response.json();
+
+    return (
+      species.varieties.find((variety) => variety.is_default)?.pokemon.name ??
+      null
+    );
   }
 
   async function hydrateInitialTeam(initialTeam) {
@@ -1624,6 +1664,26 @@ document.addEventListener("DOMContentLoaded", () => {
     showdownImportText?.focus();
   });
 
+  /*
+   * The import is all or nothing: one unknown Pokémon stops it, so the
+   * error says which one instead of PokéAPI's status code.
+   */
+  async function getImportedPokemonDetails(imported, index) {
+    const label = `${imported.speciesText} (Pokémon ${index + 1})`;
+
+    try {
+      return await getPokemonDetails(imported.species);
+    } catch (error) {
+      console.error("Showdown import lookup failed:", error);
+
+      throw new Error(
+        error.status === 404
+          ? `Couldn't find ${label}. Check the species name.`
+          : `Couldn't load ${label} from PokéAPI. Please try again.`,
+      );
+    }
+  }
+
   confirmShowdownImport?.addEventListener("click", async () => {
     try {
       const parsedTeam = parseShowdownTeam(showdownImportText.value);
@@ -1633,7 +1693,7 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let index = 0; index < parsedTeam.length; index++) {
         const imported = parsedTeam[index];
 
-        const details = await getPokemonDetails(imported.species);
+        const details = await getImportedPokemonDetails(imported, index);
 
         const pokemon = createTeamPokemon(details);
 
@@ -1718,24 +1778,25 @@ function parseShowdownTeam(text) {
 }
 
 function parseShowdownHeading(line) {
-  const [identityPart, itemPart = ""] = String(line).split(/\s+@\s+/, 2);
+  const [identityWithGender, itemPart = ""] = String(line).split(/\s+@\s+/, 2);
+
+  // "Snowflake (Vulpix-Alola) (F)": drop the gender first, or the match
+  // below reads "Vulpix-Alola) (F" as the species.
+  const identityPart = identityWithGender.replace(/\s+\([MF]\)$/i, "");
 
   const nicknameMatch = identityPart.match(/^(.*?)\s+\((.+)\)$/);
 
-  if (nicknameMatch) {
-    return {
-      nickname: nicknameMatch[1].trim(),
-
-      species: normalizeShowdownName(nicknameMatch[2]),
-
-      item: normalizeShowdownName(itemPart),
-    };
-  }
+  const [nickname, speciesText] = nicknameMatch
+    ? [nicknameMatch[1].trim(), nicknameMatch[2].trim()]
+    : ["", identityPart.trim()];
 
   return {
-    nickname: "",
+    nickname,
 
-    species: normalizeShowdownName(identityPart),
+    // As pasted, for error messages ("Ogerpon-Wellspring").
+    speciesText,
+
+    species: normalizeShowdownName(speciesText),
 
     item: normalizeShowdownName(itemPart),
   };
@@ -1801,6 +1862,7 @@ function parseShowdownPokemon(block) {
 
   const parsedPokemon = {
     species: fromShowdownSpecies(heading.species),
+    speciesText: heading.speciesText,
     nickname: heading.nickname,
     item: heading.item,
     ability: "",
@@ -1869,8 +1931,15 @@ function exportTeamToShowdown(slots) {
 function formatPokemonForShowdown(pokemon) {
   const lines = [];
 
+  // A default form exports as its species ("shaymin-land" -> "Shaymin"):
+  // Showdown has no "Shaymin-Land", so the export couldn't be imported.
   const species =
-    toShowdownSpecies(pokemon.name) ?? formatShowdownName(pokemon.name);
+    toShowdownSpecies(pokemon.name) ??
+    formatShowdownName(
+      pokemon.isDefaultForm && pokemon.speciesName
+        ? pokemon.speciesName
+        : pokemon.name,
+    );
 
   const nickname = String(pokemon.nickname ?? "").trim();
 

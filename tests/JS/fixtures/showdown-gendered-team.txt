@@ -1,0 +1,56 @@
+Lovebug (Sylveon) @ Leftovers
+Ability: Pixilate
+EVs: 252 HP / 252 Def / 4 SpD
+Bold Nature
+- Hyper Voice
+- Wish
+- Protect
+- Calm Mind
+
+Snowflake (Vulpix-Alola) (F) @ Light Clay
+Ability: Snow Warning
+EVs: 252 HP / 4 SpA / 252 Spe
+Timid Nature
+- Aurora Veil
+- Freeze-Dry
+- Encore
+- Hypnosis
+
+Pixie (Cutiefly) (F) @ Focus Sash
+Ability: Shield Dust
+Shiny: Yes
+EVs: 252 SpA / 4 SpD / 252 Spe
+Timid Nature
+- Sticky Web
+- Moonblast
+- Stun Spore
+- U-turn
+
+Bunny (Buneary) (F) @ Choice Band
+Ability: Limber
+Shiny: Yes
+Happiness: 255
+EVs: 252 Atk / 4 SpD / 252 Spe
+Jolly Nature
+- Return
+- Drain Punch
+- Ice Punch
+- Switcheroo
+
+Petal (Shaymin) @ Life Orb
+Ability: Natural Cure
+EVs: 252 SpA / 4 SpD / 252 Spe
+Timid Nature
+- Seed Flare
+- Earth Power
+- Psychic
+- Synthesis
+
+Cupcake (Alcremie-Ruby-Cream) (F) @ Leftovers
+Ability: Aroma Veil
+EVs: 252 HP / 252 Def / 4 SpD
+Bold Nature
+- Calm Mind
+- Recover
+- Dazzling Gleam
+- Mystical Fire

@@ -243,7 +243,36 @@ const SHOWDOWN_SPECIES_ALIASES = {
   "tauros-paldea-aqua": "tauros-paldea-aqua-breed",
   "meowstic-m-mega": "meowstic-male-mega",
   "meowstic-f-mega": "meowstic-female-mega",
+  "ogerpon-wellspring": "ogerpon-wellspring-mask",
+  "ogerpon-hearthflame": "ogerpon-hearthflame-mask",
+  "ogerpon-cornerstone": "ogerpon-cornerstone-mask",
+  // Showdown names female forms "-F"; the male form is the plain species.
+  "indeedee-f": "indeedee-female",
+  "meowstic-f": "meowstic-female",
+  "basculegion-f": "basculegion-female",
+  "oinkologne-f": "oinkologne-female",
 };
+
+/*
+ * Species whose Showdown forms are only cosmetic ("Alcremie-Ruby-Cream",
+ * "Vivillon-Fancy", "Gastrodon-East"). PokéAPI has no entry for most of
+ * them, so they import as the base species.
+ */
+const COSMETIC_FORM_SPECIES = [
+  "alcremie",
+  "vivillon",
+  "flabebe",
+  "floette",
+  "florges",
+  "furfrou",
+  "shellos",
+  "gastrodon",
+  "deerling",
+  "sawsbuck",
+];
+
+// Real forms of those species, with their own stats or types.
+const NON_COSMETIC_FORMS = new Set(["floette-eternal", "alcremie-gmax"]);
 
 const POKEAPI_TO_SHOWDOWN_SPECIES = Object.fromEntries(
   Object.entries(SHOWDOWN_SPECIES_ALIASES).map(([showdown, pokeApi]) => [
@@ -315,11 +344,15 @@ function formatPokemonDisplayName(name) {
   return `${displayName} (${capitalizeHyphenatedWords(form.variant)})`;
 }
 
-// "Samurott-Hisui" -> "samurott-hisui", "Farfetch’d" -> "farfetchd".
+// "Samurott-Hisui" -> "samurott-hisui", "Farfetch’d" -> "farfetchd",
+// "Flabébé" -> "flabebe".
 function normalizeShowdownName(value) {
   return String(value)
     .trim()
     .toLowerCase()
+    // Split accented letters into letter + accent, then drop the accent.
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
     .replace(/♀/g, "-f")
     .replace(/♂/g, "-m")
     .replace(/[.'’]/g, "")
@@ -329,13 +362,26 @@ function normalizeShowdownName(value) {
 
 // Normalized Showdown species -> PokéAPI resource name.
 function fromShowdownSpecies(normalizedName) {
-  return SHOWDOWN_SPECIES_ALIASES[normalizedName] ?? normalizedName;
+  if (SHOWDOWN_SPECIES_ALIASES[normalizedName]) {
+    return SHOWDOWN_SPECIES_ALIASES[normalizedName];
+  }
+
+  const cosmeticSpecies = COSMETIC_FORM_SPECIES.find((species) =>
+    normalizedName.startsWith(`${species}-`),
+  );
+
+  if (cosmeticSpecies && !NON_COSMETIC_FORMS.has(normalizedName)) {
+    return cosmeticSpecies;
+  }
+
+  return normalizedName;
 }
 
 /*
  * PokéAPI resource name -> Showdown species ("Samurott-Hisui",
- * "Tauros-Paldea-Combat", "Charizard-Mega-X"). Returns null for default
- * forms so callers can keep their existing formatting.
+ * "Tauros-Paldea-Combat", "Charizard-Mega-X", "Ogerpon-Wellspring").
+ * Returns null for default forms so callers can keep their existing
+ * formatting.
  */
 function toShowdownSpecies(name) {
   if (parseMegaForm(name)) {
@@ -348,7 +394,13 @@ function toShowdownSpecies(name) {
   const form = parseRegionalForm(POKEAPI_TO_SHOWDOWN_SPECIES[name] ?? name);
 
   if (!form) {
-    return null;
+    // Other aliased forms: "ogerpon-wellspring-mask" -> "Ogerpon-Wellspring".
+    return POKEAPI_TO_SHOWDOWN_SPECIES[name]
+      ? POKEAPI_TO_SHOWDOWN_SPECIES[name]
+          .split("-")
+          .map(capitalizeHyphenatedWords)
+          .join("-")
+      : null;
   }
 
   return [form.species, form.region, form.variant]
