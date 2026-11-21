@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\AccountController;
 use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
+use App\Controllers\FeedbackController;
 use App\Controllers\PageController;
 use App\Controllers\ProfileController;
 use App\Controllers\TeamController;
@@ -25,6 +26,15 @@ $router->get('/pokedex', [PageController::class, 'pokedex']);
 $router->get('/meta', [PageController::class, 'meta']);
 
 $router->get('/calc', [PageController::class, 'calc']);
+
+/*
+|--------------------------------------------------------------------------
+| Feedback Routes (bug reports and suggestions, guests welcome)
+|--------------------------------------------------------------------------
+*/
+
+$router->get('/feedback', [FeedbackController::class, 'show']);
+$router->post('/feedback', [FeedbackController::class, 'store']);
 
 /*
 |--------------------------------------------------------------------------

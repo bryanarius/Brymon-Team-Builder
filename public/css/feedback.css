@@ -1,0 +1,58 @@
+/* Feedback Page: the layout and inputs come from account-settings.css. */
+
+.feedback-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.feedback-tab {
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: var(--app-panel);
+  color: var(--app-muted);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.feedback-tab:hover {
+  border-color: var(--app-border-strong);
+  color: var(--text);
+}
+
+.feedback-tab[aria-current="page"] {
+  border-color: var(--accent);
+  background: rgba(244, 197, 66, 0.12);
+  color: var(--accent);
+}
+
+.feedback-optional {
+  color: var(--app-muted);
+  font-weight: 400;
+}
+
+/* Pasted Showdown teams line up like they do in Showdown. */
+.account-form .feedback-attachment {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+}
+
+/* Off-screen rather than display: none, which some bots skip. */
+.feedback-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Footer links to this page. */
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+}

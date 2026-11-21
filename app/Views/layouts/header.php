@@ -47,6 +47,7 @@ $documentTitle = str_contains($pageTitle, 'Brymon')
     <link rel="stylesheet" href="/css/footer.css">
     <link rel="stylesheet" href="/css/account-settings.css">
     <link rel="stylesheet" href="/css/profile.css">
+    <link rel="stylesheet" href="/css/feedback.css">
 
     <?php // React islands this page uses. Module scripts never block rendering. ?>
     <?php if (!empty($viteEntries)): ?>

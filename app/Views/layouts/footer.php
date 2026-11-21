@@ -6,6 +6,38 @@
         </p>
 
         <p>Built with PHP, PostgreSQL, and PokéAPI.</p>
+
+        <?php
+        // Tells a report which page it came from, e.g. /teambuilder.
+        $footerPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+        $feedbackFrom = $footerPath === '/feedback' ? [] : ['from' => $footerPath];
+        ?>
+        <p class="site-footer-links">
+            <?php
+            /*
+             * A new tab, so a visitor doesn't lose an unsaved team.
+             * noopener: the portfolio can't control this tab.
+             */
+            ?>
+            <a
+                href="https://bryanarius.github.io/Portfolio-Website/"
+                target="_blank"
+                rel="noopener"
+                aria-label="My portfolio (opens in a new tab)"
+            >My portfolio</a>
+
+            <a href="/feedback?<?= htmlspecialchars(
+                http_build_query(['type' => 'bug'] + $feedbackFrom),
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>">Report a bug</a>
+
+            <a href="/feedback?<?= htmlspecialchars(
+                http_build_query(['type' => 'suggestion'] + $feedbackFrom),
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>">Suggest a feature</a>
+        </p>
     </div>
     <div
         id="toast-container"
