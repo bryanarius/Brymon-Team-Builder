@@ -31,6 +31,84 @@ class Validator
         return $value === $comparison;
     }
 
+    public const FEEDBACK_KINDS = ['bug', 'suggestion'];
+
+    public const FEEDBACK_SUMMARY_MAX = 120;
+    public const FEEDBACK_DETAILS_MAX = 3000;
+    public const FEEDBACK_EXPECTED_MAX = 2000;
+    // Room for a full six-Pokémon Showdown export.
+    public const FEEDBACK_ATTACHMENT_MAX = 10000;
+
+    /**
+     * A bug report or suggestion, already trimmed by the controller.
+     *
+     * @param array{
+     *     kind: string,
+     *     summary: string,
+     *     details: string,
+     *     expected: string,
+     *     attachment: string,
+     *     contact_email: string
+     * } $feedback
+     *
+     * @return array<string, string> Field name => message; empty when valid.
+     */
+    public static function feedback(array $feedback): array
+    {
+        $errors = [];
+        $isBug = $feedback['kind'] === 'bug';
+
+        if (!in_array($feedback['kind'], self::FEEDBACK_KINDS, true)) {
+            $errors['kind'] = 'Choose a bug report or a suggestion.';
+        }
+
+        if (!self::required($feedback['summary'])) {
+            $errors['summary'] = 'Add a short summary.';
+        } elseif (!self::maxLength($feedback['summary'], self::FEEDBACK_SUMMARY_MAX)) {
+            $errors['summary'] = sprintf(
+                'Keep the summary under %d characters.',
+                self::FEEDBACK_SUMMARY_MAX
+            );
+        }
+
+        if (!self::required($feedback['details'])) {
+            $errors['details'] = $isBug
+                ? 'Describe what happened.'
+                : 'Describe your idea.';
+        } elseif (!self::maxLength($feedback['details'], self::FEEDBACK_DETAILS_MAX)) {
+            $errors['details'] = sprintf(
+                'Keep this under %d characters.',
+                self::FEEDBACK_DETAILS_MAX
+            );
+        }
+
+        if (!self::maxLength($feedback['expected'], self::FEEDBACK_EXPECTED_MAX)) {
+            $errors['expected'] = sprintf(
+                'Keep this under %d characters.',
+                self::FEEDBACK_EXPECTED_MAX
+            );
+        }
+
+        if (!self::maxLength($feedback['attachment'], self::FEEDBACK_ATTACHMENT_MAX)) {
+            $errors['attachment'] = sprintf(
+                'Pasted text must be under %d characters.',
+                self::FEEDBACK_ATTACHMENT_MAX
+            );
+        }
+
+        if (
+            $feedback['contact_email'] !== ''
+            && (
+                !self::email($feedback['contact_email'])
+                || !self::maxLength($feedback['contact_email'], 255)
+            )
+        ) {
+            $errors['contact_email'] = 'Please enter a valid email, or leave it blank.';
+        }
+
+        return $errors;
+    }
+
     public static function pokemonTeam(array $pokemon): array
     {
         $errors = [];
