@@ -1020,7 +1020,30 @@ require dirname(__DIR__) . '/layouts/header.php';
                 id="showdown-import-text"
                 rows="18"
                 placeholder="Paste your Pokémon Showdown team here..."
+                aria-describedby="showdown-import-error"
                 ></textarea>
+
+                <?php
+                /*
+                 * Shown inside the dialog, not as a toast: a modal dialog
+                 * blocks clicks outside it, so a toast's link couldn't be used.
+                 */
+                ?>
+                <div
+                    class="showdown-import-error"
+                    id="showdown-import-error"
+                    role="alert"
+                    hidden
+                >
+                    <p id="showdown-import-error-message"></p>
+
+                    <a
+                        href="/feedback?type=bug&amp;draft=1"
+                        id="report-showdown-import"
+                        target="_blank"
+                        rel="noopener"
+                    >Report this import <span class="visually-hidden">(opens in a new tab)</span></a>
+                </div>
 
                 <div class="showdown-dialog-actions">
                 <button

@@ -1838,3 +1838,41 @@
   color: #8398b5;
   font-variant-numeric: tabular-nums;
 }
+
+/* A failed import: the reason, and a link to report it. */
+.showdown-import-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+
+  margin-top: -0.5rem;
+  padding: 0.75rem 1rem;
+
+  border: 1px solid rgba(255, 116, 116, 0.55);
+  border-radius: 12px;
+
+  background: rgba(255, 116, 116, 0.1);
+}
+
+.showdown-import-error[hidden] {
+  display: none;
+}
+
+.showdown-import-error p {
+  margin: 0;
+
+  color: #ffd0d0;
+  line-height: 1.5;
+}
+
+.showdown-import-error a {
+  color: #ffc629;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.showdown-import-error a[hidden] {
+  display: none;
+}

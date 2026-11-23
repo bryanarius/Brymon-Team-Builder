@@ -30,6 +30,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmShowdownImport = document.querySelector(
     "#confirm-showdown-import",
   );
+
+  const showdownImportError = document.querySelector("#showdown-import-error");
+
+  const showdownImportErrorMessage = document.querySelector(
+    "#showdown-import-error-message",
+  );
+
+  const reportShowdownImport = document.querySelector(
+    "#report-showdown-import",
+  );
   const selectedPokemonEmpty = document.querySelector(
     "#selected-pokemon-empty",
   );
@@ -1660,8 +1670,48 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   importShowdownButton?.addEventListener("click", () => {
+    hideShowdownImportError();
     importShowdownDialog?.showModal();
     showdownImportText?.focus();
+  });
+
+  // The error is about the old paste; editing it clears the error.
+  showdownImportText?.addEventListener("input", hideShowdownImportError);
+
+  function showShowdownImportError(message) {
+    if (!showdownImportError || !showdownImportErrorMessage) {
+      showToast(message, { type: "error", title: "Import failed" });
+      return;
+    }
+
+    showdownImportErrorMessage.textContent = message;
+
+    // Nothing to report about an empty paste.
+    if (reportShowdownImport) {
+      reportShowdownImport.hidden = showdownImportText.value.trim() === "";
+      reportShowdownImport.href = `/feedback?${new URLSearchParams({
+        type: "bug",
+        from: window.location.pathname,
+        draft: "1",
+      })}`;
+    }
+
+    showdownImportError.hidden = false;
+  }
+
+  function hideShowdownImportError() {
+    if (showdownImportError) {
+      showdownImportError.hidden = true;
+    }
+  }
+
+  // Saved on click, so the report has the paste and error shown right now.
+  reportShowdownImport?.addEventListener("click", () => {
+    saveFeedbackDraft({
+      summary: "Showdown import failed",
+      details: `The import said: ${showdownImportErrorMessage.textContent}`,
+      attachment: showdownImportText.value,
+    });
   });
 
   /*
@@ -1746,13 +1796,8 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Showdown import error:", error);
 
-      showToast(
+      showShowdownImportError(
         error instanceof Error ? error.message : "Unable to import the team.",
-        {
-          type: "error",
-          title: "Import failed",
-          duration: 6000,
-        },
       );
     }
   });
