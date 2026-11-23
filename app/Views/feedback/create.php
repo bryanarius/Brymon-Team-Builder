@@ -102,6 +102,7 @@ $describedBy = static fn (string $field): string => isset($errors[$field])
                 method="POST"
                 action="/feedback"
                 class="account-form"
+                data-feedback-form
                 data-submit-lock
                 data-submit-label="Sending…"
             >
