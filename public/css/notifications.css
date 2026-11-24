@@ -1,0 +1,85 @@
+/* Notifications Page: the empty state and pagination come from profile.css. */
+
+.notifications-page {
+  min-height: calc(100vh - 90px);
+  padding: 2.5rem 1.5rem 4rem;
+  background: var(--app-background);
+  color: #f8fafc;
+}
+
+.notifications-page .container {
+  width: min(640px, 100%);
+  margin: 0 auto;
+}
+
+.notifications-page h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  line-height: 1.15;
+}
+
+.notification-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notification {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-panel);
+}
+
+/* New since the last visit: a blue edge and a dot, like Instagram. */
+.notification.is-unread {
+  border-color: rgba(20, 132, 245, 0.55);
+  background: rgba(20, 132, 245, 0.08);
+}
+
+.notification-avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.notification-text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: #dce7f6;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.notification-actor,
+.notification-team {
+  color: #f8fafc;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.notification-actor:hover,
+.notification-team:hover {
+  color: var(--app-blue);
+  text-decoration: underline;
+}
+
+.notification-time {
+  margin-left: 0.25rem;
+  color: var(--app-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.notification-dot {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--app-blue);
+}

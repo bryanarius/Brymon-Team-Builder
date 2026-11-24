@@ -107,6 +107,27 @@ final class NotificationTest extends TestCase
         $this->assertSame(0, $notifications->countUnread($this->meId));
     }
 
+    public function testEachNotificationSaysIfItIsUnreadAndHowOldItIs(): void
+    {
+        (new Follow())->follow($this->fanId, $this->meId);
+        (new TeamLike())->like($this->strangerId, $this->myTeamId);
+
+        $this->setFollowTime($this->fanId, $this->meId, '2026-02-01 10:00:00');
+        $this->db
+            ->prepare("UPDATE team_likes SET created_at = NOW() - INTERVAL '2 hours'")
+            ->execute();
+
+        $this->setSeenAt($this->meId, '2026-03-01 00:00:00');
+
+        [$like, $follow] = (new Notification())->findForUser($this->meId, 10);
+
+        // The like came after the last visit; the follow before it.
+        $this->assertTrue($like['is_unread']);
+        $this->assertFalse($follow['is_unread']);
+
+        $this->assertEqualsWithDelta(7200, $like['age_seconds'], 5);
+    }
+
     public function testSeenTimeNeverMovesBackwards(): void
     {
         $notifications = new Notification();

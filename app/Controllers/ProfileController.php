@@ -85,7 +85,7 @@ final class ProfileController extends Controller
         }
 
         $profileUserId = (int) $profileUser['id'];
-        $page = self::pageFrom($_GET['page'] ?? null);
+        $page = self::pageFromQuery();
         $followModel = new Follow();
 
         // One extra row says whether there's a next page, without a COUNT.
@@ -119,14 +119,6 @@ final class ProfileController extends Controller
             'hasNextPage' => $hasNextPage,
             'isOwnProfile' => Auth::activeId() === $profileUserId,
         ]);
-    }
-
-    // ?page=N, where anything that isn't a whole number from 1 up is page 1.
-    private static function pageFrom(mixed $value): int
-    {
-        $page = is_string($value) ? filter_var($value, FILTER_VALIDATE_INT) : false;
-
-        return is_int($page) && $page >= 1 && $page <= 10000 ? $page : 1;
     }
 
     public function follow(string $username): void

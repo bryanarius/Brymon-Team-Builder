@@ -25,6 +25,18 @@ abstract class Controller
     }
 
     /**
+     * ?page=N for paged lists. Anything that isn't a whole number from 1 up
+     * is page 1, so a bad link shows the first page instead of an error.
+     */
+    protected static function pageFromQuery(): int
+    {
+        $value = $_GET['page'] ?? null;
+        $page = is_string($value) ? filter_var($value, FILTER_VALIDATE_INT) : false;
+
+        return is_int($page) && $page >= 1 && $page <= 10000 ? $page : 1;
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     protected function sendJson(array $data, int $statusCode): void

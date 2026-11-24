@@ -7,6 +7,7 @@ use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
 use App\Controllers\FeedbackController;
 use App\Controllers\PageController;
+use App\Controllers\NotificationController;
 use App\Controllers\ProfileController;
 use App\Controllers\TeamController;
 use App\Controllers\UsageStatsController;
@@ -85,6 +86,7 @@ $router->post('/account/password', [AccountController::class, 'updatePassword'])
 */
 
 $router->get('/dashboard', [DashboardController::class, 'index']);
+$router->get('/notifications', [NotificationController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------

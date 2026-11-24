@@ -61,6 +61,8 @@ final class Notification
      * @return list<array{
      *     type: 'follow'|'like',
      *     created_at: string,
+     *     age_seconds: int,
+     *     is_unread: bool,
      *     actor_id: int,
      *     actor_username: string,
      *     actor_display_name: ?string,
@@ -78,12 +80,17 @@ final class Notification
                 notifications.created_at,
                 notifications.team_id,
                 notifications.team_name,
+                -- Worked out here, so PHP and PostgreSQL time zones never disagree.
+                FLOOR(EXTRACT(EPOCH FROM NOW() - notifications.created_at))::INTEGER
+                    AS age_seconds,
+                notifications.created_at > viewer.notifications_seen_at AS is_unread,
                 actors.id AS actor_id,
                 actors.username AS actor_username,
                 actors.display_name AS actor_display_name,
                 actors.avatar_pokemon_id AS actor_avatar_pokemon_id
             FROM (' . self::NOTIFICATIONS_SQL . ') AS notifications
             JOIN users AS actors ON actors.id = notifications.actor_id
+            JOIN users AS viewer ON viewer.id = :user_id
             -- type and source_id break ties, so pages never repeat or skip.
             ORDER BY
                 notifications.created_at DESC,
@@ -102,6 +109,8 @@ final class Notification
             static fn (array $row): array => [
                 'type' => $row['type'],
                 'created_at' => (string) $row['created_at'],
+                'age_seconds' => max(0, (int) $row['age_seconds']),
+                'is_unread' => (bool) $row['is_unread'],
                 'actor_id' => (int) $row['actor_id'],
                 'actor_username' => (string) $row['actor_username'],
                 'actor_display_name' => $row['actor_display_name'],
