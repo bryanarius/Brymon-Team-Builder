@@ -190,6 +190,35 @@ final class FollowTest extends TestCase
         $this->assertSame([], $follow->findFollowers($this->userAId, 2, 6));
     }
 
+    public function testRelationshipsSayWhoTheViewerFollowsAndWhoFollowsBack(): void
+    {
+        $follow = new Follow();
+        $userCId = $this->createUser('follow-c', 'follow-c@example.com');
+        $userDId = $this->createUser('follow-d', 'follow-d@example.com');
+
+        // A follows B; C follows A (so A can follow C back); D is a stranger.
+        $follow->follow($this->userAId, $this->userBId);
+        $follow->follow($userCId, $this->userAId);
+        // Follows between the others don't count.
+        $follow->follow($userCId, $userDId);
+
+        $relationships = $follow->findRelationshipsWith(
+            $this->userAId,
+            [$this->userBId, $userCId, $userDId]
+        );
+
+        $this->assertSame([$this->userBId], $relationships['following']);
+        $this->assertSame([$userCId], $relationships['followers']);
+    }
+
+    public function testRelationshipsWithNoTrainersSkipTheQuery(): void
+    {
+        $this->assertSame(
+            ['following' => [], 'followers' => []],
+            (new Follow())->findRelationshipsWith($this->userAId, [])
+        );
+    }
+
     private function createUser(string $username, string $email): int
     {
         $statement = $this->db->prepare(

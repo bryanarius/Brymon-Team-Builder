@@ -23,14 +23,114 @@ test("a guest opens a trainer's followers from their profile", async ({
     "page",
   );
 
+  // Guests see the list but no Follow buttons.
+  await expect(page.locator("[data-follow-button]")).toHaveCount(0);
+
   // Each trainer in the list opens their own profile.
-  const firstTrainer = page.locator(".follow-row").first();
+  const firstTrainer = page.locator(".follow-row-link").first();
   const username = (
     await firstTrainer.locator(".follow-row-username").textContent()
   ).replace("@", "");
 
   await firstTrainer.click();
   await expect(page).toHaveURL(`/u/${username}`);
+});
+
+async function signIn(browser, email, password) {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+
+  await page.goto("/login");
+  await page.getByLabel("Email address").fill(email);
+  await page.getByLabel("Password").fill(password);
+  await page.getByRole("button", { name: "Sign In" }).click();
+  await expect(page).toHaveURL("/dashboard");
+
+  return { context, page };
+}
+
+// Follows or unfollows from a profile, whatever the current state.
+async function setFollowing(page, username, following) {
+  await page.goto(`/u/${username}`);
+
+  const button = page.locator("#profile-follow-button");
+  const wanted = following ? "true" : "false";
+
+  if ((await button.getAttribute("aria-pressed")) !== wanted) {
+    await button.click();
+    await expect(button).toHaveAttribute("aria-pressed", wanted);
+  }
+}
+
+test("a new follower can be followed back from the followers list", async ({
+  browser,
+}) => {
+  const example = await signIn(browser, "e2e@example.com", "TestPassword123!");
+  const nessa = await signIn(
+    browser,
+    "demo_nessa@demo.brymon.local",
+    "DemoPass123!",
+  );
+
+  try {
+    await setFollowing(nessa.page, "Example", false);
+    await setFollowing(example.page, "demo_nessa", true);
+
+    // Nessa sees her new follower with a "Follow back" button.
+    await nessa.page.goto("/u/demo_nessa/followers");
+
+    const row = nessa.page.locator(".follow-row", { hasText: "@Example" });
+    const button = row.getByRole("button", { name: /Example/ });
+
+    await expect(button).toHaveText(/Follow back/);
+    await expect(button).toHaveAttribute("aria-pressed", "false");
+
+    await button.click();
+    await expect(button).toHaveText(/Following/);
+    await expect(button).toHaveAttribute("aria-pressed", "true");
+
+    // Saved, not just changed on the page.
+    await nessa.page.reload();
+    await expect(button).toHaveText(/Following/);
+
+    // Unfollowing goes back to "Follow back", since Example still follows her.
+    await button.click();
+    await expect(button).toHaveText(/Follow back/);
+
+    // Your own row in a list has no button.
+    await example.page.goto("/u/demo_nessa/followers");
+    await expect(
+      example.page
+        .locator(".follow-row", { hasText: "@Example" })
+        .getByRole("button"),
+    ).toHaveCount(0);
+  } finally {
+    // Leave the demo data as seeded.
+    await setFollowing(nessa.page, "Example", false);
+    await setFollowing(example.page, "demo_nessa", false);
+    await example.context.close();
+    await nessa.context.close();
+  }
+});
+
+test("the follower count's word matches the number", async ({ browser }) => {
+  const example = await signIn(browser, "e2e@example.com", "TestPassword123!");
+
+  try {
+    await setFollowing(example.page, "demo_nessa", false);
+
+    const count = example.page.locator("#profile-follower-count");
+    const before = Number(await count.textContent());
+
+    await example.page.locator("#profile-follow-button").click();
+    await expect(count).toHaveText(String(before + 1));
+    await expect(example.page.locator("#profile-follower-label")).toHaveText(
+      before + 1 === 1 ? "follower" : "followers",
+    );
+  } finally {
+    await setFollowing(example.page, "demo_nessa", false);
+    await example.context.close();
+  }
 });
 
 test("following someone adds you to their followers list", async ({

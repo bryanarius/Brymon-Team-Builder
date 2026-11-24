@@ -49,6 +49,9 @@ final class ProfileController extends Controller
             'isOwnProfile' => $viewerId === $profileUserId,
             'isFollowedByViewer' => $viewerId !== null
                 && $followModel->isFollowing($viewerId, $profileUserId),
+            // They follow the viewer, so the button says "Follow back".
+            'followsViewer' => $viewerId !== null
+                && $followModel->isFollowing($profileUserId, $viewerId),
         ]);
     }
 
@@ -92,13 +95,24 @@ final class ProfileController extends Controller
             : $followModel->findFollowing($profileUserId, self::FOLLOW_LIST_PAGE_SIZE + 1, $offset);
 
         $hasNextPage = count($trainers) > self::FOLLOW_LIST_PAGE_SIZE;
+        $trainers = array_slice($trainers, 0, self::FOLLOW_LIST_PAGE_SIZE);
+
+        // Which rows the signed-in viewer follows, and which follow them,
+        // for each row's Follow / Following / Follow back button.
+        $viewerId = Auth::activeId();
+        $relationships = $viewerId !== null
+            ? $followModel->findRelationshipsWith($viewerId, array_column($trainers, 'id'))
+            : ['following' => [], 'followers' => []];
 
         $this->view('profile/follows', [
             'pageTitle' => ($list === 'followers' ? 'Followers' : 'Following')
                 . ' · @' . $profileUser['username'],
             'profileUser' => $profileUser,
             'list' => $list,
-            'trainers' => array_slice($trainers, 0, self::FOLLOW_LIST_PAGE_SIZE),
+            'trainers' => $trainers,
+            'viewerId' => $viewerId,
+            'viewerFollowingIds' => $relationships['following'],
+            'viewerFollowerIds' => $relationships['followers'],
             'followerCount' => $followModel->countFollowers($profileUserId),
             'followingCount' => $followModel->countFollowing($profileUserId),
             'page' => $page,

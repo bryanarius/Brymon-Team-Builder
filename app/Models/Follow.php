@@ -131,6 +131,51 @@ final class Follow
     }
 
     /**
+     * Of $userIds, which $viewerId follows and which follow $viewerId, for
+     * the Follow / Following / Follow back buttons on one page of a list.
+     * One query, however many rows the page has.
+     *
+     * @param list<int> $userIds
+     *
+     * @return array{following: list<int>, followers: list<int>}
+     */
+    public function findRelationshipsWith(int $viewerId, array $userIds): array
+    {
+        $relationships = ['following' => [], 'followers' => []];
+
+        if ($userIds === []) {
+            return $relationships;
+        }
+
+        $statement = $this->database->prepare(
+            "
+            SELECT
+                CASE
+                    WHEN follower_id = :viewer_id THEN followed_id
+                    ELSE follower_id
+                END AS user_id,
+                follower_id = :viewer_id AS viewer_follows
+            FROM follows
+            WHERE (follower_id = :viewer_id AND followed_id = ANY(:user_ids::int[]))
+               OR (followed_id = :viewer_id AND follower_id = ANY(:user_ids::int[]))
+            "
+        );
+
+        $statement->execute([
+            'viewer_id' => $viewerId,
+            // A PostgreSQL array literal of whole numbers, e.g. {3,8,21}.
+            'user_ids' => '{' . implode(',', array_map('intval', $userIds)) . '}',
+        ]);
+
+        foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $key = $row['viewer_follows'] ? 'following' : 'followers';
+            $relationships[$key][] = (int) $row['user_id'];
+        }
+
+        return $relationships;
+    }
+
+    /**
      * One query for both lists: match $userId in one column, list the
      * trainers in the other. The column names come only from the two
      * methods above, never from a request.

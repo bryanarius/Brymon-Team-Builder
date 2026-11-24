@@ -68,7 +68,9 @@ $profileBio = trim((string) ($profileUser['bio'] ?? ''));
                     <strong id="profile-follower-count"><?=
                         (int) $followerCount
                     ?></strong>
-                    <?= (int) $followerCount === 1 ? 'follower' : 'followers' ?>
+                    <span id="profile-follower-label"><?=
+                        (int) $followerCount === 1 ? 'follower' : 'followers'
+                    ?></span>
                 </a>
                 <a href="<?= htmlspecialchars($profileUrl . '/following', ENT_QUOTES, 'UTF-8') ?>">
                     <strong><?= (int) $followingCount ?></strong> following
@@ -80,21 +82,15 @@ $profileBio = trim((string) ($profileUser['bio'] ?? ''));
             </p>
 
             <?php if ($viewerLoggedIn && !$isOwnProfile): ?>
-                <button
-                    type="button"
-                    class="profile-follow-button<?= $isFollowedByViewer
-                        ? ' is-following'
-                        : '' ?>"
-                    id="profile-follow-button"
-                    data-username="<?= htmlspecialchars(
-                        (string) $profileUser['username'],
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>"
-                    aria-pressed="<?= $isFollowedByViewer ? 'true' : 'false' ?>"
-                >
-                    <?= $isFollowedByViewer ? 'Following' : 'Follow' ?>
-                </button>
+                <?php
+                $followButtonUsername = $profileUsername;
+                $followButtonName = $profileHeading;
+                $followButtonFollowing = $isFollowedByViewer;
+                $followButtonFollowsViewer = !empty($followsViewer);
+                $followButtonSize = 'large';
+                $followButtonId = 'profile-follow-button';
+                require dirname(__DIR__) . '/partials/follow-button.php';
+                ?>
             <?php elseif (!$viewerLoggedIn): ?>
                 <a href="/login" class="profile-follow-signin">
                     Sign in to follow

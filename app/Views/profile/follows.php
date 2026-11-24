@@ -12,6 +12,9 @@ $trainers = $trainers ?? [];
 $page = $page ?? 1;
 $hasNextPage = $hasNextPage ?? false;
 $isOwnProfile = $isOwnProfile ?? false;
+$viewerId = $viewerId ?? null;
+$viewerFollowingIds = $viewerFollowingIds ?? [];
+$viewerFollowerIds = $viewerFollowerIds ?? [];
 
 $escape = static fn (?string $value): string => htmlspecialchars(
     (string) $value,
@@ -86,10 +89,10 @@ $emptyMessage = match (true) {
                         ? $trainerDisplayName
                         : $trainer['username'];
                     ?>
-                    <li>
+                    <li class="follow-row">
                         <a
                             href="/u/<?= $escape(rawurlencode($trainer['username'])) ?>"
-                            class="follow-row"
+                            class="follow-row-link"
                         >
                             <?php
                             $avatarId = $trainer['avatar_pokemon_id'];
@@ -103,6 +106,18 @@ $emptyMessage = match (true) {
                                 <span class="follow-row-username">@<?= $escape($trainer['username']) ?></span>
                             </span>
                         </a>
+
+                        <?php
+                        // Signed-in viewers only, and never on their own row.
+                        if ($viewerId !== null && $trainer['id'] !== $viewerId):
+                            $followButtonUsername = $trainer['username'];
+                            $followButtonName = $trainerName;
+                            $followButtonFollowing = in_array($trainer['id'], $viewerFollowingIds, true);
+                            $followButtonFollowsViewer = in_array($trainer['id'], $viewerFollowerIds, true);
+                            $followButtonSize = 'small';
+                            require dirname(__DIR__) . '/partials/follow-button.php';
+                        endif;
+                        ?>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -122,5 +137,14 @@ $emptyMessage = match (true) {
 
     </div>
 </main>
+
+<?php if ($viewerId !== null): ?>
+    <script>
+        window.BRYMON_CSRF_TOKEN = <?= json_encode(
+            \App\Core\Csrf::token(),
+            JSON_THROW_ON_ERROR
+        ) ?>;
+    </script>
+<?php endif; ?>
 
 <?php require dirname(__DIR__) . '/layouts/footer.php'; ?>
