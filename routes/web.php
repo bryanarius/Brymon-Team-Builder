@@ -118,6 +118,8 @@ $router->get('/p/{id}', [TeamController::class, 'showPublic']);
 */
 
 $router->get('/u/{username}', [ProfileController::class, 'show']);
+$router->get('/u/{username}/followers', [ProfileController::class, 'followers']);
+$router->get('/u/{username}/following', [ProfileController::class, 'following']);
 $router->post('/u/{username}/follow', [ProfileController::class, 'follow']);
 $router->post('/u/{username}/unfollow', [ProfileController::class, 'unfollow']);
 

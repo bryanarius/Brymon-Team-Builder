@@ -13,6 +13,8 @@ use App\Models\User;
 
 final class ProfileController extends Controller
 {
+    private const FOLLOW_LIST_PAGE_SIZE = 20;
+
     public function show(string $username): void
     {
         $userModel = new User();
@@ -48,6 +50,69 @@ final class ProfileController extends Controller
             'isFollowedByViewer' => $viewerId !== null
                 && $followModel->isFollowing($viewerId, $profileUserId),
         ]);
+    }
+
+    public function followers(string $username): void
+    {
+        $this->showFollowList($username, 'followers');
+    }
+
+    public function following(string $username): void
+    {
+        $this->showFollowList($username, 'following');
+    }
+
+    /**
+     * A trainer's followers or the trainers they follow. Public, like the
+     * counts on the profile, and paged with ?page=N.
+     */
+    private function showFollowList(string $username, string $list): void
+    {
+        $userModel = new User();
+        $profileUser = $userModel->findByUsername($username);
+
+        if ($profileUser === false) {
+            http_response_code(404);
+
+            $this->view('errors/404', [
+                'pageTitle' => 'Trainer Not Found',
+            ]);
+
+            return;
+        }
+
+        $profileUserId = (int) $profileUser['id'];
+        $page = self::pageFrom($_GET['page'] ?? null);
+        $followModel = new Follow();
+
+        // One extra row says whether there's a next page, without a COUNT.
+        $offset = ($page - 1) * self::FOLLOW_LIST_PAGE_SIZE;
+        $trainers = $list === 'followers'
+            ? $followModel->findFollowers($profileUserId, self::FOLLOW_LIST_PAGE_SIZE + 1, $offset)
+            : $followModel->findFollowing($profileUserId, self::FOLLOW_LIST_PAGE_SIZE + 1, $offset);
+
+        $hasNextPage = count($trainers) > self::FOLLOW_LIST_PAGE_SIZE;
+
+        $this->view('profile/follows', [
+            'pageTitle' => ($list === 'followers' ? 'Followers' : 'Following')
+                . ' · @' . $profileUser['username'],
+            'profileUser' => $profileUser,
+            'list' => $list,
+            'trainers' => array_slice($trainers, 0, self::FOLLOW_LIST_PAGE_SIZE),
+            'followerCount' => $followModel->countFollowers($profileUserId),
+            'followingCount' => $followModel->countFollowing($profileUserId),
+            'page' => $page,
+            'hasNextPage' => $hasNextPage,
+            'isOwnProfile' => Auth::activeId() === $profileUserId,
+        ]);
+    }
+
+    // ?page=N, where anything that isn't a whole number from 1 up is page 1.
+    private static function pageFrom(mixed $value): int
+    {
+        $page = is_string($value) ? filter_var($value, FILTER_VALIDATE_INT) : false;
+
+        return is_int($page) && $page >= 1 && $page <= 10000 ? $page : 1;
     }
 
     public function follow(string $username): void

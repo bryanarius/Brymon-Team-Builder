@@ -102,3 +102,136 @@
   color: var(--app-muted);
   text-align: center;
 }
+
+/* Follower and following counts link to their lists. */
+.profile-stats a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.profile-stats a:hover strong,
+.profile-stats a:hover {
+  color: var(--app-blue);
+}
+
+/* Followers / Following Lists */
+
+.follow-list-page .container {
+  width: min(640px, 100%);
+}
+
+.follow-list-header {
+  margin-bottom: 1.25rem;
+}
+
+.follow-list-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--app-muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.follow-list-back:hover {
+  color: var(--app-blue);
+}
+
+.follow-list-header h1 {
+  margin: 0.75rem 0 0;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  line-height: 1.15;
+}
+
+.follow-tabs {
+  display: flex;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.follow-tab {
+  flex: 1;
+  padding: 0.8rem 0.5rem;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: var(--app-muted);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.follow-tab:hover {
+  color: #f8fafc;
+}
+
+.follow-tab[aria-current="page"] {
+  border-bottom-color: var(--accent);
+  color: #f8fafc;
+}
+
+.follow-tab strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.follow-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.follow-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: var(--app-panel);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 150ms ease;
+}
+
+.follow-row:hover {
+  border-color: var(--app-border-strong);
+}
+
+.follow-row-names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.follow-row-name,
+.follow-row-username {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.follow-row-name {
+  font-weight: 700;
+}
+
+.follow-row-username {
+  color: var(--app-muted);
+  font-size: 0.9rem;
+}
+
+.follow-pagination {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+}
+
+.follow-pagination a {
+  color: var(--app-blue);
+  font-weight: 600;
+}
+
+/* Next stays on the right when there's no Previous. */
+.follow-pagination a[rel="next"] {
+  margin-left: auto;
+}

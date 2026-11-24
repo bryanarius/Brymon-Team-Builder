@@ -62,16 +62,17 @@ $profileBio = trim((string) ($profileUser['bio'] ?? ''));
                 )) ?></p>
             <?php endif; ?>
 
+            <?php $profileUrl = '/u/' . rawurlencode($profileUsername); ?>
             <p class="profile-stats">
-                <span>
+                <a href="<?= htmlspecialchars($profileUrl . '/followers', ENT_QUOTES, 'UTF-8') ?>">
                     <strong id="profile-follower-count"><?=
                         (int) $followerCount
                     ?></strong>
                     <?= (int) $followerCount === 1 ? 'follower' : 'followers' ?>
-                </span>
-                <span>
+                </a>
+                <a href="<?= htmlspecialchars($profileUrl . '/following', ENT_QUOTES, 'UTF-8') ?>">
                     <strong><?= (int) $followingCount ?></strong> following
-                </span>
+                </a>
                 <span>
                     <strong><?= count($teams) ?></strong>
                     <?= count($teams) === 1 ? 'public team' : 'public teams' ?>

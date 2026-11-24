@@ -178,6 +178,11 @@ h3 {
   height: 30px;
   font-size: 0.85rem;
 }
+.avatar--list {
+  width: 44px;
+  height: 44px;
+  font-size: 1.1rem;
+}
 .avatar--profile {
   width: 76px;
   height: 76px;
