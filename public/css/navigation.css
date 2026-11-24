@@ -346,3 +346,61 @@
     font-size: 0.8rem;
   }
 }
+
+/* Notifications heart, with a badge for unread ones. */
+.notification-heart {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 1.4rem;
+  text-decoration: none;
+  transition:
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.notification-heart:hover {
+  color: #ff4d6d;
+  transform: scale(1.08);
+}
+
+.notification-heart[aria-current="page"] {
+  color: #ff4d6d;
+}
+
+.notification-heart-badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 2px solid var(--app-header);
+  border-radius: 999px;
+  background: #ff3040;
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 14px;
+  text-align: center;
+}
+
+/* Only one heart shows at a time: beside the account menu on wide screens,
+   and beside the menu button from 860px down, where the account menu is
+   hidden (see the 860px rule in team-builder.css). */
+.navigation-mobile-end {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .navigation-mobile-end {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}

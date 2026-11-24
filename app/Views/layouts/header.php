@@ -3,8 +3,24 @@ declare(strict_types=1);
 
 use App\Core\Auth;
 use App\Core\Vite;
+use App\Models\Notification;
 
 $pageTitle = $pageTitle ?? 'Brymon';
+
+/*
+ * Unread count for the heart. This runs on every page for signed-in
+ * trainers, so a failure here only hides the badge: it never breaks the page.
+ */
+$unreadNotifications = 0;
+$headerUserId = Auth::activeId();
+
+if ($headerUserId !== null) {
+    try {
+        $unreadNotifications = (new Notification())->countUnread($headerUserId);
+    } catch (Throwable $exception) {
+        error_log('Unread notification count failed: ' . $exception);
+    }
+}
 
 $documentTitle = str_contains($pageTitle, 'Brymon')
     ? $pageTitle
@@ -102,6 +118,11 @@ $documentTitle = str_contains($pageTitle, 'Brymon')
 
         <div class="navigation-actions">
         <?php if (Auth::check()): ?>
+
+            <?php
+            $notificationHeartClass = 'notification-heart--desktop';
+            require __DIR__ . '/../partials/notification-heart.php';
+            ?>
 
             <div class="account-menu">
                 <button
@@ -205,17 +226,27 @@ $documentTitle = str_contains($pageTitle, 'Brymon')
             <?php endif; ?>
         </div>
 
-        <button
-            type="button"
-            class="mobile-nav-toggle"
-            aria-label="Open navigation menu"
-            aria-controls="mobile-navigation"
-            aria-expanded="false"
-        >
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
+        <?php // On phones the account menu is hidden, so the heart sits by the menu button. ?>
+        <div class="navigation-mobile-end">
+            <?php if (Auth::check()): ?>
+                <?php
+                $notificationHeartClass = 'notification-heart--mobile';
+                require __DIR__ . '/../partials/notification-heart.php';
+                ?>
+            <?php endif; ?>
+
+            <button
+                type="button"
+                class="mobile-nav-toggle"
+                aria-label="Open navigation menu"
+                aria-controls="mobile-navigation"
+                aria-expanded="false"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
     </div>
 
     <nav

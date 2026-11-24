@@ -33,10 +33,33 @@ async function setFollowing(page, username, following) {
   }
 }
 
-test("guests are sent to sign in", async ({ page }) => {
-  await page.goto("/notifications");
+test("guests are sent to sign in, and see no heart", async ({ page }) => {
+  await page.goto("/pokedex");
+  await expect(page.locator(".notification-heart")).toHaveCount(0);
 
+  await page.goto("/notifications");
   await expect(page).toHaveURL("/login");
+});
+
+test("on a phone the heart sits next to the menu button", async ({
+  browser,
+}) => {
+  const example = await signIn(browser, "e2e@example.com", "TestPassword123!");
+
+  try {
+    await example.page.setViewportSize({ width: 390, height: 844 });
+    await example.page.goto("/pokedex");
+
+    // Exactly one heart is visible at each width.
+    await expect(
+      example.page.getByRole("link", { name: /^Notifications/ }),
+    ).toHaveCount(1);
+    await expect(
+      example.page.locator(".navigation-mobile-end .notification-heart"),
+    ).toBeVisible();
+  } finally {
+    await example.context.close();
+  }
 });
 
 test("a new follower shows as new, then as read", async ({ browser }) => {
@@ -54,7 +77,20 @@ test("a new follower shows as new, then as read", async ({ browser }) => {
 
     await setFollowing(fan.page, "Example", true);
 
-    await example.page.goto("/notifications");
+    // The heart on any page shows one unread, and opens the page.
+    await example.page.goto("/pokedex");
+
+    const heart = example.page.getByRole("link", { name: /^Notifications/ });
+
+    await expect(heart).toHaveAccessibleName("Notifications, 1 new");
+    await expect(heart.locator(".notification-heart-badge")).toHaveText("1");
+
+    await heart.click();
+    await expect(example.page).toHaveURL("/notifications");
+
+    // On the page itself, the badge is already cleared.
+    await expect(heart).toHaveAccessibleName("Notifications");
+    await expect(heart).toHaveAttribute("aria-current", "page");
 
     const notification = example.page
       .locator(".notification")
