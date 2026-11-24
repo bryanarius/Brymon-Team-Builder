@@ -1,71 +1,29 @@
 # Brymon Team Builder
 
-A full-stack Pokémon team builder built from scratch using a custom **PHP MVC architecture**, **PostgreSQL**, **Vanilla JavaScript**, **React + TypeScript** islands, and the **PokéAPI**.
+A full-stack Pokémon team builder: build, analyze, save, and share competitive teams, with a damage calculator, meta usage stats, and Pokémon Showdown import/export.
 
-> ✅ **Status:** Version 2.1 live at [brymonteambuilder.com](https://brymonteambuilder.com), adding regional forms, Mega Evolutions, a defensive coverage chart, meta usage stats, and a damage calculator
->
-> 🚧 **In progress:** Version 3, incremental modernization. The damage calculator and team analysis now run as React + TypeScript islands; CI/CD is next. See the [roadmap](#version-3--incremental-modernization).
+Built from scratch with a **custom PHP MVC framework** (no Laravel), **PostgreSQL**, **vanilla JavaScript**, and **React + TypeScript** islands.
 
----
-
-# Live Demo
-
-https://brymonteambuilder.com
-
----
-
-# Overview
-
-Brymon is a full-stack Pokémon team-building application designed to let users create, configure, analyze, save, edit, manage, and share complete Pokémon teams — and discover teams built by other trainers.
-
-The project was built as a portfolio application to demonstrate practical full-stack engineering using a custom backend architecture rather than relying on a full-stack framework.
-
-Brymon combines:
-
-- Custom PHP MVC architecture
-- PostgreSQL relational data modeling
-- Authentication and authorization
-- Interactive JavaScript state management
-- React + TypeScript islands for the most stateful pages, built with Vite
-- PokéAPI integration (REST and GraphQL)
-- Pokémon Showdown import/export
-- Regional forms and Mega Evolutions
-- A defensive coverage chart across all 18 types
-- Competitive usage stats from Smogon, with Popular Sets suggestions
-- A damage calculator powered by Pokémon Showdown's engine
-- A browsable Pokédex reference
-- Public team sharing, likes, and following
-- Trainer profiles and a personalized dashboard feed
-- Backend validation
-- CSRF protection
-- Automated testing
-- Production deployment
-
----
-
-# Screenshots
-
-## Home
-
-![Brymon Home](docs/screenshots/home.png)
-
----
-
-## Team Builder
+**Live:** [brymonteambuilder.com](https://brymonteambuilder.com)
 
 ![Brymon Team Builder](docs/screenshots/team-builder1.png)
 
+<details>
+<summary><strong>More screenshots</strong></summary>
+
+### Home
+
+![Brymon Home](docs/screenshots/home.png)
+
+### Team Builder
+
 ![Brymon Team Builder](docs/screenshots/team-builder2.png)
 
----
-
-## Saved Teams
+### Saved Teams
 
 ![Brymon Saved Teams](docs/screenshots/saved-teams.png)
 
----
-
-## Team Analysis
+### Team Analysis
 
 ![Brymon Team Analysis](docs/screenshots/team-analysis1.png)
 
@@ -73,850 +31,284 @@ Brymon combines:
 
 ![Brymon Defensive Coverage Chart](docs/screenshots/defensive-chart.png)
 
----
+### Damage Calculator
 
-## Pokédex
+![Brymon Damage Calculator](docs/screenshots/damage-calc.png)
+
+### Meta Usage Stats
+
+![Brymon Meta Usage Stats](docs/screenshots/meta.png)
+
+### Pokédex
 
 ![Brymon Pokédex](docs/screenshots/pokedex.png)
 
 ![Brymon Pokédex detail panel](docs/screenshots/pokedex-detail.png)
 
----
-
-## Meta Usage Stats
-
-![Brymon Meta Usage Stats](docs/screenshots/meta.png)
-
----
-
-## Damage Calculator
-
-![Brymon Damage Calculator](docs/screenshots/damage-calc.png)
-
----
-
-## Dashboard Feed
+### Dashboard Feed
 
 ![Brymon Dashboard](docs/screenshots/dashboard.png)
 
----
-
-## Trainer Profile
+### Trainer Profile
 
 ![Brymon Trainer Profile](docs/screenshots/profile.png)
 
----
-
-## Shared Team
+### Shared Team
 
 ![Brymon Shared Team](docs/screenshots/shared-team.png)
 
----
-
-# Core Features
-
-## Authentication
-
-- User registration
-- Email verification
-- Resend verification email
-- User login
-- Login blocked until email is verified
-- Forgot password / password reset via email
-- Account settings — change username and password
-- Secure password hashing
-- Session authentication
-- Session regeneration after login
-- Idle and absolute session timeouts
-- Route protection
-- CSRF protection
-- Secure logout
-
-## Pokémon Browser
-
-- Live Pokémon search
-- Partial name search
-- Generation filtering
-- Type filtering
-- Multiple sorting options
-- Responsive search results
-- PokéAPI-powered Pokémon data
-
-## Pokédex
-
-- Browsable index of every Pokémon
-- Name / number search
-- Type, generation, and region (regional Pokédex) filters
-- Role filter (physical / special attacker, wall, balanced, fast, powerhouse)
-- "Has a Mega Evolution" filter
-- Detail panel: official artwork, base stats, abilities, flavor text
-- Evolution chain and Mega Evolution navigation
-
-## Team Builder
-
-- Teams of up to six Pokémon
-- Regional forms (Alolan, Galarian, Hisuian, Paldean)
-- Mega Evolutions and Primal Reversions, with the Mega Stone equipped automatically
-- Team names and notes
-- Pokémon nicknames
-- Ability selection
-- Searchable held item and move selectors
-- Nature selection with stat-effect hints
-- Four move slots
-- EV configuration
-- IV configuration
-- Pokémon base stats
-- Dynamic team summary
-- Live defensive coverage chart (all 18 types, ability-aware)
-- Popular Sets hints: the most-used moves, items, abilities, and EV spreads for the selected Pokémon in a chosen format, applied with one click
-
-## Meta Usage Stats
-
-- `/meta` page ranking the 100 most-used Pokémon per format (OU, Ubers, UU, RU, NU, PU, National Dex, Doubles OU, VGC)
-- Plain-language explanation of each format
-- Per-Pokémon breakdown: moves, items, abilities, EV spreads, Tera types, and teammates
-- Search, and shareable URLs (`?format=gen9ou&pokemon=Kingambit`)
-- Data from Smogon via `pkmn.github.io`, trimmed and cached server-side for a day (`/api/usage/{format}`), with stale data served if the source is down
-
-## Damage Calculator
-
-- `/calc` page powered by `@smogon/calc`, the same engine as Pokémon Showdown's calculator, so results match Showdown's
-- Attacker and defender: Pokémon (including regional forms and Megas), level, ability, item, nature, Tera type, status, EVs, IVs, and stat boosts
-- Each move's damage range as a percentage of the defender's HP, KO chance, and Showdown's standard description line
-- Battle conditions: singles / doubles, weather, terrain, Reflect, Light Screen, Aurora Veil, and critical hits
-- Load any Pokémon from your saved teams into either side, swap attacker and defender, or open a Pokémon straight from its saved team page
-- Built with React + TypeScript (`resources/ts/calc/`) as Brymon's first React island, bundled by Vite with `@smogon/calc` from npm and only loaded on this page
-- State managed with `useReducer`: every change (picking a species, setting a stat, swapping sides, loading a saved Pokémon) is a typed action handled by one pure, unit-tested reducer, with an exhaustiveness check so an unhandled action fails the build
-- Shared through React Context (`CalcProvider`), with separate contexts for state, `dispatch`, and the user's saved teams, so panels read what they need instead of receiving it through props
-
-## Team Management
-
-- Create teams
-- View saved teams
-- Edit teams
-- Delete teams
-- Search saved teams
-- Sort saved teams
-- User-scoped team ownership
-
-## Team Analysis
-
-- Shared weakness analysis
-- Immunity analysis
-- Team type distribution
-- Type coverage analysis (from the team's moves)
-- Resistance recommendations for shared weaknesses
-- Team role balance analysis
-- Team analysis summary
-- Defensive coverage chart: each member's multiplier against all 18 types, with weak / resist / immune totals
-- Built with React + TypeScript (`resources/ts/analysis/`) as Brymon's second React island, with the calculations unit-tested in Vitest
-- PokéAPI loading lives in a custom `useTeamAnalysis` hook, and the panel is covered by React Testing Library component tests against a stubbed PokéAPI
-
-## Pokémon Showdown Integration
-
-- Import Pokémon Showdown teams
-- Export Pokémon Showdown teams
-- Parse nicknames, moves, abilities, items, natures, EVs, and IVs
-- Translate between Showdown's and PokéAPI's names: gender markers (`(F)`), default forms named by species (`Shaymin` → `shaymin-land`), female forms (`Indeedee-F`), Ogerpon's masks, and cosmetic forms (`Alcremie-Ruby-Cream`)
-- Exports use names Showdown can import again
-- A failed import names the Pokémon that couldn't be found, and never leaves a half-imported team
-
-## Public Teams & Social
-
-- Public / private visibility toggle per team
-- Shareable read-only team pages (`/p/{id}`) with full analysis
-- Team likes
-- Following other trainers
-- Trainer profiles (`/u/{username}`) listing a trainer's public teams
-- Profile customization: display name, bio, and a Pokémon sprite avatar shown across the nav, feed, and profile pages
-- Personalized dashboard feed: teams from trainers you follow, popular teams, and recently shared teams
+</details>
 
 ---
 
-# Validation & Security
+## Highlights
 
-Brymon includes server-side validation for core application and team-building rules.
-
-Examples include:
-
-- Maximum six Pokémon per team
-- Unique team slots
-- Slot numbers restricted to 1–6
-- EVs restricted to 0–252 per stat
-- Maximum 510 total EVs
-- IVs restricted to 0–31
-- Maximum four moves
-- Valid Pokémon IDs
-- Malformed JSON rejection
-- CSRF validation for state-changing requests
-- User-scoped authorization for saved teams
-- Public / private team visibility enforced at the query level
-- User-scoped authorization for likes and follows
-- Follow relationships prevented from referencing the same user
-
-Production errors are logged internally while users receive custom error pages for:
-
-- 403 — Forbidden
-- 404 — Not Found
-- 500 — Internal Server Error
+- **Custom PHP MVC, no framework.** Routing, controllers, sessions, authentication, validation, and CSRF protection are written by hand, to learn what frameworks normally hide.
+- **PostgreSQL** accessed through PDO prepared statements, with transactions for multi-step writes, access to each user's data enforced in the query itself, and hand-written migrations.
+- **React + TypeScript islands.** The damage calculator and team analysis were moved to React one page at a time, without a rewrite. They use `useReducer` with typed actions, split React Context, and custom hooks, built with Vite.
+- **Security:** email verification, password reset with hashed expiring tokens, idle and absolute session timeouts, CSRF on every state-changing request, and rate limiting with spam checks on public forms.
+- **Tested at four levels:** PHPUnit (unit and PostgreSQL integration), Vitest with React Testing Library, Node's test runner, and Playwright end-to-end. Bugs reported by players become regression tests.
+- **Real integrations:** PokéAPI (REST and GraphQL), Smogon usage stats cached on the server, `@smogon/calc` (the engine behind Showdown's calculator), and Showdown team import/export.
+- **Built from player feedback:** regional forms, Mega Evolutions, the coverage chart, meta stats, and the calculator were all requested by players, and players can report bugs or suggest features from any page.
 
 ---
 
-# Automated Testing
+## Design Process
 
-Brymon includes automated tests at three levels: unit, integration, and end-to-end.
+Designed in Figma before any code was written: a user flow, then low-fidelity wireframes, then high-fidelity mockups, then the finished build.
 
-## Unit Tests
+<table>
+  <tr>
+    <th>Wireframe</th>
+    <th>Mockup</th>
+    <th>Built</th>
+  </tr>
+  <tr>
+    <td><img src="docs/low-fi/team-builder.png" alt="Team Builder wireframe"></td>
+    <td><img src="docs/high-fi/team-builder.png" alt="Team Builder mockup"></td>
+    <td><img src="docs/screenshots/team-builder1.png" alt="Team Builder as built"></td>
+  </tr>
+</table>
 
-PHPUnit tests cover core validation rules, including:
+<details>
+<summary><strong>See the user flow, all wireframes, and all mockups</strong></summary>
 
-- Valid Pokémon configuration
-- EV limits
-- IV limits
-- Total EV limits
-- Duplicate team slots
+### User Flow
 
-## Integration Tests
-
-PostgreSQL integration tests verify data-access behavior against a real database, including:
-
-- Owners can access their own teams
-- Other users cannot access or delete another user's team
-- Email verification tokens are generated, hashed, and expire correctly
-- Password reset tokens are generated, hashed, and expire correctly
-- Resetting a password clears the reset token and implicitly verifies the email
-- Account settings updates (username, password) persist and are scoped to the user
-- Team visibility toggling is owner-scoped; private teams are unreachable publicly
-- Team likes are idempotent and cascade on team or user deletion
-- Follow relationships are idempotent, reject self-follows, and cascade on user deletion
-- Dashboard feed queries order by likes / recency and stay scoped to public teams and followed trainers
-- Profile fields persist and clear, username uniqueness is case-insensitive at the database level, and feed queries carry owner display names and avatars
-
-## End-to-End Tests
-
-Playwright tests exercise real browser workflows, including:
-
-- Login and logout
-- Team creation
-- Pokémon Showdown import, including real teams with gender markers, default forms, and Ogerpon's masks
-- Team saving
-- Viewing a saved team
-- Editing a team
-- Deleting a team
-- Regional forms and Mega Evolutions (search, import/export, locked Mega Stones)
-- Defensive coverage chart in the builder and saved-team analysis
-- Meta page rankings, search, and shareable links
-- Applying Popular Sets suggestions in the builder
-- Damage calculator results, immunities, status and screens, swapping sides, and loading saved Pokémon
-
-Usage stats are served from a fixed fixture in the E2E tests, so they don't
-break when Smogon's monthly rankings change.
-
-## TypeScript And JavaScript Unit Tests
-
-Vitest and React Testing Library cover the React islands:
-
-- Damage calculator adapter, form state, and reducer (as pure functions)
-- Damage calculator components through `CalcProvider`: loading saved Pokémon, swapping sides, and battle conditions
-- Team analysis calculations, the `useTeamAnalysis` hook, and the analysis panel
-
-Node's built-in test runner covers the classic browser scripts:
-
-- Type matchups and the defensive coverage chart
-- Pokémon Showdown parsing and export, using real pasted teams as fixtures
-
-### Current Test Results
-
-```text
-PHPUnit
-
-84 tests
-164 assertions
-100% passing
-
-
-Playwright
-
-14 end-to-end tests
-100% passing
-
-
-Vitest + React Testing Library (TypeScript unit and component tests)
-
-55 tests
-100% passing
-
-
-Node (JS unit tests)
-
-13 tests
-100% passing
-```
-
-Run the complete automated test suite with:
-
-```bash
-./vendor/bin/phpunit
-npm run test:ts
-npm run test:js
-npx playwright test
-```
-
----
-
-# Why Brymon?
-
-Brymon was intentionally built without Laravel or another full-stack PHP framework for Version 1.
-
-The goal was to develop a deeper understanding of the mechanics that frameworks normally abstract away, including:
-
-- Routing
-- Controllers
-- Models
-- Views
-- Authentication
-- Authorization
-- Sessions
-- Database access
-- Validation
-- CSRF protection
-- Error handling
-- Application structure
-
-Building these systems manually provided hands-on experience with how full-stack web applications work beneath modern frameworks.
-
----
-
-# Design & Architecture Process
-
-Brymon was designed and planned before development.
-
-The project moved through user-flow planning, low-fidelity wireframes, high-fidelity mockups, database modeling, and application architecture before reaching the final production implementation.
-
----
-
-## User Flow
-
-The user flow was created to map the primary experience through Brymon before implementation.
+How a user moves through sign-up, building a team, configuring Pokémon, and managing saved teams.
 
 ![Brymon User Flow](docs/low-fi/user-flow.png)
 
-It helped define how users move through authentication, team creation, Pokémon configuration, saved teams, and team management.
+### Low-Fidelity Wireframes
 
----
+Page structure, information hierarchy, and the main interactions, before any visual design.
 
-## Low-Fidelity Wireframes
-
-Low-fidelity wireframes were created before visual design to establish page structure, information hierarchy, and the application's primary interactions.
-
-### Home
+**Home**
 
 ![Brymon Low-Fidelity Home](docs/low-fi/home-page.png)
 
-### Team Builder
+**Team Builder**
 
 ![Brymon Low-Fidelity Team Builder](docs/low-fi/team-builder.png)
 
-### Pokémon Editor
+**Pokémon Editor**
 
 ![Brymon Low-Fidelity Pokémon Editor](docs/low-fi/pokemon-editor.png)
 
-### Saved Teams
+**Saved Teams**
 
 ![Brymon Low-Fidelity Saved Teams](docs/low-fi/saved-pokemon.png)
 
----
+### High-Fidelity Mockups
 
-## High-Fidelity Mockups
+The visual design system: layout, typography, spacing, and component styles.
 
-The low-fidelity concepts were developed into high-fidelity mockups that established Brymon's visual design system, layout, typography, spacing, and component styling before implementation.
-
-### Home
+**Home**
 
 ![Brymon High-Fidelity Home](docs/high-fi/home.png)
 
-### Team Builder
+**Team Builder**
 
 ![Brymon High-Fidelity Team Builder](docs/high-fi/team-builder.png)
 
-### Saved Teams
+**Saved Teams**
 
 ![Brymon High-Fidelity Saved Teams](docs/high-fi/saved-teams.png)
 
-### About
+**About**
 
 ![Brymon High-Fidelity About](docs/high-fi/about.png)
 
----
-
-## Database Design
-
-The PostgreSQL database structure was planned using an entity-relationship diagram before implementing the application's persistence layer.
-
-![Brymon ERD](docs/architecture/brymon-erd.png)
-
-The database design supports:
-
-- User accounts and ownership
-- Multiple teams per user
-- Multiple Pokémon per team
-- Ordered team slots
-- Pokémon configuration data
-- Referential integrity between application entities
+</details>
 
 ---
 
-## MVC Architecture
+## Features
 
-Brymon uses a custom MVC architecture built specifically for the project.
+- **Team Builder:** up to six Pokémon with regional forms, Mega Evolutions, abilities, items, natures, moves, EVs, and IVs, plus a live defensive coverage chart and one-click "Popular Sets" from Smogon data.
+- **Team Analysis:** shared weaknesses, immunities, move coverage, role balance, and an 18-type defensive chart.
+- **Damage Calculator:** damage ranges and KO chances that match Showdown's, with weather, terrain, screens, boosts, and Tera types. Load any Pokémon from your saved teams.
+- **Meta Usage Stats:** the 100 most-used Pokémon per format, with their common moves, items, spreads, and teammates.
+- **Pokédex:** search and filter every Pokémon by type, generation, region, and role.
+- **Showdown Import/Export:** handles nicknames, gender markers, alternate forms, and cosmetic forms. A failed import says which Pokémon it couldn't find and can be reported in one click.
+- **Social:** public and private teams, shareable team pages, likes, follows, trainer profiles, and a personalized feed.
+- **Feedback:** bug reports and feature suggestions from the footer of every page, open to guests.
+
+<details>
+<summary><strong>Full feature list</strong></summary>
+
+### Authentication
+
+- Registration with email verification (and resending the verification email)
+- Login blocked until the email is verified
+- Password reset by email
+- Account settings: change username and password
+- Password hashing, session regeneration after login, and idle and absolute session timeouts
+- Protected routes, CSRF protection, and secure logout
+
+### Pokémon Browser and Pokédex
+
+- Live search by full or partial name, filtered by generation and type, with several sort orders
+- Pokédex filters by type, generation, region, role (physical or special attacker, wall, balanced, fast, powerhouse), and "has a Mega Evolution"
+- Detail panel: official artwork, base stats, abilities, flavor text, evolution chain, and Mega Evolution links
+
+### Team Builder
+
+- Regional forms (Alolan, Galarian, Hisuian, Paldean)
+- Mega Evolutions and Primal Reversions, with the Mega Stone equipped automatically
+- Team names, notes, and nicknames
+- Searchable held item and move selectors
+- Nature selection with stat-effect hints
+- EVs and IVs, base stats, and a live team summary
+- A defensive coverage chart that accounts for abilities
+- Popular Sets: the most-used moves, items, abilities, and EV spreads for the selected Pokémon in a chosen format
+
+### Team Management and Analysis
+
+- Create, view, edit, delete, search, and sort saved teams
+- Shared weaknesses, immunities, type distribution, move coverage, resistance suggestions, and role balance
+
+### Meta Usage Stats
+
+- Formats: OU, Ubers, UU, RU, NU, PU, National Dex, Doubles OU, and VGC, each explained in plain language
+- Per-Pokémon breakdown: moves, items, abilities, EV spreads, Tera types, and teammates
+- Search and shareable URLs (`?format=gen9ou&pokemon=Kingambit`)
+- Data from Smogon via `pkmn.github.io`, trimmed and cached on the server for a day. The cached copy is still served if the source is down.
+
+### Damage Calculator
+
+- Attacker and defender: species, level, ability, item, nature, Tera type, status, EVs, IVs, and stat boosts
+- Battle conditions: singles or doubles, weather, terrain, Reflect, Light Screen, Aurora Veil, and critical hits
+- Swap attacker and defender, or open a Pokémon straight from its saved team page
+
+### Social
+
+- Public and private teams, with read-only share pages (`/p/{id}`)
+- Likes, following, and trainer profiles (`/u/{username}`)
+- Profile display name, bio, and Pokémon sprite avatar
+- Dashboard feed: followed trainers, popular teams, and recent teams
+
+### Feedback
+
+- Bug reports (what happened, what you expected, pasted text) and feature suggestions
+- Saved to PostgreSQL and emailed to the maintainer
+- Protected by CSRF, a hidden spam field, a per-session limit, and a pause on emails during a flood of reports
+
+</details>
+
+---
+
+## Architecture
+
+```text
+Browser ──► public/index.php ──► Router ──► Controller ──► Model ──► PostgreSQL
+                                                │
+                                                └──► View (PHP template)
+
+Browser JavaScript and React islands ──► PokéAPI
+```
+
+Every request goes through one front controller, which loads the environment, starts the session, and lets the hand-written `Router` dispatch to a controller. Models query PostgreSQL directly with prepared statements: there is no ORM. Team-building rules live in one place, `Validator::pokemonTeam`.
+
+PHP renders every page. On the React pages, React renders into a single mount element, with data passed from PHP as embedded JSON. `app/Core/Vite.php` prints the bundle's script tags from Vite's manifest.
+
+<details>
+<summary><strong>MVC diagram, database design, and project structure</strong></summary>
+
+### MVC Architecture
 
 ![Brymon MVC Architecture](docs/architecture/brymon-mvc.drawio.png)
 
-The architecture separates the application into:
+### Database Design
 
-- **Router** — matches incoming HTTP requests to application actions
-- **Controllers** — coordinate requests and application behavior
-- **Models** — handle PostgreSQL persistence and data access
-- **Views** — render the user interface
-- **Core services** — provide shared functionality such as authentication, sessions, CSRF protection, validation, configuration, and database connectivity
+Planned as an entity-relationship diagram before the persistence layer was written.
 
----
+![Brymon ERD](docs/architecture/brymon-erd.png)
 
-## From Concept to Production
-
-Brymon followed a deliberate development process:
+### Project Structure
 
 ```text
-User Flow
-    ↓
-Low-Fidelity Wireframes
-    ↓
-High-Fidelity Mockups
-    ↓
-Database Design
-    ↓
-MVC Architecture
-    ↓
-Implementation
-    ↓
-Automated Testing
-    ↓
-Production Deployment
+app/
+  Controllers/     # Page, Auth, Account, Team, Profile, Dashboard, UsageStats, Feedback
+  Core/            # Router, Auth, Csrf, Validator, Database, Mailer, Config, Vite
+  Models/          # Team, User, Follow, TeamLike, Feedback
+  Views/           # templates grouped by feature, plus shared layouts
+docs/
+  database/migrations/   # hand-applied SQL migrations
+public/
+  css/             # stylesheets for each feature, plus design tokens
+  js/              # vanilla JavaScript, one file per feature area
+  index.php        # front controller
+resources/ts/
+  calc/            # damage calculator island (reducer, context, panels)
+  analysis/        # team analysis island (calculations, hook, panel)
+  components/      # shared React components
+routes/web.php
+tests/
+  Unit/  Integration/  TS/  JS/  E2E/
 ```
 
-This process allowed Brymon to evolve from an initial product concept into a tested, production-deployed full-stack application.
+</details>
 
 ---
 
-# Tech Stack
+## Tech Stack
 
-| Layer              | Technology                      |
-| ------------------ | ------------------------------- |
-| Frontend           | HTML5, CSS3, Vanilla JavaScript |
-| Frontend (islands) | React, TypeScript, Vite         |
-| Icons              | Font Awesome                    |
-| Backend            | PHP 8                           |
-| Architecture       | Custom MVC                      |
-| Database           | PostgreSQL                      |
-| Database Access    | PDO                             |
-| External API       | PokéAPI (REST + GraphQL)        |
-| Email              | Resend                          |
-| Damage Calculator  | @smogon/calc                    |
-| Testing            | PHPUnit, Playwright, Vitest, React Testing Library, Node test runner |
-| Package Management | Composer, npm                   |
-| Deployment         | Docker, Render                  |
-| Version Control    | Git & GitHub                    |
+| Layer      | Technology                                                           |
+| ---------- | -------------------------------------------------------------------- |
+| Backend    | PHP 8, custom MVC, PDO                                               |
+| Database   | PostgreSQL                                                           |
+| Frontend   | HTML, CSS, vanilla JavaScript, React, TypeScript, Vite               |
+| APIs       | PokéAPI (REST + GraphQL), Smogon usage stats, `@smogon/calc`, Resend |
+| Testing    | PHPUnit, Vitest, React Testing Library, Node test runner, Playwright |
+| Deployment | Docker, Render                                                       |
+| Design     | Figma                                                                |
 
 ---
 
-# Application Architecture
+## Run It Locally
 
-At a high level, requests move through Brymon's custom MVC architecture before interacting with PostgreSQL.
-
-```text
-Browser
-   │
-   ▼
-Router
-   │
-   ▼
-Controllers
-   │
-   ├──────────────► Views
-   │
-   ▼
-Models
-   │
-   ▼
-PostgreSQL
-
-Browser / JavaScript and React islands
-   │
-   ▼
-PokéAPI
-```
-
-PHP still renders every page. On the damage calculator and team analysis,
-React renders into a single mount element, with data passed from PHP as
-embedded JSON; `app/Core/Vite.php` prints the bundle's script tags from
-Vite's manifest.
-
----
-
-# Project Structure
-
-```text
-Brymon/
-│
-├── app/
-│   ├── Controllers/     # Page, Auth, Account, Team, Profile, Dashboard, UsageStats
-│   ├── Core/            # Router, Auth, Csrf, Validator, Database, Mailer, Config, Vite
-│   ├── Models/          # Team, User, Follow, TeamLike
-│   └── Views/           # feature-grouped templates, shared layouts and partials
-│
-├── docs/
-│   ├── architecture/
-│   ├── database/
-│   │   ├── brymon-erd.sql
-│   │   └── migrations/  # incremental, hand-applied SQL migrations
-│   ├── high-fi/
-│   ├── low-fi/
-│   └── screenshots/
-│
-├── public/
-│   ├── css/             # feature-scoped stylesheets + design tokens
-│   ├── favicon/
-│   ├── images/
-│   ├── js/              # one file per feature area, no build step
-│   ├── build/           # Vite output (generated, git-ignored)
-│   └── index.php        # front controller
-│
-├── resources/
-│   └── ts/
-│       ├── calc/        # damage calculator island (reducer, context, panels)
-│       ├── analysis/    # team analysis island (calculations, hook, panel)
-│       └── components/  # shared React components (Combobox, TypeBadge)
-│
-├── routes/
-│   └── web.php
-│
-├── tests/
-│   ├── Unit/            # PHPUnit
-│   ├── Integration/     # PHPUnit against PostgreSQL
-│   ├── TS/              # Vitest + React Testing Library
-│   ├── JS/              # Node test runner for the classic scripts
-│   └── E2E/             # Playwright
-│
-├── composer.json
-├── package.json
-├── vite.config.mts
-├── phpunit.xml
-└── Dockerfile
-```
-
----
-
-# Engineering Concepts Demonstrated
-
-Brymon demonstrates experience across multiple areas of full-stack software development.
-
-## Backend Engineering
-
-- Custom MVC architecture
-- Object-oriented PHP
-- Custom routing
-- Controller design
-- Model abstraction
-- PostgreSQL database design
-- Incremental SQL migrations
-- Many-to-many relationships (team likes, trainer follows)
-- Aggregate queries and ranked / filtered feeds
-- PDO database access
-- Prepared SQL statements
-- Transactional database operations
-- Server-side validation
-
-## Authentication & Security
-
-- Authentication
-- Authorization
-- Email verification with expiring, hashed tokens
-- Password reset with expiring, hashed tokens
-- Password hashing
-- Session management
-- Session regeneration
-- CSRF protection
-- User-scoped resource ownership
-- Production-safe error handling
-- Transactional email delivery (Resend)
-
-## Frontend Engineering
-
-- Semantic HTML
-- Responsive CSS with a shared design-token layer
-- Vanilla JavaScript, no build step
-- Reusable components (searchable combobox, shared team card partial)
-- Asynchronous API requests
-- Client-side state management
-- Dynamic UI rendering
-- Accessible dialog / focus management (Pokédex detail panel)
-- Form validation
-- Responsive navigation
-
-## React & TypeScript
-
-- Incremental migration through React islands, one page at a time, without a rewrite
-- `useReducer` with typed actions (discriminated unions) and an exhaustiveness check
-- React Context with split state / dispatch contexts and guarded consumer hooks
-- Custom hooks for data loading (`useTeamAnalysis`)
-- Pure calculation modules kept separate from components
-- Vite builds with hashed bundles, served through a PHP manifest reader
-
-## API Integration
-
-- PokéAPI integration (REST and GraphQL)
-- Pokémon data retrieval and bulk stat queries
-- Client-side caching of API responses
-- Pokémon Showdown parsing
-- Pokémon Showdown import/export
-
-## Testing
-
-- PHPUnit unit testing
-- PostgreSQL integration testing
-- Playwright browser testing
-- End-to-end CRUD testing
-- Authentication workflow testing
-- Vitest unit testing for TypeScript
-- React Testing Library component and hook testing
-- Regression tests built from real user-reported bugs
-
-## Deployment
-
-- Docker
-- Render
-- PostgreSQL production database
-- Environment-based configuration
-- Custom domain configuration
-- Git and GitHub workflow
-
----
-
-# Version 1 Roadmap
-
-## ✅ Phase 0 — Planning
-
-- [x] Project planning
-- [x] MVP definition
-- [x] User flows
-- [x] Database design
-
----
-
-## ✅ Phase 1 — UI / UX
-
-- [x] Low-fidelity wireframes
-- [x] High-fidelity mockups
-- [x] Responsive design system
-
----
-
-## ✅ Phase 2 — Backend Architecture
-
-- [x] Custom MVC architecture
-- [x] Routing
-- [x] PostgreSQL integration
-- [x] Authentication
-- [x] Authorization
-- [x] Session management
-- [x] Docker deployment
-
----
-
-## ✅ Phase 3 — Core Application
-
-- [x] Homepage
-- [x] About page
-- [x] Authentication
-- [x] Pokémon search
-- [x] Search filters
-- [x] Add Pokémon to team
-- [x] Pokémon configuration
-- [x] Team CRUD
-- [x] Saved teams
-- [x] Team analysis
-- [x] Pokémon Showdown import
-- [x] Pokémon Showdown export
-
----
-
-## ✅ Phase 4 — Production Readiness
-
-- [x] Backend validation
-- [x] CSRF protection
-- [x] Production error handling
-- [x] Custom 403 page
-- [x] Custom 404 page
-- [x] Custom 500 page
-- [x] PHPUnit unit tests
-- [x] PostgreSQL integration tests
-- [x] Playwright end-to-end tests
-- [x] Responsive production UI
-- [x] Custom production domain
-- [x] Render deployment
-
----
-
-# Future Roadmap
-
-## Version 2
-
-### ✅ Completed
-
-- [x] Email verification
-- [x] Password reset
-- [x] Account settings
-- [x] Deeper team analysis
-  - [x] Type coverage analysis
-  - [x] Shared weakness recommendations
-  - [x] Team role balance
-- [x] Searchable item and move selectors
-- [x] Add Pokédex
-- [x] Public teams and sharing
-  - [x] Public / private team visibility
-  - [x] Shareable read-only team pages
-  - [x] Team likes
-  - [x] Following trainers
-  - [x] Trainer profiles (`/u/{username}`)
-  - [x] Dashboard feed (popular, recent, following)
-- [x] Profile customization
-  - [x] Display name
-  - [x] Bio
-  - [x] Pokémon avatar
-- [x] Accessibility improvements
-  - [x] Visible keyboard focus indicator
-  - [x] Skip-to-content link
-  - [x] `<main>` landmark on every page
-  - [x] Reduced-motion support
-- [x] Usability improvements
-  - [x] Form submit locks and progress state
-  - [x] Consistent page title suffix
-
----
-
-## ✅ Version 2.1 — Player Feedback Sprint
-
-Five features requested by players, built in this order. Each one ships with
-tests and is integrated without breaking existing saved teams.
-
-1. [x] **Regional and convergent forms** — make alternate forms selectable in
-   the builder (e.g. Hisuian Samurott, Galarian Slowking, Paldean Tauros),
-   with correct typing, abilities, artwork, saved-team support, team
-   analysis, and Showdown import/export. Convergent Pokémon (Wiglett,
-   Toedscool) are already distinct species and supported today.
-2. [x] **Mega Evolutions in the builder** — add Mega forms to a team slot,
-   with the Mega's typing and ability carried through to team analysis.
-   Built on the same form-loading mechanism as regional forms.
-3. [x] **Defensive coverage chart** — a full team-by-type defensive grid
-   across all 18 types, showing weak / resist / immune multipliers for each
-   member with per-type totals, similar to Marriland's team builder.
-4. [x] **Meta usage stats** — surface Smogon / Pokémon Showdown usage data
-   (most-used Pokémon per format, common moves, items, abilities, and EV
-   spreads) via a CORS-friendly source such as `pkmn.github.io`, with
-   caching and format selection.
-5. [x] **Damage calculator** — choose an attacker, defender, move, and stat
-   spreads to see damage ranges and KO chances, in the spirit of the
-   Pokémon Showdown calculator. Built on `@smogon/calc`, the library behind
-   Showdown's own calculator, rather than reimplementing battle mechanics.
-
----
-
-## Version 3 — Incremental Modernization
-
-The goal is to adopt modern tooling where it adds real value, **not** to
-rewrite Brymon. The custom PHP MVC core stays in place.
-
-### ✅ Completed
-
-- [x] **React + TypeScript islands** — Vite build, served through a PHP
-  manifest reader, with React only on the pages that hold a lot of state
-  - [x] Damage calculator rebuilt as a React island
-  - [x] Team analysis rebuilt as a React island
-  - [x] Custom `useTeamAnalysis` hook
-  - [x] Calculator state managed with `useReducer`
-  - [x] Calculator state shared through React Context
-- [x] Vitest and React Testing Library test suites
-- [x] Showdown import fixes from player reports (gender markers, default
-  forms, Ogerpon masks, cosmetic forms)
-
-### Planned
-
-- **CI/CD** — run PHPUnit, Vitest, and Playwright automatically on every push.
-- **Accessibility testing** — automated axe checks in Playwright.
-- **Laravel** — explore it through a small, isolated API or feature rather
-  than migrating the application.
-- **Expanded automated testing** — broader E2E coverage of the builder and
-  analysis features.
-- Custom uploaded profile pictures
-- Performance optimization
-
----
-
-# Installation
-
-## Requirements
-
-To run Brymon locally, you will need:
-
-- PHP 8+
-- Composer
-- PostgreSQL
-- Node.js
-- npm
-
----
-
-## 1. Clone the Repository
+You'll need PHP 8+, Composer, PostgreSQL, Node.js, and npm.
 
 ```bash
 git clone https://github.com/bryanarius/brymon-team-builder.git
-
 cd brymon-team-builder
-```
 
----
-
-## 2. Install PHP Dependencies
-
-```bash
 composer install
-```
-
----
-
-## 3. Install JavaScript Dependencies And Build The React Islands
-
-```bash
 npm install
-npm run build
+npm run build          # compiles the React + TypeScript islands
+
+cp .env.example .env   # then add your PostgreSQL and Resend settings
 ```
 
-`npm run build` type-checks and compiles the React + TypeScript code in
-`resources/ts` into `public/build`. Rerun it after changing that code, or
-use `npm run dev` with `VITE_DEV_SERVER=http://localhost:5173` in `.env`
-for instant reloads.
-
----
-
-## 4. Configure the Environment
-
-Copy the example environment file:
+Create a PostgreSQL database, apply the migrations in `docs/database/migrations/` in filename order, then start the server:
 
 ```bash
-cp .env.example .env
+php -S localhost:8000 -t public
 ```
 
-Configure your local PostgreSQL credentials:
+<details>
+<summary><strong>Environment variables</strong></summary>
 
 ```env
 APP_ENV=development
@@ -930,133 +322,67 @@ DB_PASSWORD=your_password
 
 RESEND_API_KEY=your_resend_api_key
 MAIL_FROM=noreply@yourdomain.com
+FEEDBACK_EMAIL=you@example.com
 ```
 
-`APP_URL` is used to build the absolute links sent in verification and password reset emails. `RESEND_API_KEY`/`MAIL_FROM` are used to send those emails via [Resend](https://resend.com) — `MAIL_FROM`'s domain must be a verified sending domain in your Resend account.
+- `APP_URL` builds the links in verification and password reset emails.
+- `RESEND_API_KEY` and `MAIL_FROM` send email through [Resend](https://resend.com). `MAIL_FROM`'s domain must be verified in Resend.
+- `FEEDBACK_EMAIL` receives bug reports and suggestions. Leave it empty to only save them to the database.
+- For React development with instant reloads, run `npm run dev` and set `VITE_DEV_SERVER=http://localhost:5173`.
+
+</details>
 
 ---
 
-## 5. Configure PostgreSQL
-
-Create a PostgreSQL database for Brymon, then apply the migrations in `docs/database/migrations/` in filename order.
-
----
-
-## 6. Start the Development Server
+## Testing
 
 ```bash
-php -S localhost:8000 -t public
+./vendor/bin/phpunit   # unit tests, plus integration tests against a real PostgreSQL database
+npm run test:ts        # Vitest + React Testing Library
+npm run test:js        # Node test runner for the vanilla JavaScript
+npx playwright test    # end-to-end tests (start the PHP server first)
 ```
 
-Visit:
+Integration tests use a separate `brymon_test` database, configured in `.env.testing`, so they never touch development or production data.
 
-```text
-http://localhost:8000
-```
+They cover:
 
----
-
-# Running Tests
-
-## PHPUnit
-
-Run all PHPUnit unit and integration tests:
-
-```bash
-./vendor/bin/phpunit
-```
+- **Ownership:** one user can't read, edit, or delete another user's team.
+- **Accounts:** verification and reset tokens are hashed and expire.
+- **Social:** follows and likes can't be duplicated.
+- **Showdown import:** real teams that players reported broken are kept as fixtures.
 
 ---
 
-## Vitest And Node
+## Roadmap
 
-Run the TypeScript unit and component tests, then the classic JavaScript unit tests:
-
-```bash
-npm run test:ts
-npm run test:js
-```
-
----
-
-## Playwright
-
-Start the development server first, then run the browser-based end-to-end tests:
-
-```bash
-php -S localhost:8000 -t public
-npx playwright test
-```
-
-See [Current Test Results](#current-test-results) for what each suite covers.
+- [x] **Version 1:** custom MVC, authentication, team building, analysis, Showdown import/export, testing, deployment
+- [x] **Version 2:** email verification, password reset, Pokédex, public teams, likes, follows, profiles, feed, accessibility improvements
+- [x] **Version 2.1:** player-requested regional forms, Mega Evolutions, coverage chart, meta usage stats, damage calculator
+- [ ] **Version 3, in progress:** incremental modernization without a rewrite
+  - [x] React + TypeScript islands for the calculator and team analysis
+  - [x] Player feedback: bug reports and suggestions
+  - [ ] Follower and following lists on profiles
+  - [ ] Admin page for feedback
+  - [ ] Automated accessibility checks (axe)
+  - [ ] CI/CD running every test suite on each push
 
 ---
 
-## Test Database
+## Lessons Learned
 
-Integration tests use a separate PostgreSQL test database.
-
-Example `.env.testing`:
-
-```env
-APP_ENV=testing
-
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_NAME=brymon_test
-DB_USER=your_username
-DB_PASSWORD=your_password
-```
-
-Keeping the test database separate prevents automated tests from modifying development or production data.
+- **Frameworks make more sense after building one.** Writing the router, sessions, and CSRF protection by hand showed what Laravel is actually doing behind the scenes.
+- **Check access in the query, not after it.** Filtering by `user_id` in SQL means a forgotten check can't expose someone else's team.
+- **Choose state tools by how state flows.** The calculator moved from many `useState` calls to `useReducer` with split Context once several panels needed the same state.
+- **Measure before optimizing.** I tried splitting the calculator bundle with `React.lazy`, measured it, and skipped it because it only delayed the page.
+- **Player bug reports make the best tests.** Each broken Showdown import became a fixture, so the same bug can't return unnoticed.
 
 ---
 
-# Lessons Learned
+## Acknowledgements
 
-Building Brymon provided hands-on experience with the full software development lifecycle.
+Pokémon data and artwork come from [PokéAPI](https://pokeapi.co/). Brymon is a fan-made portfolio project and is not affiliated with or endorsed by Nintendo, Game Freak, Creatures Inc., or The Pokémon Company. Pokémon and all related trademarks belong to their respective owners.
 
-Key lessons included:
+## License
 
-- Designing normalized relational database schemas
-- Evolving a schema safely with incremental migrations
-- Modeling a social graph (likes and follows) with join tables and unique constraints
-- Building ranked and filtered feed queries with SQL aggregates
-- Building a custom MVC architecture
-- Understanding routing beneath full-stack frameworks
-- Implementing authentication and authorization
-- Managing secure PHP sessions
-- Protecting state-changing requests with CSRF tokens
-- Designing validation at both client and server levels
-- Integrating third-party APIs over REST and GraphQL
-- Managing complex browser-side state
-- Building transactional PostgreSQL operations
-- Handling resource ownership and authorization
-- Writing unit, integration, and end-to-end tests
-- Handling production errors safely
-- Deploying a Dockerized PHP application
-- Configuring a production PostgreSQL database
-- Configuring a custom production domain
-- Migrating a live application to React + TypeScript incrementally, one island at a time
-- Choosing between `useState`, `useReducer`, and Context based on how state actually flows
-- Measuring before optimizing: skipping a code split that would only have delayed the page
-- Turning user bug reports into regression tests
-- Moving a project from initial planning through production release
-
----
-
-# Acknowledgements
-
-Pokémon data and artwork are provided through **PokéAPI**.
-
-https://pokeapi.co/
-
-Brymon is a fan-made educational portfolio project and is not affiliated with or endorsed by Nintendo, Game Freak, Creatures Inc., or The Pokémon Company.
-
-Pokémon and all related trademarks are property of their respective owners.
-
----
-
-# License
-
-This project is licensed under the MIT License.
+MIT
