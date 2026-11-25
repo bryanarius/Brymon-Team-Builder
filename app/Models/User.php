@@ -396,6 +396,77 @@ final class User extends Model
         return $teams;
     }
 
+    /**
+     * Trainers whose username or display name contains $query, ignoring
+     * case. Best matches come first: an exact name, then names that start
+     * with the search, then names that only contain it.
+     *
+     * This scans the users table, which is fine at this size. With many
+     * more trainers, a pg_trgm GIN index on the two columns would let
+     * ILIKE '%...%' use an index.
+     *
+     * @return list<array{
+     *     id: int,
+     *     username: string,
+     *     display_name: ?string,
+     *     avatar_pokemon_id: ?int
+     * }>
+     */
+    public function searchTrainers(string $query, int $limit, int $offset = 0): array
+    {
+        $query = trim($query);
+
+        if ($query === '') {
+            return [];
+        }
+
+        // % and _ are wildcards in LIKE; escape them (and the escape
+        // character itself) so they only match themselves.
+        $literal = addcslashes($query, '\\%_');
+
+        $statement = $this->db->prepare(
+            "SELECT
+                id,
+                username,
+                display_name,
+                avatar_pokemon_id
+             FROM users
+             WHERE username ILIKE :contains ESCAPE '\\'
+                OR display_name ILIKE :contains ESCAPE '\\'
+             ORDER BY
+                CASE
+                    WHEN LOWER(username) = LOWER(:exact)
+                      OR LOWER(display_name) = LOWER(:exact) THEN 0
+                    WHEN username ILIKE :prefix ESCAPE '\\'
+                      OR display_name ILIKE :prefix ESCAPE '\\' THEN 1
+                    ELSE 2
+                END,
+                LOWER(username),
+                -- id breaks ties, so pages never repeat or skip a trainer.
+                id
+             LIMIT :limit OFFSET :offset"
+        );
+
+        $statement->bindValue('contains', '%' . $literal . '%');
+        $statement->bindValue('prefix', $literal . '%');
+        $statement->bindValue('exact', $query);
+        $statement->bindValue('limit', max(0, $limit), PDO::PARAM_INT);
+        $statement->bindValue('offset', max(0, $offset), PDO::PARAM_INT);
+        $statement->execute();
+
+        return array_map(
+            static fn (array $row): array => [
+                'id' => (int) $row['id'],
+                'username' => (string) $row['username'],
+                'display_name' => $row['display_name'],
+                'avatar_pokemon_id' => $row['avatar_pokemon_id'] !== null
+                    ? (int) $row['avatar_pokemon_id']
+                    : null,
+            ],
+            $statement->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+
     private function findPokemonByTeamIds(array $teamIds): array
     {
         if ($teamIds === []) {
