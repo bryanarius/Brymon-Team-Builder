@@ -83,42 +83,7 @@ $emptyMessage = match (true) {
         <?php else: ?>
             <ul class="follow-list">
                 <?php foreach ($trainers as $trainer): ?>
-                    <?php
-                    $trainerDisplayName = trim((string) ($trainer['display_name'] ?? ''));
-                    $trainerName = $trainerDisplayName !== ''
-                        ? $trainerDisplayName
-                        : $trainer['username'];
-                    ?>
-                    <li class="follow-row">
-                        <a
-                            href="/u/<?= $escape(rawurlencode($trainer['username'])) ?>"
-                            class="follow-row-link"
-                        >
-                            <?php
-                            $avatarId = $trainer['avatar_pokemon_id'];
-                            $avatarName = $trainerName;
-                            $avatarModifier = 'list';
-                            require dirname(__DIR__) . '/partials/avatar.php';
-                            ?>
-
-                            <span class="follow-row-names">
-                                <span class="follow-row-name"><?= $escape($trainerName) ?></span>
-                                <span class="follow-row-username">@<?= $escape($trainer['username']) ?></span>
-                            </span>
-                        </a>
-
-                        <?php
-                        // Signed-in viewers only, and never on their own row.
-                        if ($viewerId !== null && $trainer['id'] !== $viewerId):
-                            $followButtonUsername = $trainer['username'];
-                            $followButtonName = $trainerName;
-                            $followButtonFollowing = in_array($trainer['id'], $viewerFollowingIds, true);
-                            $followButtonFollowsViewer = in_array($trainer['id'], $viewerFollowerIds, true);
-                            $followButtonSize = 'small';
-                            require dirname(__DIR__) . '/partials/follow-button.php';
-                        endif;
-                        ?>
-                    </li>
+                    <?php require dirname(__DIR__) . '/partials/trainer-row.php'; ?>
                 <?php endforeach; ?>
             </ul>
         <?php endif; ?>

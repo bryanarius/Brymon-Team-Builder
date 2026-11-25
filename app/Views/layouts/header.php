@@ -117,6 +117,11 @@ $documentTitle = str_contains($pageTitle, 'Brymon')
         </nav>
 
         <div class="navigation-actions">
+        <?php
+        $trainerSearchClass = 'trainer-search-link--desktop';
+        require __DIR__ . '/../partials/trainer-search-link.php';
+        ?>
+
         <?php if (Auth::check()): ?>
 
             <?php
@@ -140,7 +145,7 @@ $documentTitle = str_contains($pageTitle, 'Brymon')
                     require __DIR__ . '/../partials/avatar.php';
                     ?>
 
-                    <span>
+                    <span class="account-menu-name">
                         <?= htmlspecialchars(
                             Auth::username() ?? 'Account',
                             ENT_QUOTES,
@@ -226,8 +231,13 @@ $documentTitle = str_contains($pageTitle, 'Brymon')
             <?php endif; ?>
         </div>
 
-        <?php // On phones the account menu is hidden, so the heart sits by the menu button. ?>
+        <?php // On phones the account menu is hidden, so search and the heart sit by the menu button. ?>
         <div class="navigation-mobile-end">
+            <?php
+            $trainerSearchClass = 'trainer-search-link--mobile';
+            require __DIR__ . '/../partials/trainer-search-link.php';
+            ?>
+
             <?php if (Auth::check()): ?>
                 <?php
                 $notificationHeartClass = 'notification-heart--mobile';

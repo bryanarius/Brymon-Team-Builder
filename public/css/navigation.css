@@ -33,6 +33,15 @@
   width: auto;
 }
 
+/* The logo keeps its size however crowded the header gets: flex items
+   shrink by default, and base.css's img { max-width: 100% } lets the grid
+   squeeze its column below the logo's real width. */
+.logo-symbol,
+.logo-wordmark {
+  flex-shrink: 0;
+  max-width: none;
+}
+
 .primary-navigation {
   display: flex;
   align-items: center;
@@ -252,6 +261,22 @@
 .mobile-navigation form {
   margin: 0;
 }
+/* Below this the full header doesn't fit, so the account button shows just
+   the avatar. The name stays in the button for screen readers. */
+@media (max-width: 1200px) {
+  .navigation-button.account-menu-button {
+    min-width: auto;
+    padding-inline: 0.75rem;
+  }
+  .account-menu-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
 @media (max-width: 1050px) {
   /* Navigation */
   .navigation {
@@ -261,7 +286,13 @@
     height: 52px;
   }
   .primary-navigation {
-    gap: 1.5rem;
+    gap: 1.1rem;
+  }
+  .primary-navigation a {
+    font-size: 0.95rem;
+  }
+  .navigation-actions {
+    gap: 0.5rem;
   }
   .navigation-button {
     min-width: 100px;
@@ -388,6 +419,31 @@
   font-weight: 800;
   line-height: 14px;
   text-align: center;
+}
+
+/* Find trainers: a magnifying glass beside the heart. */
+.header-icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 1.25rem;
+  text-decoration: none;
+  transition:
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.header-icon-link:hover,
+.header-icon-link[aria-current="page"] {
+  color: var(--accent);
+}
+
+.header-icon-link:hover {
+  transform: scale(1.08);
 }
 
 /* Only one heart shows at a time: beside the account menu on wide screens,

@@ -10,6 +10,7 @@ use App\Controllers\PageController;
 use App\Controllers\NotificationController;
 use App\Controllers\ProfileController;
 use App\Controllers\TeamController;
+use App\Controllers\TrainerController;
 use App\Controllers\UsageStatsController;
 
 /*
@@ -119,6 +120,8 @@ $router->get('/p/{id}', [TeamController::class, 'showPublic']);
 |--------------------------------------------------------------------------
 */
 
+$router->get('/trainers', [TrainerController::class, 'index']);
+$router->get('/trainers/results', [TrainerController::class, 'results']);
 $router->get('/u/{username}', [ProfileController::class, 'show']);
 $router->get('/u/{username}/followers', [ProfileController::class, 'followers']);
 $router->get('/u/{username}/following', [ProfileController::class, 'following']);
