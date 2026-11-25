@@ -77,13 +77,17 @@ test("a new follower shows as new, then as read", async ({ browser }) => {
 
     await setFollowing(fan.page, "Example", true);
 
-    // The heart on any page shows one unread, and opens the page.
+    // The heart on any page shows it as unread, and opens the page. Other
+    // specs running at the same time can follow Example too, so this checks
+    // for "some" unread rather than exactly one.
     await example.page.goto("/pokedex");
 
     const heart = example.page.getByRole("link", { name: /^Notifications/ });
 
-    await expect(heart).toHaveAccessibleName("Notifications, 1 new");
-    await expect(heart.locator(".notification-heart-badge")).toHaveText("1");
+    await expect(heart).toHaveAccessibleName(/^Notifications, (\d|9\+) new$/);
+    await expect(heart.locator(".notification-heart-badge")).toHaveText(
+      /^(\d|9\+)$/,
+    );
 
     await heart.click();
     await expect(example.page).toHaveURL("/notifications");
