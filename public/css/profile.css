@@ -310,11 +310,7 @@
   overflow-wrap: anywhere;
 }
 
-/* With trainer-search.js running, results come as you type. */
-.trainer-search.is-live .button {
-  display: none;
-}
-
+/* Results fade while the next search loads. */
 [data-trainer-results][aria-busy="true"] {
   opacity: 0.6;
   transition: opacity 150ms ease;

@@ -34,9 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let timer = null;
   let request = null;
 
-  // Results come as you type, so the Search button isn't needed.
-  form.classList.add("is-live");
-
   async function showResults() {
     const query = input.value.trim();
 

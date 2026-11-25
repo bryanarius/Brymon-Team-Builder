@@ -40,7 +40,10 @@ $viewerId = $viewerId ?? null;
                 spellcheck="false"
             >
 
-            <button type="submit" class="button button-primary">Search</button>
+            <?php // Results come as you type; the button is only for browsers without JavaScript. ?>
+            <noscript>
+                <button type="submit" class="button button-primary">Search</button>
+            </noscript>
         </form>
 
         <p class="visually-hidden" role="status" data-trainer-search-status></p>
