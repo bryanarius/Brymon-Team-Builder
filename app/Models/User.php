@@ -421,7 +421,11 @@ final class User extends Model
         }
 
         // % and _ are wildcards in LIKE; escape them (and the escape
-        // character itself) so they only match themselves.
+        // character itself) so they only match themselves. Backslash is
+        // PostgreSQL's default LIKE escape, so the SQL needs no ESCAPE '\'
+        // clause, and must not have one: before PHP 8.4 (production runs
+        // 8.3), PDO reads \' in SQL as an escaped quote, misses every
+        // placeholder after it, and the query fails.
         $literal = addcslashes($query, '\\%_');
 
         $statement = $this->db->prepare(
@@ -431,14 +435,14 @@ final class User extends Model
                 display_name,
                 avatar_pokemon_id
              FROM users
-             WHERE username ILIKE :contains ESCAPE '\\'
-                OR display_name ILIKE :contains ESCAPE '\\'
+             WHERE username ILIKE :contains
+                OR display_name ILIKE :contains
              ORDER BY
                 CASE
                     WHEN LOWER(username) = LOWER(:exact)
                       OR LOWER(display_name) = LOWER(:exact) THEN 0
-                    WHEN username ILIKE :prefix ESCAPE '\\'
-                      OR display_name ILIKE :prefix ESCAPE '\\' THEN 1
+                    WHEN username ILIKE :prefix
+                      OR display_name ILIKE :prefix THEN 1
                     ELSE 2
                 END,
                 LOWER(username),
