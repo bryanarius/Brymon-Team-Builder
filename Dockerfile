@@ -25,7 +25,10 @@ COPY resources ./resources
 
 RUN npm run build
 
-FROM php:8.3-cli
+# Keep this on the same PHP version as local development. Production on 8.3
+# with 8.5 locally once let a query pass every test and fail only in
+# production (PDO's SQL parsing changed in 8.4).
+FROM php:8.5-cli
 
 # Install PostgreSQL PDO driver
 RUN apt-get update \
