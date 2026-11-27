@@ -178,6 +178,9 @@ EVs: 4 HP / 252 SpA / 252 Spe
   |--------------------------------------------------------------------------
   */
 
+  // navigation.js wires up the menu on DOMContentLoaded; clicking before
+  // the page after the delete has finished loading did nothing.
+  await page.waitForLoadState("load");
   await page.locator("#account-menu-button").click();
 
   await expect(page.locator("#account-menu-dropdown")).toBeVisible();

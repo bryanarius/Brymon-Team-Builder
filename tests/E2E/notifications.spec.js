@@ -82,7 +82,9 @@ test("a new follower shows as new, then as read", async ({ browser }) => {
     // for "some" unread rather than exactly one.
     await example.page.goto("/pokedex");
 
-    const heart = example.page.getByRole("link", { name: /^Notifications/ });
+    // The desktop heart: before navigation.css applies on a new page, the
+    // phone heart is briefly visible too, and a role query would match both.
+    const heart = example.page.locator(".notification-heart--desktop");
 
     await expect(heart).toHaveAccessibleName(/^Notifications, (\d|9\+) new$/);
     await expect(heart.locator(".notification-heart-badge")).toHaveText(
