@@ -12,12 +12,16 @@ declare(strict_types=1);
  *   $viewerId            ?int    the signed-in trainer, or null for guests
  *   $viewerFollowingIds  int[]   rows the viewer follows
  *   $viewerFollowerIds   int[]   rows that follow the viewer
+ *   $trainerRowAction    string  optional: 'follow' (default), or
+ *                                'remove-recent' for an ✕ that removes the
+ *                                trainer from your recent searches
  */
 
 $trainerDisplayName = trim((string) ($trainer['display_name'] ?? ''));
 $trainerName = $trainerDisplayName !== '' ? $trainerDisplayName : $trainer['username'];
+$trainerRowAction = $trainerRowAction ?? 'follow';
 ?>
-<li class="follow-row">
+<li class="follow-row" data-username="<?= htmlspecialchars($trainer['username'], ENT_QUOTES, 'UTF-8') ?>">
     <a
         href="/u/<?= htmlspecialchars(rawurlencode($trainer['username']), ENT_QUOTES, 'UTF-8') ?>"
         class="follow-row-link"
@@ -35,8 +39,18 @@ $trainerName = $trainerDisplayName !== '' ? $trainerDisplayName : $trainer['user
         </span>
     </a>
 
+    <?php if ($trainerRowAction === 'remove-recent'): ?>
+        <button
+            type="button"
+            class="recent-search-remove"
+            data-recent-search-remove
+            aria-label="Remove <?= htmlspecialchars($trainerName, ENT_QUOTES, 'UTF-8') ?> from recent searches"
+            title="Remove"
+        >
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
     <?php
-    if ($viewerId !== null && $trainer['id'] !== $viewerId):
+    elseif ($viewerId !== null && $trainer['id'] !== $viewerId):
         $followButtonUsername = $trainer['username'];
         $followButtonName = $trainerName;
         $followButtonFollowing = in_array($trainer['id'], $viewerFollowingIds, true);

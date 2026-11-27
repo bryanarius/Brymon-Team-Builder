@@ -52,6 +52,29 @@ test("guests can find a trainer from the header", async ({ page }) => {
   );
 });
 
+test("typing before the script loads still searches", async ({ page }) => {
+  // Hold trainer-search.js back, like a slow phone connection.
+  let releaseScript;
+  const scriptHeld = new Promise((resolve) => {
+    releaseScript = resolve;
+  });
+
+  await page.route("**/js/trainer-search.js", async (route) => {
+    await scriptHeld;
+    await route.continue();
+  });
+
+  await page.goto("/trainers", { waitUntil: "commit" });
+  await searchBox(page).fill("hilda");
+
+  releaseScript();
+
+  await expect(page).toHaveURL("/trainers?q=hilda");
+  await expect(
+    page.locator(".follow-row").filter({ hasText: "@demo_hilda" }),
+  ).toHaveCount(1);
+});
+
 test("without JavaScript, the Search button still works", async ({
   browser,
 }) => {

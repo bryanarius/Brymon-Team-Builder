@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Core\Auth;
 use App\Core\Controller;
 use App\Models\Follow;
+use App\Models\RecentSearch;
 use App\Models\User;
 
 /**
@@ -71,9 +72,15 @@ final class TrainerController extends Controller
             ? (new Follow())->findRelationshipsWith($viewerId, array_column($trainers, 'id'))
             : ['following' => [], 'followers' => []];
 
+        // An empty search box shows who you opened recently, like Instagram.
+        $recentTrainers = $query === '' && $viewerId !== null
+            ? (new RecentSearch())->findForUser($viewerId, RecentSearch::MAX_KEPT)
+            : [];
+
         return [
             'query' => $query,
             'trainers' => $trainers,
+            'recentTrainers' => $recentTrainers,
             'page' => $page,
             'hasNextPage' => $hasNextPage,
             'viewerId' => $viewerId,

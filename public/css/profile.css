@@ -315,3 +315,55 @@
   opacity: 0.6;
   transition: opacity 150ms ease;
 }
+
+/* Recent searches: shown when the search box is empty, like Instagram. */
+.recent-searches-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.recent-searches-clear {
+  padding: 0.25rem 0;
+  border: 0;
+  background: none;
+  color: var(--app-blue);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.recent-searches-clear:hover {
+  text-decoration: underline;
+}
+
+.recent-search-remove {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--app-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.recent-search-remove:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}
+
+.recent-searches-clear:disabled,
+.recent-search-remove:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}

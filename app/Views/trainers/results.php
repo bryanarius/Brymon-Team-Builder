@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 $query = $query ?? '';
 $trainers = $trainers ?? [];
+$recentTrainers = $recentTrainers ?? [];
 $page = $page ?? 1;
 $hasNextPage = $hasNextPage ?? false;
 $viewerId = $viewerId ?? null;
@@ -35,7 +36,36 @@ $summary = match (true) {
 };
 ?>
 <div data-trainer-search-summary="<?= $escape($summary) ?>">
-    <?php if ($query === ''): ?>
+    <?php if ($query === '' && $viewerId !== null): ?>
+        <?php // Who you opened from search lately, like Instagram. ?>
+        <section class="recent-searches" aria-labelledby="recent-searches-heading">
+            <div class="recent-searches-header">
+                <h2 id="recent-searches-heading" class="trainer-search-heading">Recent</h2>
+
+                <?php if ($recentTrainers !== []): ?>
+                    <button type="button" class="recent-searches-clear" data-recent-searches-clear>
+                        Clear all
+                    </button>
+                <?php endif; ?>
+            </div>
+
+            <?php if ($recentTrainers === []): ?>
+                <p class="profile-empty">No recent searches.</p>
+            <?php else: ?>
+                <ul class="follow-list">
+                    <?php
+                    $trainerRowAction = 'remove-recent';
+
+                    foreach ($recentTrainers as $trainer):
+                        require dirname(__DIR__) . '/partials/trainer-row.php';
+                    endforeach;
+
+                    $trainerRowAction = 'follow';
+                    ?>
+                </ul>
+            <?php endif; ?>
+        </section>
+    <?php elseif ($query === ''): ?>
         <p class="profile-empty">
             Search for a trainer to see their profile and teams.
         </p>

@@ -9,6 +9,7 @@ use App\Controllers\FeedbackController;
 use App\Controllers\PageController;
 use App\Controllers\NotificationController;
 use App\Controllers\ProfileController;
+use App\Controllers\RecentSearchController;
 use App\Controllers\TeamController;
 use App\Controllers\TrainerController;
 use App\Controllers\UsageStatsController;
@@ -127,6 +128,11 @@ $router->get('/u/{username}/followers', [ProfileController::class, 'followers'])
 $router->get('/u/{username}/following', [ProfileController::class, 'following']);
 $router->post('/u/{username}/follow', [ProfileController::class, 'follow']);
 $router->post('/u/{username}/unfollow', [ProfileController::class, 'unfollow']);
+
+// Recent trainer searches (signed in, JSON, CSRF-checked).
+$router->post('/u/{username}/recent-search', [RecentSearchController::class, 'record']);
+$router->post('/u/{username}/recent-search/remove', [RecentSearchController::class, 'remove']);
+$router->post('/recent-searches/clear', [RecentSearchController::class, 'clear']);
 
 /*
 |--------------------------------------------------------------------------
